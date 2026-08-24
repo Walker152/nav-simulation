@@ -1,0 +1,22 @@
+rmuc_2024:
+  world: resource/worlds/rmuc_2024_world.sdf
+  map: maps/rmuc_2024.yaml
+  # Kept inside the free area of the packaged occupancy map.
+  spawn: {x: 6.35, y: 7.10, z: 0.20, yaw: 0.0}
+
+rmul_2024:
+  world: resource/worlds/rmul_2024_world.sdf
+  map: maps/rmul_2024.yaml
+  spawn: {x: 4.3, y: 3.35, z: 1.20, yaw: 0.0}
+
+rmuc_2025:
+  world: resource/worlds/rmuc_2025_world.sdf
+  map: maps/rmuc_2025.yaml
+  # Upstream's red spawn y=9.5 lies outside its packaged map (max y=6.76).
+  spawn: {x: 3.4, y: 5.0, z: 0.28, yaw: 0.0}
+
+rmul_2025:
+  world: resource/worlds/rmul_2025_world.sdf
+  map: maps/rmul_2025.yaml
+  # Use the upstream blue-side spawn; its red-side spawn is outside this map.
+  spawn: {x: 4.8, y: -3.5, z: 0.28, yaw: 3.14159265}

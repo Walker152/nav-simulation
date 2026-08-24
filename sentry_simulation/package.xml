@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>sentry_simulation</name>
+  <version>0.1.0</version>
+  <description>Gazebo Fortress simulation resources and adapters for the sentry navigation stack.</description>
+  <maintainer email="maintainer@example.com">sentry navigation maintainers</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+
+  <build_depend>ignition-gazebo6</build_depend>
+  <build_depend>ignition-msgs8</build_depend>
+  <build_depend>ignition-transport11</build_depend>
+
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>pcl_conversions</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
+  <depend>rclpy</depend>
+  <depend>sensor_msgs</depend>
+
+  <exec_depend>navi2</exec_depend>
+  <exec_depend>minco_controller</exec_depend>
+  <exec_depend>minco_planner</exec_depend>
+  <exec_depend>rog_map</exec_depend>
+  <exec_depend>spatio_temporal_voxel_layer</exec_depend>
+  <exec_depend>nav2_bringup</exec_depend>
+  <exec_depend>nav2_lifecycle_manager</exec_depend>
+  <exec_depend>nav2_map_server</exec_depend>
+  <exec_depend>nav2_common</exec_depend>
+  <exec_depend>point_lio</exec_depend>
+  <exec_depend>ros_gz_bridge</exec_depend>
+  <exec_depend>ros_gz_sim</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>ignition-gazebo6</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>rosgraph_msgs</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+
+  <test_depend>ament_cmake_pytest</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
