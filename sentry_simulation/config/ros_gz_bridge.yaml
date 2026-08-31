@@ -4,13 +4,31 @@
   gz_type_name: ignition.msgs.Clock
   direction: GZ_TO_ROS
 
-- ros_topic_name: /sim/lidar/points
-  gz_topic_name: /sim/lidar/points
+- ros_topic_name: /sim/lidar/left/front/points
+  gz_topic_name: /sim/lidar/left/front/points
   ros_type_name: sensor_msgs/msg/PointCloud2
   gz_type_name: ignition.msgs.PointCloudPacked
   direction: GZ_TO_ROS
 
-- ros_topic_name: /sim/imu
+- ros_topic_name: /sim/lidar/left/rear/points
+  gz_topic_name: /sim/lidar/left/rear/points
+  ros_type_name: sensor_msgs/msg/PointCloud2
+  gz_type_name: ignition.msgs.PointCloudPacked
+  direction: GZ_TO_ROS
+
+- ros_topic_name: /sim/lidar/right/front/points
+  gz_topic_name: /sim/lidar/right/front/points
+  ros_type_name: sensor_msgs/msg/PointCloud2
+  gz_type_name: ignition.msgs.PointCloudPacked
+  direction: GZ_TO_ROS
+
+- ros_topic_name: /sim/lidar/right/rear/points
+  gz_topic_name: /sim/lidar/right/rear/points
+  ros_type_name: sensor_msgs/msg/PointCloud2
+  gz_type_name: ignition.msgs.PointCloudPacked
+  direction: GZ_TO_ROS
+
+- ros_topic_name: /sim/imu_raw
   gz_topic_name: /sim/imu
   ros_type_name: sensor_msgs/msg/Imu
   gz_type_name: ignition.msgs.IMU
@@ -23,8 +41,7 @@
   direction: ROS_TO_GZ
 
 - ros_topic_name: /sim/ground_truth/odom
-  gz_topic_name: /sentry/odometry
+  gz_topic_name: /sentry/ground_truth_odometry
   ros_type_name: nav_msgs/msg/Odometry
   gz_type_name: ignition.msgs.Odometry
   direction: GZ_TO_ROS
-

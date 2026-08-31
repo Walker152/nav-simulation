@@ -1,22 +1,45 @@
 rmuc_2024:
   world: resource/worlds/rmuc_2024_world.sdf
   map: maps/rmuc_2024.yaml
-  # Kept inside the free area of the packaged occupancy map.
-  spawn: {x: 6.35, y: 7.10, z: 0.20, yaw: 0.0}
+  spawn_clearance: 0.0
+  # Current real-vehicle RMUC ICP initial pose.
+  spawn: {x: 4.234, y: 7.3, z: 0.0, yaw: 0.04}
+  # The available model cloud describes the newer RMUC geometry.
+  icp: {enable: false}
 
 rmul_2024:
   world: resource/worlds/rmul_2024_world.sdf
   map: maps/rmul_2024.yaml
-  spawn: {x: 4.3, y: 3.35, z: 1.20, yaw: 0.0}
+  spawn_clearance: 0.0
+  # Historical real-vehicle RMUL ICP initial pose retained in repository history.
+  spawn: {x: 2.0, y: 6.0, z: 0.0, yaw: 0.4}
+  # The available model cloud describes the newer RMUL geometry.
+  icp: {enable: false}
 
 rmuc_2025:
   world: resource/worlds/rmuc_2025_world.sdf
   map: maps/rmuc_2025.yaml
-  # Upstream's red spawn y=9.5 lies outside its packaged map (max y=6.76).
-  spawn: {x: 3.4, y: 5.0, z: 0.28, yaw: 0.0}
+  spawn_clearance: 0.0
+  spawn: {x: 4.234, y: 7.3, z: 0.0, yaw: 0.04}
+  icp:
+    enable: true
+    target_pcd: resource/maps/pcd/rmuc_model.pcd
+    # Calibrated from ratio-GICP against the simulator ground-truth spawn pose.
+    pcd_to_map: [-0.18495, 0.38684, -0.022672]
+    min_inlier_ratio: 0.4
+    min_overlap_ratio: 0.5
 
 rmul_2025:
   world: resource/worlds/rmul_2025_world.sdf
   map: maps/rmul_2025.yaml
-  # Use the upstream blue-side spawn; its red-side spawn is outside this map.
-  spawn: {x: 4.8, y: -3.5, z: 0.28, yaw: 3.14159265}
+  spawn_clearance: 0.0
+  spawn: {x: 2.0, y: 6.0, z: 0.0, yaw: 0.4}
+  icp:
+    enable: true
+    target_pcd: resource/maps/pcd/rmul_model.pcd
+    # Calibrated from ratio-GICP against the simulator ground-truth spawn pose.
+    pcd_to_map: [-0.059784, -0.060093, -0.002569]
+    # RMUL exposes less model surface from the real-ICP spawn; measured ratios
+    # are about 0.36 / 0.44 while normalized fitness remains below 0.006.
+    min_inlier_ratio: 0.35
+    min_overlap_ratio: 0.42

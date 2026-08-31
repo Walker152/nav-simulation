@@ -1,0 +1,79 @@
+gicp_relocalization_node:
+  ros__parameters:
+    use_sim_time: true
+    mode: initial_guess
+    # Overridden per world by simulation.launch.py.
+    target_pcd_file: ""
+    map_frame: pcd_map
+    visualization_en: false
+    source_cloud_topic: /cloud_registered_full
+    alignment_frequency: 5.0
+    accumulate_frames: 3
+    tf_publish_frequency: 100.0
+
+    gicp:
+      # Dual-lidar raw score scales with point count; disable that legacy guard
+      # and use normalized score, inlier ratio and overlap ratio instead.
+      score_threshold: -1.0
+      normalized_score_threshold: 0.2
+      min_inlier_ratio: 0.4
+      min_overlap_ratio: 0.5
+      fine_alignment:
+        enable: true
+        coarse_first_window_only: true
+        max_correspondence_distance: 0.2
+      planar_observability:
+        enable: false
+        min_eigen_ratio: 0.001
+      target_voxel_leaf_size: 0.05
+      source_voxel_leaf_size: 0.05
+      local_map_radius: 12.0
+      max_correspondence_distance: 0.5
+      max_iterations: 100
+      transformation_epsilon: 0.01
+      euclidean_fitness_epsilon: 0.01
+
+    converged_count_threshold: 3
+    convergence:
+      max_xy_spread: 0.15
+      max_yaw_spread: 0.02
+
+    initial_pose_guard:
+      enable: true
+      max_translation_correction: 0.5
+      max_yaw_correction: 0.2
+
+    results:
+      enable: false
+      path: /tmp/gicp_sim_results.csv
+
+    enable_continuous_relocalization: false
+    max_tracking_lost_count: 3
+    continuous_relocalization:
+      max_translation_jump: 0.1
+      max_yaw_jump: 0.1
+
+    timeout_seconds: 15.0
+    default_pose_on_timeout: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    initial_pose: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    multi_guess:
+      search_rectangles: [0.0, 3.0, 0.0, 3.0, -2.0, 0.0, -1.0, 1.0]
+      z_candidates: [0.0, 0.4]
+      step_x: 2.0
+      step_y: 2.0
+      step_yaw: 0.785398
+
+    height_filter:
+      enable: true
+      min_z: -0.5
+      max_z: 2.5
+
+    source_crop:
+      enable: true
+      min_x: -8.0
+      max_x: 8.0
+      min_y: -8.0
+      max_y: 8.0
+      min_z: -0.5
+      max_z: 3.0

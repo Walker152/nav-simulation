@@ -23,6 +23,7 @@ def _launch_setup(context, package_share):
     world_name = LaunchConfiguration("world").perform(context)
     chassis_type = LaunchConfiguration("chassis_type").perform(context)
     headless = _as_bool(LaunchConfiguration("headless").perform(context))
+    use_icp = _as_bool(LaunchConfiguration("use_icp").perform(context))
 
     if chassis_type not in ("omni", "diff"):
         raise RuntimeError("chassis_type must be 'omni' or 'diff'")
@@ -44,6 +45,15 @@ def _launch_setup(context, package_share):
     )
     bridge_path = os.path.join(package_share, "config", "ros_gz_bridge.yaml")
     point_lio_path = os.path.join(package_share, "config", "point_lio_sim.yaml")
+    gicp_path = os.path.join(package_share, "config", "gicp_sim.yaml")
+    mid360_pattern_path = os.path.join(
+        package_share,
+        "resource",
+        "models",
+        "mid360",
+        "scan_mode",
+        "mid360-real-centr.csv",
+    )
     nav2_params_path = os.path.join(package_share, "config", "nav2_sim.yaml")
     configured_nav2_params = ReplaceString(
         source_file=nav2_params_path,
@@ -54,9 +64,8 @@ def _launch_setup(context, package_share):
     y = float(spawn["y"])
     z = float(spawn["z"])
     yaw = float(spawn["yaw"])
-    lidar_x = x + 0.20 * math.sin(yaw)
-    lidar_y = y - 0.20 * math.cos(yaw)
-    lidar_z = z + 0.58
+    fusion_x = x + 0.2 * math.sin(yaw)
+    fusion_y = y - 0.2 * math.cos(yaw)
 
     gz_args = f"-r {'-s ' if headless else ''}{world_path}"
     gazebo = IncludeLaunchDescription(
@@ -87,6 +96,22 @@ def _launch_setup(context, package_share):
         parameters=[{"config_file": bridge_path, "use_sim_time": True}],
     )
 
+    imu_filter = Node(
+        package="sentry_simulation",
+        executable="sentry_sim_imu_filter",
+        name="sentry_sim_imu_filter",
+        output="screen",
+        parameters=[{
+            "use_sim_time": True,
+            "input_topic": "/sim/imu_raw",
+            "output_topic": "/sim/imu",
+            "acceleration_limit": 29.43,
+            "angular_velocity_limit": 35.0,
+            "dynamic_acceleration_limit": 4.0,
+            "vertical_dynamic_acceleration_limit": 0.0,
+        }],
+    )
+
     point_lio_container = ComposableNodeContainer(
         name="livox_pointlio_container",
         namespace="",
@@ -100,12 +125,20 @@ def _launch_setup(context, package_share):
                 name="pointcloud_adapter",
                 parameters=[{
                     "use_sim_time": True,
-                    "input_topic": "/sim/lidar/points",
-                    "output_topic": "/velodyne_points",
-                    "n_scan": 32,
-                    "vertical_min_deg": -7.0,
-                    "vertical_max_deg": 52.0,
-                    "scan_period": 0.05,
+                    "left_front_input_topic": "/sim/lidar/left/front/points",
+                    "left_rear_input_topic": "/sim/lidar/left/rear/points",
+                    "right_front_input_topic": "/sim/lidar/right/front/points",
+                    "right_rear_input_topic": "/sim/lidar/right/rear/points",
+                    "output_topic": "/livox/lidar",
+                    "output_frame_id": "sim_lidar",
+            "left_sensor_pose": [-0.0496, 0.352530918687, 0.0, -0.5835987756, 0.0, 0.0],
+            "right_sensor_pose": [-0.0496, 0.047469081313, 0.0, 0.5835987756, 0.0, 0.0],
+                    "pattern_file": mid360_pattern_path,
+                    "pattern_points_per_frame": 20000,
+                    "sync_tolerance_ms": 5.0,
+                    "vertical_min_deg": -7.3,
+                    "vertical_max_deg": 52.3,
+                    "scan_period": 0.1,
                 }],
                 extra_arguments=[{"use_intra_process_comms": True}],
             ),
@@ -135,22 +168,80 @@ def _launch_setup(context, package_share):
         }.items(),
     )
 
-    return [
-        gazebo,
-        spawn_robot,
-        bridge,
-        point_lio_container,
-        Node(
+    localization_actions = []
+    icp_config = world_config.get("icp", {})
+    if use_icp and bool(icp_config.get("enable", False)):
+        pcd_path = os.path.join(package_share, icp_config["target_pcd"])
+        if not os.path.isfile(pcd_path):
+            raise RuntimeError(f"model PCD does not exist: {pcd_path}")
+        pcd_to_map_x, pcd_to_map_y, pcd_to_map_yaw = [
+            float(value) for value in icp_config["pcd_to_map"]
+        ]
+        delta_x = fusion_x - pcd_to_map_x
+        delta_y = fusion_y - pcd_to_map_y
+        cos_yaw = math.cos(pcd_to_map_yaw)
+        sin_yaw = math.sin(pcd_to_map_yaw)
+        initial_pose = [
+            cos_yaw * delta_x + sin_yaw * delta_y,
+            -sin_yaw * delta_x + cos_yaw * delta_y,
+            0.0,
+            0.0,
+            0.0,
+            yaw - pcd_to_map_yaw,
+        ]
+        localization_actions.extend([
+            Node(
+                package="tf2_ros",
+                executable="static_transform_publisher",
+                name="map_to_pcd_map",
+                output="screen",
+                arguments=[
+                    str(pcd_to_map_x), str(pcd_to_map_y), "0",
+                    str(pcd_to_map_yaw), "0", "0", "map", "pcd_map",
+                ],
+                parameters=[{"use_sim_time": True}],
+            ),
+            Node(
+                package="icp_relocalization",
+                executable="gicp_node",
+                name="gicp_relocalization_node",
+                output="screen",
+                parameters=[
+                    gicp_path,
+                    {
+                        "use_sim_time": True,
+                        "target_pcd_file": pcd_path,
+                        "initial_pose": initial_pose,
+                        "default_pose_on_timeout": initial_pose,
+                        "gicp.min_inlier_ratio": float(
+                            icp_config["min_inlier_ratio"]
+                        ),
+                        "gicp.min_overlap_ratio": float(
+                            icp_config["min_overlap_ratio"]
+                        ),
+                    },
+                ],
+            ),
+        ])
+    else:
+        localization_actions.append(Node(
             package="tf2_ros",
             executable="static_transform_publisher",
             name="map_to_camera_init",
             output="screen",
             arguments=[
-                str(lidar_x), str(lidar_y), str(lidar_z),
-                str(yaw), "0", "0", "map", "camera_init",
+                str(fusion_x), str(fusion_y), "0", str(yaw), "0", "0", "map", "camera_init"
             ],
             parameters=[{"use_sim_time": True}],
-        ),
+        ))
+
+    return [
+        gazebo,
+        spawn_robot,
+        bridge,
+        imu_filter,
+        point_lio_container,
+        *localization_actions,
         Node(
             package="nav2_map_server",
             executable="map_server",
@@ -203,6 +294,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument("headless", default_value="false"),
         DeclareLaunchArgument("rviz", default_value="true"),
+        DeclareLaunchArgument("use_icp", default_value="true"),
         DeclareLaunchArgument("log_level", default_value="info"),
         OpaqueFunction(function=_launch_setup, args=[package_share]),
     ])

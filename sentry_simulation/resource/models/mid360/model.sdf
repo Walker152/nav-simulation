@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<sdf version="1.7">
+  <model name="mid360">
+    <static>true</static>
+    <link name="mid360">
+      <visual name="visual">
+        <geometry><mesh><uri>model://mid360/meshes/mid360.dae</uri></mesh></geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

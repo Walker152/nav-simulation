@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <sdf version='1.7'>
   <world name='default'>
+    <gravity>0 0 -9.81</gravity>
     <!-- Physics -->
     <plugin filename="libignition-gazebo-physics-system.so" name="ignition::gazebo::systems::Physics">
     </plugin>
@@ -40,7 +41,8 @@
       <include>
         <uri>model://rmul_2025</uri>
       </include>
-      <pose>0.0 0.0 0 0 0 0</pose>
+      <!-- Centered 12.6 x 8.6 m mesh shifted into the zero-origin map frame. -->
+      <pose>6.3 4.3 0 0 0 0</pose>
       <static>true</static>
     </model>
   </world>

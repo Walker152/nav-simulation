@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<sdf version="1.7">
+  <model name="pb2025_visuals">
+    <static>true</static>
+    <link name="visual_assets"/>
+  </model>
+</sdf>

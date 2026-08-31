@@ -127,10 +127,9 @@ controller_server:
       alpha_min: -5.0
       alpha_max: 5.0
 
-      # Lidar extrinsic parameters
+      # The two physical MID360 clouds are fused into a level chassis-center frame.
       lidar_offset_x: 0.0
-      lidar_offset_y: -0.20
-      # The simplified simulator LiDAR / IMU frame is mounted level.
+      lidar_offset_y: 0.0
       lidar_roll_offset: 0.0
 
       # Frame settings
@@ -155,15 +154,15 @@ local_costmap:
     ros__parameters:
       update_frequency: 10.0
       publish_frequency: 10.0
-      global_frame: camera_init
+      global_frame: map
       robot_base_frame: base_link
       use_sim_time: True
       rolling_window: true
       width: 5
       height: 5
       resolution: 0.05
-      # robot_radius: 0.22
-      robot_radius: 0.2
+      # Convex hull of the omni rounded-square wheel envelope and diff wheel width.
+      footprint: "[[0.30, 0.00], [0.296, 0.22], [0.274, 0.274], [0.22, 0.296], [0.00, 0.32], [-0.22, 0.296], [-0.274, 0.274], [-0.296, 0.22], [-0.30, 0.00], [-0.296, -0.22], [-0.274, -0.274], [-0.22, -0.296], [0.00, -0.32], [0.22, -0.296], [0.274, -0.274], [0.296, -0.22]]"
       plugins: ["static_layer", "stvl_layer", "inflation_layer"]
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
@@ -171,7 +170,7 @@ local_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 6.0
-        inflation_radius: 0.25
+        inflation_radius: 0.50
       stvl_layer:
         plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer"
         enabled: true
@@ -224,8 +223,7 @@ global_costmap:
       global_frame: map
       robot_base_frame: base_link
       use_sim_time: True
-      # robot_radius: 0.22
-      robot_radius: 0.20
+      footprint: "[[0.30, 0.00], [0.296, 0.22], [0.274, 0.274], [0.22, 0.296], [0.00, 0.32], [-0.22, 0.296], [-0.274, 0.274], [-0.296, 0.22], [-0.30, 0.00], [-0.296, -0.22], [-0.274, -0.274], [-0.22, -0.296], [0.00, -0.32], [0.22, -0.296], [0.274, -0.274], [0.296, -0.22]]"
       resolution: 0.05
       track_unknown_space: true
       plugins: ["static_layer", "stvl_layer", "inflation_layer"]
@@ -324,7 +322,7 @@ planner_server:
       allow_unknown: false
       odom_topic: /aft_mapped_to_init
       lidar_offset_x: 0.0
-      lidar_offset_y: -0.20
+      lidar_offset_y: 0.0
       performance:
         enable: false
         print_enable: false
@@ -341,7 +339,7 @@ planner_server:
         resolution: 0.05
         # [基础地图][m/cell] 三维膨胀地图分辨率；通常与 resolution 保持一致，过细增加膨胀查询计算量，过粗会让碰撞边界变粗糙。
         inflation_resolution: 0.05
-        map_size: [10.0, 10.0, 1.5]
+        map_size: [10.0, 10.0, 3.0]
         fix_map_origin: [0.0, 0.0, 0.0]
 
         map_sliding:
@@ -398,7 +396,7 @@ planner_server:
           # [raycasting][m,m] 射线有效距离 [min,max]；min 过大会忽略近处点，max 过大会增加计算量并可能引入远处噪声。
           ray_range: [0.03, 10.0]
           # [raycasting][m,m,m] 每次局部更新盒尺寸；调大覆盖更多点但 raycasting 和 dirty column 数量上升。
-          local_update_box: [10.0, 10.0, 2.5]
+          local_update_box: [10.0, 10.0, 3.0]
           # [raycasting][概率] unknown 判断阈值相关参数；影响 UNKNOWN/FREE/OCCUPIED 判定，进而影响 projection layer。
           unk_thresh: 0.70
           p_hit: 0.9
@@ -438,7 +436,7 @@ planner_server:
           # [absolute Z coordinate, m]
           # ROGMap frame 中参与单柱扫描的绝对 Z 下界。
           # 这是坐标值，不是地面相对高度，也不是高度差。
-          scan_z_min_abs: -0.20
+          scan_z_min_abs: -0.80
 
           # [absolute Z coordinate, m]
           # ROGMap frame 中参与单柱扫描的绝对 Z 上界。
@@ -464,7 +462,7 @@ planner_server:
 
           # [dimensionless ratio, 0~1]
           # H 区间内的垂直占据率达到该值时，视为连续竖直墙。
-          wall_occupancy_ratio_min: 0.80
+          wall_occupancy_ratio_min: 0.70
 
           # [vertical height difference, m]
           # 可通行隧道所需的最小上下表面高度差。
@@ -491,7 +489,7 @@ planner_server:
           hysteresis_enable: false
           hysteresis_count: 2
           # Projection 二维障碍退出原始 OCCUPIED 后的保持时间，单位为秒。
-          obstacle_hold_time: 1.5
+          obstacle_hold_time: 0.0
 
           mask_filter_en: true
           fill_occ_min: 8
@@ -540,7 +538,7 @@ planner_server:
           rate: 10.0
           range: [10.0, 10.0, 1.5]
       corridor:
-        robot_radius: 0.25
+        robot_radius: 0.42
         extra_margin: 0.05
 
       smac_2d:
@@ -553,7 +551,7 @@ planner_server:
         opt_freq: 20.0
         traj_goal_tolerance: 0.3
         enable_yaw_opt: true
-        safe_dist: 0.35
+        safe_dist: 0.45
         collision_dist: 0.2
         lookahead_dist: 6.0  # 前视距离,用于minco部分优化
         max_velocity: 3.0
