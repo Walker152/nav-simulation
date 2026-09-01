@@ -13,6 +13,11 @@ The following files were migrated without changing their upstream license:
 - `sentry_simulation/resource/maps/pcd/rmul_model.pcd` and the aligned
   `sentry_simulation/maps/rmul_2025.pgm`: copied from this workspace's
   `navi2_bringup/maps/pcd/2026rmul.pcd` and `maps/2026/rmul2026.pgm`.
+- `sentry_simulation/resource/maps/pcd/rmuc_2026.pcd` and
+  `sentry_simulation/maps/rmuc_2026.pgm`: copied from this workspace's
+  `navi2_bringup/maps/pcd/2026rmuc.pcd` and `maps/2026/rmuc2026.pgm`.
+  The matching visual and collision STL files are generated locally from that
+  point cloud and remain project-owned simulation derivatives.
 - The point-cloud field conversion behavior is adapted from
   `pb2025_sentry_nav/ign_sim_pointcloud_tool`, and the world-to-body velocity
   conversion follows `pb2025_sentry_nav/fake_vel_transform`, at the same

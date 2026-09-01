@@ -29,6 +29,19 @@ rmuc_2025:
     min_inlier_ratio: 0.4
     min_overlap_ratio: 0.5
 
+rmuc_2026:
+  world: resource/worlds/rmuc_2026_world.sdf
+  map: maps/rmuc_2026.yaml
+  spawn_clearance: 0.0
+  spawn: {x: 4.234, y: 7.3, z: 0.0, yaw: 0.04}
+  icp:
+    enable: true
+    target_pcd: resource/maps/pcd/rmuc_2026.pcd
+    # The PCD, visual mesh, collision surface and 2-D map share map coordinates.
+    pcd_to_map: [0.0, 0.0, 0.0]
+    min_inlier_ratio: 0.4
+    min_overlap_ratio: 0.5
+
 rmul_2025:
   world: resource/worlds/rmul_2025_world.sdf
   map: maps/rmul_2025.yaml

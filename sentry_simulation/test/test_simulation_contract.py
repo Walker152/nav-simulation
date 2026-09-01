@@ -151,6 +151,7 @@ class SimulationContractTest(unittest.TestCase):
         ):
             self.assertIn(package, script)
         self.assertIn("simulation_source_models", script)
+        self.assertIn("SENTRY_SIMULATION_SHARE", script)
         self.assertIn("IGN_GAZEBO_RESOURCE_PATH", script)
 
     def test_manifest_declares_the_complete_navigation_runtime(self):
@@ -573,7 +574,7 @@ class SimulationContractTest(unittest.TestCase):
 
     def test_all_world_files_are_valid_sdf(self):
         worlds_dir = PACKAGE_ROOT / "resource" / "worlds"
-        expected = {"rmuc_2024", "rmul_2024", "rmuc_2025", "rmul_2025"}
+        expected = {"rmuc_2024", "rmul_2024", "rmuc_2025", "rmuc_2026", "rmul_2025"}
         actual = {path.stem.removesuffix("_world") for path in worlds_dir.glob("*_world.sdf")}
         self.assertEqual(actual, expected)
         for world in worlds_dir.glob("*_world.sdf"):
@@ -702,7 +703,8 @@ class SimulationContractTest(unittest.TestCase):
             (PACKAGE_ROOT / "config" / "worlds.yaml").read_text(encoding="utf-8")
         )
         self.assertEqual(
-            set(catalog), {"rmuc_2024", "rmul_2024", "rmuc_2025", "rmul_2025"}
+            set(catalog),
+            {"rmuc_2024", "rmul_2024", "rmuc_2025", "rmuc_2026", "rmul_2025"},
         )
         for item in catalog.values():
             self.assertTrue((PACKAGE_ROOT / item["world"]).is_file())
@@ -810,17 +812,18 @@ class SimulationContractTest(unittest.TestCase):
         self.assertGreaterEqual(params["gicp"]["min_overlap_ratio"], 0.5)
 
         pcd_dir = PACKAGE_ROOT / "resource" / "maps" / "pcd"
-        for filename in ("rmuc_model.pcd", "rmul_model.pcd"):
+        for filename in ("rmuc_model.pcd", "rmuc_2026.pcd", "rmul_model.pcd"):
             path = pcd_dir / filename
             self.assertTrue(path.is_file(), filename)
-            header = path.open("rb").read(512)
+            with path.open("rb") as stream:
+                header = stream.read(512)
             self.assertIn(b"FIELDS", header)
             self.assertIn(b"POINTS", header)
 
         catalog = yaml.safe_load(
             (PACKAGE_ROOT / "config" / "worlds.yaml").read_text(encoding="utf-8")
         )
-        for name in ("rmuc_2025", "rmul_2025"):
+        for name in ("rmuc_2025", "rmuc_2026", "rmul_2025"):
             self.assertTrue(catalog[name]["icp"]["enable"])
             target = catalog[name]["icp"]["target_pcd"]
             self.assertNotIn("red", target)
@@ -830,6 +833,8 @@ class SimulationContractTest(unittest.TestCase):
 
         self.assertEqual(catalog["rmuc_2025"]["icp"]["min_inlier_ratio"], 0.4)
         self.assertEqual(catalog["rmuc_2025"]["icp"]["min_overlap_ratio"], 0.5)
+        self.assertEqual(catalog["rmuc_2026"]["icp"]["min_inlier_ratio"], 0.4)
+        self.assertEqual(catalog["rmuc_2026"]["icp"]["min_overlap_ratio"], 0.5)
         self.assertEqual(catalog["rmul_2025"]["icp"]["min_inlier_ratio"], 0.35)
         self.assertEqual(catalog["rmul_2025"]["icp"]["min_overlap_ratio"], 0.42)
 
@@ -850,6 +855,7 @@ class SimulationContractTest(unittest.TestCase):
             catalog["rmuc_2025"]["icp"]["pcd_to_map"],
             [-0.18495, 0.38684, -0.022672],
         )
+        self.assertEqual(catalog["rmuc_2026"]["icp"]["pcd_to_map"], [0.0, 0.0, 0.0])
         self.assertEqual(
             catalog["rmul_2025"]["icp"]["pcd_to_map"],
             [-0.059784, -0.060093, -0.002569],
@@ -962,7 +968,13 @@ class SimulationContractTest(unittest.TestCase):
             module.get_package_share_directory = lambda name: shares[name]
 
             for chassis_type in ("omni", "diff"):
-                for world in ("rmuc_2024", "rmul_2024", "rmuc_2025", "rmul_2025"):
+                for world in (
+                    "rmuc_2024",
+                    "rmul_2024",
+                    "rmuc_2025",
+                    "rmuc_2026",
+                    "rmul_2025",
+                ):
                     context = LaunchContext()
                     context.launch_configurations.update(
                         {

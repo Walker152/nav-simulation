@@ -283,11 +283,18 @@ def _launch_setup(context, package_share):
 
 
 def generate_launch_description():
-    package_share = get_package_share_directory("sentry_simulation")
+    installed_package_share = get_package_share_directory("sentry_simulation")
+    package_share = os.environ.get(
+        "SENTRY_SIMULATION_SHARE", installed_package_share
+    )
+    if not os.path.isfile(os.path.join(package_share, "package.xml")):
+        raise RuntimeError(
+            f"sentry_simulation share directory is invalid: {package_share}"
+        )
     return LaunchDescription([
         DeclareLaunchArgument(
             "world", default_value="rmuc_2025",
-            description="rmuc_2024, rmul_2024, rmuc_2025, or rmul_2025",
+            description="rmuc_2024, rmul_2024, rmuc_2025, rmuc_2026, or rmul_2025",
         ),
         DeclareLaunchArgument(
             "chassis_type", default_value="omni", description="omni or diff"
