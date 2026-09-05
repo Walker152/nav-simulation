@@ -308,7 +308,6 @@ planner_server:
         map_frame: map
         rog_frame: camera_init
       priormap:
-        use_nav2_global_search: true
         clip_seed_by_rog_boundary: true
         rog_boundary_margin: 0.2
         rog_boundary_sample_step: 0.1
@@ -544,7 +543,6 @@ planner_server:
         esdf_max_cost: 0.5
 
       minco_optimizer:
-        opt_freq: 20.0
         traj_goal_tolerance: 0.3
         enable_yaw_opt: true
         safe_dist: 0.45

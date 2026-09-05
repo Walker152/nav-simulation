@@ -910,6 +910,8 @@ class SimulationContractTest(unittest.TestCase):
         self.assertEqual(global_costmap["footprint"], expected_footprint)
         self.assertGreaterEqual(local["inflation_layer"]["inflation_radius"], 0.50)
         self.assertNotIn("corridor", planner)
+        self.assertNotIn("use_nav2_global_search", planner["priormap"])
+        self.assertNotIn("opt_freq", planner["minco_optimizer"])
         self.assertAlmostEqual(planner["minco_optimizer"]["safe_dist"], 0.45)
 
         projection = planner["rog_map"]["projection"]
