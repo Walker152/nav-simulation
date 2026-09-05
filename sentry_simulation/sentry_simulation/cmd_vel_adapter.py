@@ -6,6 +6,8 @@ import math
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 import rclpy
+from rclpy._rclpy_pybind11 import RCLError
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 
@@ -107,7 +109,7 @@ def main(args=None) -> None:
     node = SentrySimCmdAdapter()
     try:
         rclpy.spin(node)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException, RCLError):
         pass
     finally:
         node.destroy_node()
