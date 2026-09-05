@@ -185,8 +185,8 @@ ros2 topic echo /sim/ground_truth/odom --once
 - 2025/2026 场地通过 `map -> pcd_map -> camera_init` 接入一次性 GICP；超时会回退到同一
   实车初始位姿。2024 场地直接发布 `map -> camera_init`。两种路径的定位原点 Z 都为零。
 - planner/controller 的雷达杆臂补偿设为零，因为 Point-LIO 输出已经位于车体中心公共帧。
-- Nav2 使用同时包络全向轮和差速轮的凸多边形 footprint；MINCO corridor 半径为
-  `0.42 m`、优化安全距离为 `0.45 m`，避免原先 `0.20/0.25 m` 低估车体后卡场地边角。
+- Nav2 使用同时包络全向轮和差速轮的凸多边形 footprint；MINCO 优化安全距离为
+  `0.45 m`，避免原先 `0.20/0.25 m` 低估车体后卡场地边角。
 - Point-LIO 继续发布当前仓库既有的 `camera_init -> aft_mapped` 与里程计话题。
 - MPC `/cmd_vel_mpc` 是世界坐标系速度；适配节点通过 Point-LIO yaw 转为车体系。
 - 差速模式不会把 `linear.y` 直接发送给底盘，而是生成转向角速度；目标在车后方时允许倒车。

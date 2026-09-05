@@ -537,10 +537,6 @@ planner_server:
           # [visualization][Hz] 可视化发布上限频率；实际每个 topic 仅在存在订阅者时构造并发布。
           rate: 10.0
           range: [10.0, 10.0, 1.5]
-      corridor:
-        robot_radius: 0.42
-        extra_margin: 0.05
-
       smac_2d:
         use_esdf_cost: true
         esdf_weight: 1.0
