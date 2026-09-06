@@ -6,7 +6,12 @@ import os
 import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction
+from launch.actions import (
+    DeclareLaunchArgument,
+    ExecuteProcess,
+    IncludeLaunchDescription,
+    OpaqueFunction,
+)
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
@@ -247,6 +252,20 @@ def _launch_setup(context, package_share):
             parameters=[{"use_sim_time": True}],
         ))
 
+    # RViz exposes the navigation goal tool before bt_navigator is active.
+    # Delay startup to avoid rejecting the first goal during lifecycle startup.
+    rviz_config = os.path.join(get_package_share_directory("navi2"), "config", "our.rviz")
+    rviz = ExecuteProcess(
+        condition=IfCondition(LaunchConfiguration("rviz")),
+        cmd=[
+            "bash", "-c",
+            "until ros2 lifecycle get /bt_navigator 2>/dev/null | grep -q '^active \\[3\\]'; "
+            f"do sleep 0.2; done; exec rviz2 -d '{rviz_config}' --ros-args -p use_sim_time:=true",
+        ],
+        name="rviz2",
+        output="screen",
+    )
+
     return [
         gazebo,
         spawn_robot,
@@ -281,17 +300,7 @@ def _launch_setup(context, package_share):
             output="screen",
             parameters=[{"use_sim_time": True, "chassis_type": chassis_type}],
         ),
-        Node(
-            condition=IfCondition(LaunchConfiguration("rviz")),
-            package="rviz2",
-            executable="rviz2",
-            name="rviz2",
-            output="screen",
-            arguments=[
-                "-d", os.path.join(get_package_share_directory("navi2"), "config", "our.rviz")
-            ],
-            parameters=[{"use_sim_time": True}],
-        ),
+        rviz,
     ]
 
 
