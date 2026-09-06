@@ -152,6 +152,18 @@ def _launch_setup(context, package_share):
         ],
     )
 
+    # Keep the synchronous planner callback out of the high-rate point-cloud
+    # executor.  A goal may trigger global search and MINCO optimization, so
+    # sharing this container can delay LiDAR/odom processing and make the
+    # simulation appear unresponsive.
+    planner_container = ComposableNodeContainer(
+        name="simulation_planner_container",
+        namespace="",
+        package="rclcpp_components",
+        executable="component_container_mt",
+        output="screen",
+    )
+
     navigation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
@@ -163,7 +175,7 @@ def _launch_setup(context, package_share):
             "params_file": configured_nav2_params,
             "autostart": "true",
             "use_composition": "False",
-            "planner_container_name": "livox_pointlio_container",
+            "planner_container_name": "simulation_planner_container",
             "log_level": LaunchConfiguration("log_level"),
         }.items(),
     )
@@ -241,6 +253,7 @@ def _launch_setup(context, package_share):
         bridge,
         imu_filter,
         point_lio_container,
+        planner_container,
         *localization_actions,
         Node(
             package="nav2_map_server",

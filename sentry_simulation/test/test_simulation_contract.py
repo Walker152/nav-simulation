@@ -445,6 +445,42 @@ class SimulationContractTest(unittest.TestCase):
         for token in ("PatternRay", "pattern_file", "pattern_points_per_frame"):
             self.assertIn(token, adapter_source)
 
+    def test_simulation_isolates_planner_and_disables_expensive_realtime_outputs(self):
+        launch_source = (
+            PACKAGE_ROOT / "launch" / "simulation.launch.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn('name="simulation_planner_container"', launch_source)
+        self.assertIn('"planner_container_name": "simulation_planner_container"', launch_source)
+
+        params = yaml.safe_load(
+            (PACKAGE_ROOT / "config" / "nav2_sim.yaml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            params["controller_server"]["ros__parameters"]["controller_frequency"],
+            20.0,
+        )
+        self.assertFalse(
+            params["local_costmap"]["local_costmap"]["ros__parameters"][
+                "always_send_full_costmap"
+            ]
+        )
+        self.assertFalse(
+            params["global_costmap"]["global_costmap"]["ros__parameters"][
+                "always_send_full_costmap"
+            ]
+        )
+        planner_params = params["planner_server"]["ros__parameters"]["MincoPlanner"]
+        self.assertEqual(planner_params["rog_map"]["ros_callback"]["update_period_ms"], 100)
+        self.assertTrue(planner_params["rog_map"]["visualization"]["enable"])
+
+    def test_rviz_waits_for_navigation_lifecycle(self):
+        """The first RViz goal must not race bt_navigator activation."""
+        launch_source = (
+            PACKAGE_ROOT / "launch" / "simulation.launch.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("ros2 lifecycle get /bt_navigator", launch_source)
+        self.assertIn("exec rviz2", launch_source)
+
     def test_compact_chassis_and_dual_mid360_mounts_follow_description(self):
         visual_dir = PACKAGE_ROOT / "resource" / "models" / "pb2025_visuals" / "meshes"
         expected_assets = {
