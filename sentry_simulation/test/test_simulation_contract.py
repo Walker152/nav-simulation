@@ -1003,7 +1003,14 @@ class SimulationContractTest(unittest.TestCase):
         planner = params["planner"]
         self.assertFalse(planner["rog_map"]["projection"]["prior_map"]["enable"])
         self.assertEqual(params["frames"], {"map": "map", "odom": "camera_init", "base": "base_link"})
-        self.assertEqual(params["odometry"]["sensor_in_base"]["xyz"], [0.0, 0.0, 0.0])
+        model = ET.parse(PACKAGE_ROOT / "resource" / "models" / "sentry_omni" / "model.sdf").getroot().find("model")
+        base_pose = [float(v) for v in model.findtext("link[@name='base_link']/pose").split()]
+        imu_pose = [float(v) for v in model.findtext("link[@name='sim_lidar']/pose").split()]
+        # Fusion does not move the IMU. Point-LIO's planar navigation base
+        # preserves odom Z while offsetting XY to the chassis center.
+        sensor_xyz = params["odometry"]["sensor_in_base"]["xyz"]
+        self.assertEqual(sensor_xyz[:2], [imu_pose[i] - base_pose[i] for i in (0, 1)])
+        self.assertEqual(sensor_xyz[2], 0.0)
         self.assertEqual(params["controller"]["q_cross"], 12.0)
         self.assertNotIn("corridor", planner)
         self.assertNotIn("use_nav2_global_search", planner["priormap"])
@@ -1036,15 +1043,29 @@ class SimulationContractTest(unittest.TestCase):
             resolved["planner_server"]["ros__parameters"]["MincoPlanner"]["minco"]["vehicle"],
         )
 
-    def test_behavior_trees_are_packaged_and_do_not_depend_on_source_cwd(self):
-        config_path = PACKAGE_ROOT / "config" / "nav2_sim.yaml"
-        params = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-        launch_text = (
-            PACKAGE_ROOT / "launch" / "simulation.launch.py"
-        ).read_text(encoding="utf-8")
-        self.assertIn("ReplaceString", launch_text)
-        self.assertIn('"<simulation_share>": package_share', launch_text)
-        self.assertIn('"host_params_file"', launch_text)
+    def test_simulation_forwards_selected_robot_file_without_relocating_it(self):
+        launch_path = PACKAGE_ROOT / "launch" / "simulation.launch.py"
+        spec = importlib.util.spec_from_file_location("sentry_simulation_launch", launch_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        module.get_package_share_directory = lambda name: str(PACKAGE_ROOT)
+        with TemporaryDirectory() as directory:
+            profile = Path(directory) / "robot profile.yaml"
+            profile.write_text((PACKAGE_ROOT / "config" / "nav2_sim.yaml").read_text())
+            context = LaunchContext()
+            context.launch_configurations.update({
+                "world": "rmuc_2024", "chassis_type": "omni", "headless": "true",
+                "rviz": "false", "use_icp": "false", "log_level": "info",
+                "params_file": str(profile),
+            })
+            actions = module._launch_setup(context, str(PACKAGE_ROOT))
+            navigation = next(action for action in actions
+                              if isinstance(action, IncludeLaunchDescription)
+                              and "params_file" in dict(action.launch_arguments))
+            arguments = dict(navigation.launch_arguments)
+            self.assertEqual(arguments["params_file"], str(profile))
+            self.assertEqual(arguments["use_sim_time"], "true")
+            self.assertIn("host_params_file", arguments)
 
     def test_cmd_adapter_forwards_body_command_without_odometry_rotation(self):
         source = (PACKAGE_ROOT / "sentry_simulation" / "cmd_vel_adapter.py").read_text()
@@ -1097,6 +1118,7 @@ class SimulationContractTest(unittest.TestCase):
                             "rviz": "false",
                             "use_icp": "true",
                             "log_level": "info",
+                            "params_file": str(PACKAGE_ROOT / "config" / "nav2_sim.yaml"),
                     }
                 )
                 actions = module._launch_setup(context, str(PACKAGE_ROOT))

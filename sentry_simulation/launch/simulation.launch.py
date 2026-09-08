@@ -19,7 +19,6 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import ComposableNodeContainer, Node
 from launch_ros.descriptions import ComposableNode
-from nav2_common.launch import ReplaceString
 
 
 def _as_bool(value: str) -> bool:
@@ -78,11 +77,7 @@ def _launch_setup(context, package_share):
         "scan_mode",
         "mid360-real-centr.csv",
     )
-    nav2_params_path = os.path.join(package_share, "config", "nav2_sim.yaml")
-    configured_nav2_params = ReplaceString(
-        source_file=nav2_params_path,
-        replacements={"<simulation_share>": package_share},
-    )
+    nav2_params_path = LaunchConfiguration("params_file").perform(context)
     nav2_host_params = os.path.join(
         get_package_share_directory("navi2"), "params", "nav2_host.yaml"
     )
@@ -187,7 +182,7 @@ def _launch_setup(context, package_share):
         ),
         launch_arguments={
             "use_sim_time": "true",
-            "params_file": configured_nav2_params,
+            "params_file": nav2_params_path,
             "host_params_file": nav2_host_params,
             "autostart": "true",
             "use_composition": "False",
@@ -335,6 +330,10 @@ def generate_launch_description():
         DeclareLaunchArgument("rviz", default_value="true"),
         DeclareLaunchArgument("use_icp", default_value="true"),
         DeclareLaunchArgument("log_level", default_value="info"),
+        DeclareLaunchArgument(
+            "params_file", default_value=os.path.join(package_share, "config", "nav2_sim.yaml"),
+            description="Robot navigation profile; navi2 merges host parameters automatically",
+        ),
         GroupAction(
             actions=[OpaqueFunction(function=_launch_setup, args=[package_share])],
             scoped=True,

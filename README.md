@@ -40,10 +40,10 @@ Gazebo 左右双 MID360（每颗由前/后 180° GPU LiDAR 拼接）+ 水平 IMU
   仅用于资源接入和坐标检查，等待外部 CAD/网格工具生成的修复版本覆盖；不要把当前
   RMUC 2026 网格视作已完成的坡道、碰撞和导航验收结果。
 - `sentry_omni`：轮心按 `0.44 m × 0.44 m` 正方形布置的四轮全向底盘，使用
-  Fortress 原生 `MecanumDrive`，PB2025 chassis/gimbal 网格仅作视觉模型。
+  包内构建的 `MecanumDrive2`，PB2025 chassis/gimbal 网格仅作视觉模型。
 - `sentry_diff`：半径 `0.3 m` 的圆形两轮差速底盘，仅左右两轮驱动，前后球形
   万向支承，使用 Fortress 原生 `DiffDrive`。
-- 双 MID360：左右镜像安装在 `z=0.25 m`，每颗水平 360°、垂直
+- 双 MID360：左右镜像安装，位姿以模型 SDF 和 launch 的测量帧转换为准；每颗水平 360°、垂直
   -7.3°～52.3°、0.1～40 m、10 Hz；按 80 万条真实非重复扫描模式轮转采样。
   每颗每帧最多 20,000 个 `CustomPoint`，融合后目标点率 400,000 points/s。
 - RMUC 使用 ICP 包内非 red/blue 的模型 PCD；RMUL 使用 Nav2 地图目录中的模型 PCD。
@@ -82,16 +82,16 @@ colcon build --symlink-install --packages-select sentry_simulation
 
 启动脚本会检查 `sentry_simulation`、ROS–Gazebo bridge、`point_lio`、
 `icp_relocalization`、`navi2`、
-`minco_planner`、`minco_controller` 和 `rog_map`。底盘只使用 Fortress 原生驱动；
-历史 `MecanumDrive2` 源文件保留作追溯，但不会构建、安装或在启动时检查。
+`minco_planner`、`minco_controller` 和 `rog_map`。全向底盘使用随包构建和安装的
+`MecanumDrive2`，仿真适配器直接转发车体系速度；实车通信节点不参与这条链路。
 
 ## 快速启动
 
-所有命令都在父仓库根目录执行。先运行预检，不启动 Gazebo：
+以下命令在 ROS 工作空间根目录执行。先运行依赖预检，不启动 Gazebo：
 
 ```bash
-cd /home/alioth/2025-sentry-navi
-./simlation.bash omni rmuc_2025 --check
+cd /home/alioth/nature_will
+./src/scripts/simlation.bash omni rmuc_2025 --check
 ```
 
 脚本位置参数和选项：
@@ -108,16 +108,16 @@ cd /home/alioth/2025-sentry-navi
 
 ```bash
 # 全向底盘 + RMUC 2025（默认）
-./simlation.bash omni rmuc_2025
+./src/scripts/simlation.bash omni rmuc_2025
 
 # 全向底盘 + RMUC 2026 点云重建场地
-./simlation.bash omni rmuc_2026
+./src/scripts/simlation.bash omni rmuc_2026
 
 # 差速底盘 + RMUL 2025
 # 差速导航尚未实现，不使用 diff 启动闭环导航。
 
 # 无 Gazebo GUI，也不启动 RViz
-./simlation.bash omni rmuc_2024 --headless --no-rviz
+./src/scripts/simlation.bash omni rmuc_2024 --headless --no-rviz
 ```
 
 可选 world：`rmuc_2024`、`rmul_2024`、`rmuc_2025`、`rmuc_2026`、`rmul_2025`。
@@ -135,7 +135,38 @@ ros2 launch sentry_simulation simulation.launch.py \
   headless:=false rviz:=true use_icp:=false log_level:=info
 ```
 
-直接 `ros2 launch` 使用 install tree；新增或替换资源后应重新执行 symlink-install 构建。根目录 `simlation.bash` 会额外指定源码侧 simulation share 和模型搜索路径，适合当前仓库日常启动。
+直接 `ros2 launch` 使用 install tree；新增或替换资源后应重新执行 symlink-install 构建。`src/scripts/simlation.bash` 会额外指定源码侧 simulation share 和模型搜索路径，适合当前仓库日常启动。
+
+### 导航参数与对照验证
+
+默认读取 [config/nav2_sim.yaml](sentry_simulation/config/nav2_sim.yaml)，按
+`frames / odometry / vehicle / planner / controller` 分组；Nav2 宿主和
+`use_sim_time=true` 由 launch 统一装配。保留 20 Hz 控制、0.05 s MPC 步长、
+Q/R、车辆能力、ROG 更新周期和 footprint。共享测量原点为
+`sensor_in_base.xyz: [0, -0.2, 0]`，匹配 Point-LIO 当前平面导航 base。
+
+复制这份 YAML 调整权重或能力后，可显式选择文件，路径含空格时使用引号：
+
+```bash
+ros2 launch sentry_simulation simulation.launch.py \
+  world:=rmuc_2024 use_icp:=false headless:=true rviz:=true \
+  params_file:=/绝对路径/nav2_sim_compare.yaml
+```
+
+对照文件保留仿真输入链的 frame、topic 和外参。直接传递原文件路径，
+其中相对地图路径按该 YAML 所在目录解析。当前样例由场地选择加载全局地图，
+ROGMap 使用在线点云，prior_map 保持关闭。
+
+只验证参数、仿真时钟和生命周期时，可使用测试输入，完全不启动 Gazebo：
+
+```bash
+ROS_LOCALHOST_ONLY=1 ROS_DOMAIN_ID=195 MINCO_RUN_LAUNCH_TESTS=1 \
+  /usr/bin/python3 -m pytest src/navigation/navi2_bringup/test/test_navigation_lifecycle.py \
+  -q -k nav2_sim
+```
+
+这两项检查覆盖独立/组合入口、实际 `use_sim_time`、planner/controller 外参、
+global costmap 轮廓、激活和正常退出；它们不替代 Gazebo 中的运动闭环验证。
 
 ### 仿真点云传输
 
@@ -193,16 +224,17 @@ ros2 topic echo /sim/ground_truth/odom --once
 
 - 全部节点启用 `/clock` 和 `use_sim_time`。
 - `config/nav2_sim.yaml` 使用与实车相同的机器人配置分组，由 navi2 launch 合并宿主参数。planner 独立于 LiDAR 进程启动，global costmap 从该进程继承完整参数；不再先创建空容器再加载 planner。
-- 左右 MID360 相对公共帧的位姿分别为
-  `(-0.0496, +0.136, 0, -0.5835988, 0, 0)` 和
-  `(-0.0496, -0.136, 0, +0.5835988, 0, 0)`；公共 LiDAR/IMU 帧位于车体中心
-  `z=0.25 m`，保持水平。适配器先把两颗雷达变换到该公共帧，再发布一条 CustomMsg。
+- 融合 LiDAR/IMU link 在模型中的位姿为 `(0,-0.2,0.3,0,0,0)`，
+  物理 base_link 位于 `(0,0,0.2,0,0,0)`。适配器将左右测量点转换到该 IMU 公共帧，
+  不会把里程计原点移到车体中心。
 - 2025/2026 场地通过 `map -> pcd_map -> camera_init` 接入一次性 GICP；超时会回退到同一
   实车初始位姿。2024 场地直接发布 `map -> camera_init`。两种路径的定位原点 Z 都为零。
-- planner/controller 的雷达杆臂补偿设为零，因为 Point-LIO 输出已经位于车体中心公共帧。
+- planner/controller 共用 `[0,-0.2,0]` 平面外参，位置及旋转引起的杆臂速度一起修正。
+  Z 为零是沿用 Point-LIO 导航 base 与 body 等高的约定；与 Gazebo 物理 link 的三维外参不同。
 - Nav2 使用同时包络全向轮和差速轮的凸多边形 footprint；MINCO 优化安全距离为
   `0.45 m`，避免原先 `0.20/0.25 m` 低估车体后卡场地边角。
-- Point-LIO 继续发布当前仓库既有的 `camera_init -> aft_mapped` 与里程计话题。
+- Point-LIO 发布 `camera_init -> body` 和 `camera_init -> base_link`；Odometry 为
+  `camera_init / body`。当前 base TF 仅保留 yaw，三维坡面 TF 的统一不在这次参数修正范围。
 - MPC 在 odom 求解，`/cmd_vel_mpc` 为车体系速度；适配器直接转发。
 - 当前只允许 omni 导航；差速模型保留为仿真资源，需规划与控制成对实现后再接入。
 - MPC 命令超过 0.25 s 未刷新时，适配节点会向 Gazebo 发送一次零速度，避免底盘保持旧指令。
@@ -254,7 +286,7 @@ sentry_simulation/resource/models/rmuc_2026/meshes/rmuc_2026_collision.stl
 
 视觉和碰撞 STL 必须使用完全相同的坐标系。替换后至少检查文件边界、三角面数量、孔洞/非流形面、出生点地面高度、坡道与台阶尺寸，再运行全向/差速车辆通过性验收。不要自动居中模型，也不要在 `model.sdf` 中用未知平移补偿错误坐标。
 
-新增其他场地时，复制现有同类型目录并在 `config/worlds.yaml` 注册；随后同步更新根目录 `simlation.bash` 的 world 白名单。场地名称、目录名、model URI 和 catalog key 应保持一致。
+新增其他场地时，复制现有同类型目录并在 `config/worlds.yaml` 注册；随后同步更新`src/scripts/simlation.bash` 的 world 白名单。场地名称、目录名、model URI 和 catalog key 应保持一致。
 
 ## 常见问题
 
@@ -264,7 +296,7 @@ sentry_simulation/resource/models/rmuc_2026/meshes/rmuc_2026_collision.stl
 
 ### Gazebo 找不到 `model://...`
 
-优先使用根目录 `simlation.bash`，它会设置 `IGN_GAZEBO_RESOURCE_PATH`、`GZ_SIM_RESOURCE_PATH`、`SDF_PATH` 和 `IGN_FILE_PATH`。直接 launch 时需要重新构建并 source 最新 install tree。
+优先使用`src/scripts/simlation.bash`，它会设置 `IGN_GAZEBO_RESOURCE_PATH`、`GZ_SIM_RESOURCE_PATH`、`SDF_PATH` 和 `IGN_FILE_PATH`。直接 launch 时需要重新构建并 source 最新 install tree。
 
 ### 有导航目标，但小车不动
 
@@ -281,9 +313,9 @@ sentry_simulation/resource/models/rmuc_2026/meshes/rmuc_2026_collision.stl
 ## 当前验证边界
 
 模块提供静态契约、Python 运动学、XML/YAML/SDF/launch 检查。运行验收时应分别测试：
-全向的 X/Y/yaw 三自由度；差速对车体系 `linear.y` 的拒绝、前进和原地旋转；以及
+全向的 X/Y/yaw 三自由度（当前导航只支持 omni）；以及
 `CustomMsg` 字段、Point-LIO 静止稳定性和真值位姿。注意真值里程计记录底盘模型原点，
-Point-LIO 记录双雷达融合后的车体中心公共帧，因此可直接和底盘真值比较平面位置；
+Point-LIO 记录融合 IMU 原点，比较平面真值前必须施加 map 变换和上述 0.2 m 原点修正；
 运行验收仍需分别检查静止 Z/roll/pitch 峰峰值、中央区域漂移和 ROGMap 地面残影。
 
 当前 RMUC 2026 临时网格因可见坑洞尚未通过上述运行验收。外部修复网格替换完成前，RMUC 2026 只用于检查资源加载、坐标链和转换流程，不用于评价最终坡道通过性或定位精度。

@@ -1,50 +1,123 @@
-# Simulation robot profile. Host-only Nav2 settings come from navi2/nav2_host.yaml.
-frames: {map: map, odom: camera_init, base: base_link}
+# Simulation robot profile; choose with params_file in simulation.launch.py.
+# Same schema as sentry1/naturebase. Launch owns use_sim_time and Nav2 host settings.
+frames:
+  map: map
+  odom: camera_init
+  base: base_link
+
+# Topic pose: camera_init -> body; twist is expressed at body. Timeout [s].
 odometry:
   topic: /aft_mapped_to_init
   child_frame: body
   timeout: 0.5
-  # The simulated dual-LiDAR fusion output is already expressed at chassis center.
-  sensor_in_base: {xyz: [0.0, 0.0, 0.0], rpy: [0.0, 0.0, 0.0]}
+  # Planar base -> body. Point-LIO navigation TF keeps body Z unchanged.
+  # The physical Gazebo link has a different Z; do not copy its height here.
+  sensor_in_base:
+    xyz: [0.0, -0.2, 0.0]
+    rpy: [0.0, 0.0, 0.0]
+
+# Shared omni envelope: m/s, m/s^2, rad/s, rad/s^2; unchanged software baseline.
 vehicle:
   model: omni
-  # Existing simulation navigation envelope, not measured hardware limits.
   max_velocity: 3.0
   max_acceleration: 2.0
   max_yaw_rate: 5.0
   max_yaw_acceleration: 5.0
-  # Existing simulated chassis hull; the assembler applies it only to the host costmap.
-  footprint: [[0.30, 0.00], [0.296, 0.22], [0.274, 0.274], [0.22, 0.296], [0.00, 0.32], [-0.22, 0.296], [-0.274, 0.274], [-0.296, 0.22], [-0.30, 0.00], [-0.296, -0.22], [-0.274, -0.274], [-0.22, -0.296], [0.00, -0.32], [0.22, -0.296], [0.274, -0.274], [0.296, -0.22]]
+  # Existing global costmap hull [m]; MINCO keeps its own distance margins.
+  footprint:
+  - [0.3, 0.0]
+  - [0.296, 0.22]
+  - [0.274, 0.274]
+  - [0.22, 0.296]
+  - [0.0, 0.32]
+  - [-0.22, 0.296]
+  - [-0.274, 0.274]
+  - [-0.296, 0.22]
+  - [-0.3, 0.0]
+  - [-0.296, -0.22]
+  - [-0.274, -0.274]
+  - [-0.22, -0.296]
+  - [0.0, -0.32]
+  - [0.22, -0.296]
+  - [0.274, -0.274]
+  - [0.296, -0.22]
+
+# The arena map comes from simulation.launch.py; ROGMap uses online point clouds.
 planner:
   expected_frequency: 20.0
   mode: PRIORMAP
   tolerance: 0.3
   use_smac: true
   allow_unknown: false
-  priormap: {clip_seed_by_rog_boundary: true, rog_boundary_margin: 0.2, rog_boundary_sample_step: 0.1}
-  exploration: {boundary_margin: 0.2, boundary_sample_step: 0.1, unknown_as_occupied: true, prefer_goal_direction: true}
-  performance: {enable: false, print_enable: false, detailed_csv_enable: false, odom_sub_debug_enable: false, minco_csv_path: /tmp/minco_perf_detailed.csv, print_period_sec: 1.0, csv_flush_every_n: 30, run_id: "", scenario: "", variant: ""}
+  priormap:
+    clip_seed_by_rog_boundary: true
+    rog_boundary_margin: 0.2
+    rog_boundary_sample_step: 0.1
+  exploration:
+    boundary_margin: 0.2
+    boundary_sample_step: 0.1
+    unknown_as_occupied: true
+    prefer_goal_direction: true
+  performance:
+    enable: false
+    print_enable: false
+    detailed_csv_enable: false
+    odom_sub_debug_enable: false
+    minco_csv_path: /tmp/minco_perf_detailed.csv
+    print_period_sec: 1.0
+    csv_flush_every_n: 30
+    run_id: ''
+    scenario: ''
+    variant: ''
   rog_map:
     resolution: 0.05
     inflation_resolution: 0.05
     map_size: [10.0, 10.0, 3.0]
     fix_map_origin: [0.0, 0.0, 0.0]
-    map_sliding: {enable: true, threshold: 0.2, center_offset_enable: true, center_offset: [0.0, 0.2, 0.0]}
-    ros_callback: {enable: true, cloud_topic: /cloud_registered_full, update_period_ms: 100}
-    cloud_filter: {enable: false}
-    raycasting: {enable: true, batch_update_size: 1, ray_range: [0.03, 10.0], local_update_box: [10.0, 10.0, 3.0], unk_thresh: 0.70, p_hit: 0.9, p_miss: 0.45, p_min: 0.12, p_max: 0.97, p_occ: 0.85, p_free: 0.499, parallel_enable: false, num_threads: 4}
-    decay: {enable: true, keep_time: 0.5, clear_time: 1.2, active_list_enable: false}
+    map_sliding:
+      enable: true
+      threshold: 0.2
+      center_offset_enable: true
+      center_offset: [0.0, 0.2, 0.0]
+    # Existing point-cloud update period [ms]; odom source comes from the common group.
+    ros_callback:
+      enable: true
+      cloud_topic: /cloud_registered_full
+      update_period_ms: 100
+    cloud_filter:
+      enable: false
+    raycasting:
+      enable: true
+      batch_update_size: 1
+      ray_range: [0.03, 10.0]
+      local_update_box: [10.0, 10.0, 3.0]
+      unk_thresh: 0.7
+      p_hit: 0.9
+      p_miss: 0.45
+      p_min: 0.12
+      p_max: 0.97
+      p_occ: 0.85
+      p_free: 0.499
+      parallel_enable: false
+      num_threads: 4
+    decay:
+      enable: true
+      keep_time: 0.5
+      clear_time: 1.2
+      active_list_enable: false
     projection:
       enable: true
-      # The selected arena map is supplied to map_server by simulation.launch.py.
-      prior_map: {enable: false, yaml_path: "", pgm_path: ""}
-      scan_z_min_abs: -0.80
+      prior_map:
+        enable: false
+        yaml_path: ''
+        pgm_path: ''
+      scan_z_min_abs: -0.8
       scan_z_max_abs: 1.5
       unknown_as_occupied: false
       min_observed_voxels: 2
       surface_height_delta_max: 0.1
-      wall_height_delta_min: 0.30
-      wall_occupancy_ratio_min: 0.70
+      wall_height_delta_min: 0.3
+      wall_occupancy_ratio_min: 0.7
       tunnel_height_delta_min: 0.25
       tunnel_height_delta_max: 0.4
       tunnel_occupancy_ratio_max: 0.6
@@ -55,25 +128,86 @@ planner:
       mask_filter_en: true
       fill_occ_min: 8
       denoise_occ_max: 0
-    field: {enable: true, inflation_radius: 0.0, max_distance: 6.0, min_distance: -3.0, clamp_distance: true, interpolation: quadratic, update_rate: 20.0}
-    performance: {enable: false, detailed_csv_enable: false, summary_csv_enable: false, detailed_csv_path: /tmp/rog_map_perf_detailed.csv, summary_csv_path: /tmp/rog_map_perf_summary.csv, run_id: "", scenario: "", variant: "", csv_flush_every_n: 30, print_enable: true, summary_rate: 1.0, dirty_column_enable: true, dirty_full_ratio: 0.30, parallel_raycast_enable: false, raycast_num_threads: 4}
-    visualization: {enable: true, rate: 10.0, range: [10.0, 10.0, 1.5]}
-  smac_2d: {use_esdf_cost: true, esdf_weight: 1.0, esdf_decay: 0.8, esdf_max_cost: 0.5}
-  minco_optimizer: {traj_goal_tolerance: 0.3, enable_yaw_opt: true, safe_dist: 0.45, collision_dist: 0.2, lookahead_dist: 6.0, smooth_eps: 0.01, integral_res: 16, opt_accuracy: 0.001, print_optimizer_log: false, penalty_weight_time: 100.0, penalty_weight_pos: 50000.0, penalty_weight_vel: 1500.0, penalty_weight_acc: 1500.0, penalty_weight_att: 100.0}
-  recovery_server: {fail_threshold: 5, cooldown_sec: 1.0, recovery_window_sec: 3.0, escape_speed: 0.5}
+    field:
+      enable: true
+      inflation_radius: 0.0
+      max_distance: 6.0
+      min_distance: -3.0
+      clamp_distance: true
+      interpolation: quadratic
+      update_rate: 20.0
+    performance:
+      enable: false
+      detailed_csv_enable: false
+      summary_csv_enable: false
+      detailed_csv_path: /tmp/rog_map_perf_detailed.csv
+      summary_csv_path: /tmp/rog_map_perf_summary.csv
+      run_id: ''
+      scenario: ''
+      variant: ''
+      csv_flush_every_n: 30
+      print_enable: true
+      summary_rate: 1.0
+      dirty_column_enable: true
+      dirty_full_ratio: 0.3
+      parallel_raycast_enable: false
+      raycast_num_threads: 4
+    visualization:
+      enable: true
+      rate: 10.0
+      range: [10.0, 10.0, 1.5]
+  smac_2d:
+    use_esdf_cost: true
+    esdf_weight: 1.0
+    esdf_decay: 0.8
+    esdf_max_cost: 0.5
+  minco_optimizer:
+    traj_goal_tolerance: 0.3
+    enable_yaw_opt: true
+    safe_dist: 0.45
+    collision_dist: 0.2
+    lookahead_dist: 6.0
+    smooth_eps: 0.01
+    integral_res: 16
+    opt_accuracy: 0.001
+    print_optimizer_log: false
+    penalty_weight_time: 100.0
+    penalty_weight_pos: 50000.0
+    penalty_weight_vel: 1500.0
+    penalty_weight_acc: 1500.0
+    penalty_weight_att: 100.0
+  recovery_server:
+    fail_threshold: 5
+    cooldown_sec: 1.0
+    recovery_window_sec: 3.0
+    escape_speed: 0.5
+
+# Preserve 20 Hz control, 50 ms prediction step and the existing Q/R tuning.
 controller:
-  # Preserve the simulation's 20 Hz loop matched to the 50 ms MPC step.
   frequency: 20.0
-  goal_tolerance: {xy: 0.3, yaw: 6.28}
+  goal_tolerance:
+    xy: 0.3
+    yaw: 6.28
   q_along: 3.0
   q_cross: 12.0
   q_yaw: 2.0
   R: [1.5, 1.5, 1.0]
   dt: 0.05
   lookahead_time: 0.5
+  # Prediction and output phase delays [s]; these are existing baseline values.
   control_delay_compensation: 0.05
   output_phase_delay: 0.025
   deadzone_speed_threshold: 0.1
   use_small_gyro_mode: false
   fixed_wz: 4.18
-  performance: {enable: true, print_enable: true, detailed_csv_enable: false, odom_sub_debug_enable: false, mpc_csv_path: /tmp/mpc_perf_detailed.csv, print_period_sec: 1.0, csv_flush_every_n: 30, run_id: "", scenario: "", variant: ""}
+  performance:
+    enable: true
+    print_enable: true
+    detailed_csv_enable: false
+    odom_sub_debug_enable: false
+    mpc_csv_path: /tmp/mpc_perf_detailed.csv
+    print_period_sec: 1.0
+    csv_flush_every_n: 30
+    run_id: ''
+    scenario: ''
+    variant: ''
