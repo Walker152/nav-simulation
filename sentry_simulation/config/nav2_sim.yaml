@@ -94,7 +94,7 @@ controller_server:
       movement_time_allowance: 1000.0
     general_goal_checker:
       stateful: True
-      plugin: "nav2_controller::SimpleGoalChecker"
+      plugin: "minco_controller::MincoGoalChecker"
       xy_goal_tolerance: 0.3
       yaw_goal_tolerance: 6.28
 
