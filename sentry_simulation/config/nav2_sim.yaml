@@ -76,7 +76,9 @@ controller_server:
   ros__parameters:
     robot_base_frame: "base_link"
     use_sim_time: True
-    controller_frequency: 100.0
+    # The MPC reference step is 50 ms; matching the controller loop to it
+    # avoids solving the same horizon repeatedly at 100 Hz in simulation.
+    controller_frequency: 20.0
     min_x_velocity_threshold: 0.01
     min_y_velocity_threshold: 0.01
     min_theta_velocity_threshold: 0.001
@@ -92,7 +94,7 @@ controller_server:
       movement_time_allowance: 1000.0
     general_goal_checker:
       stateful: True
-      plugin: "nav2_controller::SimpleGoalChecker"
+      plugin: "minco_controller::MincoGoalChecker"
       xy_goal_tolerance: 0.3
       yaw_goal_tolerance: 6.28
 
@@ -183,7 +185,7 @@ local_costmap:
         update_footprint_enabled: true
         combination_method: 1
         origin_z: 0.0
-        publish_voxel_map: true
+        publish_voxel_map: false
         transform_tolerance: 0.2
         mapping_mode: false
         map_save_duration: 60.0
@@ -213,7 +215,7 @@ local_costmap:
           horizontal_fov_angle: 6.29   # 3D lidar scanners like the VLP16 have 360 deg horizontal FOV.
           decay_acceleration: 15.0
           model_type: 1
-      always_send_full_costmap: True
+      always_send_full_costmap: False
 
 global_costmap:
   global_costmap:
@@ -277,7 +279,7 @@ global_costmap:
           horizontal_fov_angle: 6.29   # 3D lidar scanners like the VLP16 have 360 deg horizontal FOV.
           decay_acceleration: 15.0
           model_type: 1
-      always_send_full_costmap: True
+      always_send_full_costmap: False
 
 map_server:
   ros__parameters:
@@ -308,7 +310,6 @@ planner_server:
         map_frame: map
         rog_frame: camera_init
       priormap:
-        use_nav2_global_search: true
         clip_seed_by_rog_boundary: true
         rog_boundary_margin: 0.2
         rog_boundary_sample_step: 0.1
@@ -354,7 +355,9 @@ planner_server:
           cloud_topic: /cloud_registered_full
           odom_topic: /aft_mapped_to_init
           odom_timeout: 2.0
-          update_period_ms: 20
+          # LiDAR frames arrive at 10 Hz; avoid waking the map updater five
+          # times per frame while the previous update is still in progress.
+          update_period_ms: 100
 
         # 入图前点云区域滤除；关闭时不创建过滤器，保持原始 ROGMap 数据链路。
         cloud_filter:
@@ -453,12 +456,12 @@ planner_server:
           # 同一 XY 柱中最高与最低占据体素的垂直高度差 H。
           # 不超过该值时，分类为地面或坡面薄表面。
           # 这是差值，不是 ROGMap frame 中的绝对 Z 坐标。
-          surface_height_delta_max: 0.25
+          surface_height_delta_max: 0.1
 
           # [vertical height difference, m]
           # 判定竖直墙所需的最小单柱垂直高度差 H。
           # 这是差值，不是绝对 Z 坐标。
-          wall_height_delta_min: 0.50
+          wall_height_delta_min: 0.30
 
           # [dimensionless ratio, 0~1]
           # H 区间内的垂直占据率达到该值时，视为连续竖直墙。
@@ -468,12 +471,12 @@ planner_server:
           # 可通行隧道所需的最小上下表面高度差。
           # 应包含机器人实际高度和安全余量。
           # 这是差值，不是绝对 Z 坐标。
-          tunnel_height_delta_min: 0.26
+          tunnel_height_delta_min: 0.25
 
           # [vertical height difference, m]
           # 当前 RM 场景中允许识别为目标隧道的最大上下表面高度差。
           # 这是差值，不是绝对 Z 坐标。
-          tunnel_height_delta_max: 0.6
+          tunnel_height_delta_max: 0.4
 
           # [dimensionless ratio, 0~1]
           # 隧道上下表面之间的最大垂直占据率。
@@ -537,10 +540,6 @@ planner_server:
           # [visualization][Hz] 可视化发布上限频率；实际每个 topic 仅在存在订阅者时构造并发布。
           rate: 10.0
           range: [10.0, 10.0, 1.5]
-      corridor:
-        robot_radius: 0.42
-        extra_margin: 0.05
-
       smac_2d:
         use_esdf_cost: true
         esdf_weight: 1.0
@@ -548,7 +547,6 @@ planner_server:
         esdf_max_cost: 0.5
 
       minco_optimizer:
-        opt_freq: 20.0
         traj_goal_tolerance: 0.3
         enable_yaw_opt: true
         safe_dist: 0.45
@@ -561,7 +559,6 @@ planner_server:
         turn_angle_saturation: 0.8
         min_turn_vel: 0.7
         decay_power: 1.6
-        time_allocation_iters: 15
         smooth_eps: 0.01
         integral_res: 16
         opt_accuracy: 0.001

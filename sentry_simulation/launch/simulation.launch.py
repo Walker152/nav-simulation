@@ -6,7 +6,14 @@ import os
 import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction
+from launch.actions import (
+    DeclareLaunchArgument,
+    ExecuteProcess,
+    GroupAction,
+    IncludeLaunchDescription,
+    OpaqueFunction,
+    SetEnvironmentVariable,
+)
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
@@ -20,6 +27,18 @@ def _as_bool(value: str) -> bool:
 
 
 def _launch_setup(context, package_share):
+    transport_actions = []
+    # The default 512 KiB SHM segment cannot hold one raw GPU lidar frame.
+    # Keep operator profiles and localhost-only transport restrictions intact.
+    if (
+        not context.environment.get("FASTRTPS_DEFAULT_PROFILES_FILE")
+        and context.environment.get("ROS_LOCALHOST_ONLY") != "1"
+    ):
+        transport_actions.append(SetEnvironmentVariable(
+            "FASTRTPS_DEFAULT_PROFILES_FILE",
+            os.path.join(package_share, "config", "fastdds_shm.xml"),
+        ))
+
     world_name = LaunchConfiguration("world").perform(context)
     chassis_type = LaunchConfiguration("chassis_type").perform(context)
     headless = _as_bool(LaunchConfiguration("headless").perform(context))
@@ -152,6 +171,18 @@ def _launch_setup(context, package_share):
         ],
     )
 
+    # Keep the synchronous planner callback out of the high-rate point-cloud
+    # executor.  A goal may trigger global search and MINCO optimization, so
+    # sharing this container can delay LiDAR/odom processing and make the
+    # simulation appear unresponsive.
+    planner_container = ComposableNodeContainer(
+        name="simulation_planner_container",
+        namespace="",
+        package="rclcpp_components",
+        executable="component_container_mt",
+        output="screen",
+    )
+
     navigation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
@@ -163,7 +194,7 @@ def _launch_setup(context, package_share):
             "params_file": configured_nav2_params,
             "autostart": "true",
             "use_composition": "False",
-            "planner_container_name": "livox_pointlio_container",
+            "planner_container_name": "simulation_planner_container",
             "log_level": LaunchConfiguration("log_level"),
         }.items(),
     )
@@ -235,12 +266,28 @@ def _launch_setup(context, package_share):
             parameters=[{"use_sim_time": True}],
         ))
 
+    # RViz exposes the navigation goal tool before bt_navigator is active.
+    # Delay startup to avoid rejecting the first goal during lifecycle startup.
+    rviz_config = os.path.join(get_package_share_directory("navi2"), "config", "our.rviz")
+    rviz = ExecuteProcess(
+        condition=IfCondition(LaunchConfiguration("rviz")),
+        cmd=[
+            "bash", "-c",
+            "until ros2 lifecycle get /bt_navigator 2>/dev/null | grep -q '^active \\[3\\]'; "
+            f"do sleep 0.2; done; exec rviz2 -d '{rviz_config}' --ros-args -p use_sim_time:=true",
+        ],
+        name="rviz2",
+        output="screen",
+    )
+
     return [
+        *transport_actions,
         gazebo,
         spawn_robot,
         bridge,
         imu_filter,
         point_lio_container,
+        planner_container,
         *localization_actions,
         Node(
             package="nav2_map_server",
@@ -268,17 +315,7 @@ def _launch_setup(context, package_share):
             output="screen",
             parameters=[{"use_sim_time": True, "chassis_type": chassis_type}],
         ),
-        Node(
-            condition=IfCondition(LaunchConfiguration("rviz")),
-            package="rviz2",
-            executable="rviz2",
-            name="rviz2",
-            output="screen",
-            arguments=[
-                "-d", os.path.join(get_package_share_directory("navi2"), "config", "our.rviz")
-            ],
-            parameters=[{"use_sim_time": True}],
-        ),
+        rviz,
     ]
 
 
@@ -303,5 +340,8 @@ def generate_launch_description():
         DeclareLaunchArgument("rviz", default_value="true"),
         DeclareLaunchArgument("use_icp", default_value="true"),
         DeclareLaunchArgument("log_level", default_value="info"),
-        OpaqueFunction(function=_launch_setup, args=[package_share]),
+        GroupAction(
+            actions=[OpaqueFunction(function=_launch_setup, args=[package_share])],
+            scoped=True,
+        ),
     ])

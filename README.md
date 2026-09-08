@@ -137,6 +137,20 @@ ros2 launch sentry_simulation simulation.launch.py \
 
 直接 `ros2 launch` 使用 install tree；新增或替换资源后应重新执行 symlink-install 构建。根目录 `simlation.bash` 会额外指定源码侧 simulation share 和模型搜索路径，适合当前仓库日常启动。
 
+### 仿真点云传输
+
+`simulation.launch.py` 默认给本次仿真进程设置 `FASTRTPS_DEFAULT_PROFILES_FILE`，
+加载 `sentry_simulation/config/fastdds_shm.xml`。该配置为每个 Fast DDS participant
+提供 16 MiB 的共享内存段，并保留 UDPv4 传输。四路 GPU LiDAR 的单条原始点云约 1.38 MB，超过
+Fast DDS 原有 512 KiB 共享内存段；扩大容量避免大消息发送失败造成点云缺帧和四路
+同步等待。配置不改变点云 QoS、同步容差、传感器频率或实车启动链路。
+
+环境变量只在仿真 launch 的作用域内生效，不会覆盖同一父 launch 中其他组件的环境。
+如果启动环境已经设置了非空 `FASTRTPS_DEFAULT_PROFILES_FILE`，仿真沿用该配置；
+使用其他 RMW 实现时该 Fast DDS 配置不生效。若设置了 `ROS_LOCALHOST_ONLY=1`，
+仿真不会自动加载此配置，以保留已有的本机通信限制；此时如需扩大 SHM，应由用户
+提供同时保留本机限制的 DDS profile。
+
 ## 导航使用方法
 
 完整闭环的推荐检查顺序：
@@ -185,8 +199,8 @@ ros2 topic echo /sim/ground_truth/odom --once
 - 2025/2026 场地通过 `map -> pcd_map -> camera_init` 接入一次性 GICP；超时会回退到同一
   实车初始位姿。2024 场地直接发布 `map -> camera_init`。两种路径的定位原点 Z 都为零。
 - planner/controller 的雷达杆臂补偿设为零，因为 Point-LIO 输出已经位于车体中心公共帧。
-- Nav2 使用同时包络全向轮和差速轮的凸多边形 footprint；MINCO corridor 半径为
-  `0.42 m`、优化安全距离为 `0.45 m`，避免原先 `0.20/0.25 m` 低估车体后卡场地边角。
+- Nav2 使用同时包络全向轮和差速轮的凸多边形 footprint；MINCO 优化安全距离为
+  `0.45 m`，避免原先 `0.20/0.25 m` 低估车体后卡场地边角。
 - Point-LIO 继续发布当前仓库既有的 `camera_init -> aft_mapped` 与里程计话题。
 - MPC `/cmd_vel_mpc` 是世界坐标系速度；适配节点通过 Point-LIO yaw 转为车体系。
 - 差速模式不会把 `linear.y` 直接发送给底盘，而是生成转向角速度；目标在车后方时允许倒车。
