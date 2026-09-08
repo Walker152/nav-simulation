@@ -169,10 +169,17 @@ ROS_LOCALHOST_ONLY=1 ROS_DOMAIN_ID=195 MINCO_RUN_LAUNCH_TESTS=1 \
   -q -k nav2_sim
 ```
 
-这两项检查覆盖独立/组合入口、实际 `use_sim_time`、planner/controller 外参、
-global costmap 轮廓、激活和正常退出；它们不替代 Gazebo 中的运动闭环验证。
+这六项检查覆盖独立、混合组合和外部 LiDAR 容器入口，核验实际 `use_sim_time`、
+planner/controller 外参以及 costmap 实际发布的轮廓；分别执行 lifecycle shutdown
+和持续点云更新后的 SIGINT，要求所有子进程正常退出。它们不替代 Gazebo 中的运动闭环验证。
 
 ### 仿真点云传输
+
+Point-LIO 的完整点云 publisher 使用 `UniquePtr`，ROGMap cloud subscription 显式启用
+intra-process。ROGMap 的四类互斥回调由同一进程内的专属四线程 executor 调度，
+退出先停止并 join executor，再销毁回调组，避免 Humble 等待队列访问已释放的 guard condition。
+该调整不更改点云话题、消息格式、QoS 或频率。实车容器也需要预加载同一份参数，
+步骤见[同进程通信与退出知识文档](../docs/knowledge/20260908_navigation_composition_shutdown.md)。
 
 `simulation.launch.py` 默认给本次仿真进程设置 `FASTRTPS_DEFAULT_PROFILES_FILE`，
 加载 `sentry_simulation/config/fastdds_shm.xml`。该配置为每个 Fast DDS participant
@@ -227,7 +234,7 @@ ros2 topic echo /sim/ground_truth/odom --once
 ## 坐标、时间与速度语义
 
 - 全部节点启用 `/clock` 和 `use_sim_time`。
-- `config/nav2_sim.yaml` 使用与实车相同的机器人配置分组，由 navi2 launch 合并宿主参数。planner 独立于 LiDAR 进程启动，global costmap 从该进程继承完整参数；不再先创建空容器再加载 planner。
+- `config/nav2_sim.yaml` 使用与实车相同的机器人配置分组，由 navi2 launch 合并宿主参数。planner 与 Point-LIO、点云适配器保持在 `livox_pointlio_container` 同一进程。启动容器前将机器人配置与 `nav2_host.yaml` 合成为进程级 ROS 参数，使 planner 内部创建的 global costmap 也能继承完整配置；退出时删除本次临时参数文件。
 - 融合 LiDAR/IMU link 在模型中的位姿为 `(0,-0.2,0.3,0,0,0)`，
   物理 base_link 位于 `(0,0,0.2,0,0,0)`。适配器将左右测量点转换到该 IMU 公共帧，
   不会把里程计原点移到车体中心。

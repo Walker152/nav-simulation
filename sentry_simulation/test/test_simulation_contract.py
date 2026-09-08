@@ -20,6 +20,7 @@ from launch.actions import (
 )
 from launch.event_handlers import OnProcessExit
 from launch_ros.substitutions import ExecutableInPackage
+from launch.utilities import perform_substitutions
 import yaml
 
 
@@ -546,13 +547,47 @@ class SimulationContractTest(unittest.TestCase):
         for token in ("PatternRay", "pattern_file", "pattern_points_per_frame"):
             self.assertIn(token, adapter_source)
 
-    def test_simulation_isolates_planner_and_disables_expensive_realtime_outputs(self):
-        launch_source = (
-            PACKAGE_ROOT / "launch" / "simulation.launch.py"
-        ).read_text(encoding="utf-8")
-        self.assertIn('"use_composition": "False"', launch_source)
-        self.assertNotIn("simulation_planner_container", launch_source)
-        self.assertNotIn('"planner_container_name"', launch_source)
+    def test_simulation_loads_planner_into_lidar_container_with_costmap_parameters(self):
+        spec = importlib.util.spec_from_file_location(
+            "sentry_simulation_launch", PACKAGE_ROOT / "launch" / "simulation.launch.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        resolve_share = module.get_package_share_directory
+        module.get_package_share_directory = lambda name: str(
+            REPO_ROOT / "src" / "navigation" / "navi2_bringup"
+        ) if name == "navi2" else resolve_share(name)
+        context = LaunchContext()
+        context.launch_configurations.update({
+            "world": "rmuc_2024", "chassis_type": "omni", "headless": "true",
+            "rviz": "false", "use_icp": "false", "log_level": "info",
+            "params_file": str(PACKAGE_ROOT / "config" / "nav2_sim.yaml"),
+        })
+        containers = []
+
+        def capture_container(**kwargs):
+            containers.append(kwargs)
+            return kwargs
+
+        with patch.object(module, "ComposableNodeContainer", side_effect=capture_container):
+            actions = module._launch_setup(context, str(PACKAGE_ROOT))
+        navigation = next(action for action in actions
+                          if isinstance(action, IncludeLaunchDescription)
+                          and "params_file" in dict(action.launch_arguments))
+        self.assertEqual(dict(navigation.launch_arguments)["planner_container_name"],
+                         containers[0]["name"])
+        component_names = {perform_substitutions(context, node.node_name)
+                           for node in containers[0]["composable_node_descriptions"]}
+        self.assertIn("laserMapping", component_names)
+        arguments = containers[0]["arguments"]
+        process_file = Path(arguments[arguments.index("--params-file") + 1])
+        try:
+            costmap = yaml.safe_load(process_file.read_text())["global_costmap"]["global_costmap"]["ros__parameters"]
+            self.assertEqual(costmap["plugins"], ["static_layer", "inflation_layer"])
+            self.assertEqual(costmap["global_frame"], "map")
+            self.assertTrue(costmap["use_sim_time"])
+            self.assertEqual(len(json.loads(costmap["footprint"])), 16)
+        finally:
+            process_file.unlink()
 
         params = yaml.safe_load(
             (PACKAGE_ROOT / "config" / "nav2_sim.yaml").read_text(encoding="utf-8")
@@ -586,6 +621,13 @@ class SimulationContractTest(unittest.TestCase):
             cli.write_text("#!/bin/sh\nexit 1\n")
             cli.chmod(0o755)
             module.get_package_share_directory = lambda name: str(directory)
+            # The simulation now assembles nested costmap parameters before
+            # creating its lidar container. Keep that real boundary in this probe.
+            navigation_share = REPO_ROOT / "src" / "navigation" / "navi2_bringup"
+            for relative in ("launch/navigation_parameters.py", "params/nav2_host.yaml"):
+                target = directory / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text((navigation_share / relative).read_text())
             for enabled in (True, False):
                 with self.subTest(rviz=enabled):
                     output.unlink(missing_ok=True)
@@ -597,8 +639,10 @@ class SimulationContractTest(unittest.TestCase):
                         "sigterm_timeout": "0.1", "sigkill_timeout": "0.1",
                     })
                     service.context.environment["PATH"] = f"{directory}:{os.environ['PATH']}"
-                    rviz = module._launch_setup(service.context, str(PACKAGE_ROOT))[-1]
+                    actions = module._launch_setup(service.context, str(PACKAGE_ROOT))
+                    rviz = actions[-1]
                     service.include_launch_description(LaunchDescription([
+                        *[action for action in actions if isinstance(action, RegisterEventHandler)],
                         RegisterEventHandler(OnProcessExit(target_action=rviz,
                             on_exit=[Shutdown(reason="RViz probe completed")])),
                         rviz, TimerAction(period=2.0, actions=[Shutdown(reason="probe deadline")]),
@@ -1095,7 +1139,10 @@ class SimulationContractTest(unittest.TestCase):
         spec = importlib.util.spec_from_file_location("sentry_simulation_launch", launch_path)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        module.get_package_share_directory = lambda name: str(PACKAGE_ROOT)
+        resolve_share = module.get_package_share_directory
+        module.get_package_share_directory = lambda name: str(
+            REPO_ROOT / "src" / "navigation" / "navi2_bringup"
+        ) if name == "navi2" else resolve_share(name)
         with TemporaryDirectory() as directory:
             profile = Path(directory) / "robot profile.yaml"
             profile.write_text((PACKAGE_ROOT / "config" / "nav2_sim.yaml").read_text())

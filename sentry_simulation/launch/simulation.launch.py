@@ -2,6 +2,8 @@
 
 import math
 import os
+import importlib.util
+from pathlib import Path
 
 import yaml
 from ament_index_python.packages import get_package_share_directory
@@ -11,9 +13,11 @@ from launch.actions import (
     GroupAction,
     IncludeLaunchDescription,
     OpaqueFunction,
+    RegisterEventHandler,
     SetEnvironmentVariable,
 )
 from launch.conditions import IfCondition
+from launch.event_handlers import OnShutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import ComposableNodeContainer, Node
@@ -80,6 +84,14 @@ def _launch_setup(context, package_share):
     nav2_host_params = os.path.join(
         get_package_share_directory("navi2"), "params", "nav2_host.yaml"
     )
+    assembler_path = Path(get_package_share_directory("navi2")) / "launch" / "navigation_parameters.py"
+    spec = importlib.util.spec_from_file_location("navigation_parameters", assembler_path)
+    assembler = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(assembler)
+    process_params_file = assembler.write_navigation_parameters(
+        assembler.load_navigation_parameters(nav2_params_path, nav2_host_params, use_sim_time=True))
+    cleanup_params = RegisterEventHandler(OnShutdown(on_shutdown=[OpaqueFunction(
+        function=lambda context: Path(process_params_file).unlink(missing_ok=True))]))
 
     x = float(spawn["x"])
     y = float(spawn["y"])
@@ -139,6 +151,10 @@ def _launch_setup(context, package_share):
         package="rclcpp_components",
         executable="component_container_mt",
         output="screen",
+        # Nested global_costmap reads process arguments, not PlannerServer's
+        # component-only overrides. Load the same robot contract before startup.
+        arguments=["--ros-args", "--params-file", process_params_file,
+                   "--remap", "/tf:=tf", "--remap", "/tf_static:=tf_static"],
         composable_node_descriptions=[
             ComposableNode(
                 package="sentry_simulation",
@@ -185,6 +201,7 @@ def _launch_setup(context, package_share):
             "host_params_file": nav2_host_params,
             "autostart": "true",
             "use_composition": "False",
+            "planner_container_name": "livox_pointlio_container",
             "log_level": LaunchConfiguration("log_level"),
         }.items(),
     )
@@ -270,6 +287,7 @@ def _launch_setup(context, package_share):
     )
 
     return [
+        cleanup_params,
         *transport_actions,
         gazebo,
         spawn_robot,
