@@ -10,7 +10,7 @@ Gazebo 左右双 MID360（每颗由前/后 180° GPU LiDAR 拼接）+ 水平 IMU
   -> Point-LIO (/aft_mapped_to_init, /cloud_registered_full)
   -> model PCD GICP (pcd_map -> camera_init, 2025/2026 场地)
   -> ROGMap + MINCO planner
-  -> Minco MPC controller (/cmd_vel_mpc, 世界坐标系)
+  -> Minco MPC controller (/cmd_vel_mpc, base 坐标系)
   -> sentry_sim_cmd_adapter
   -> Gazebo omni/diff chassis
 ```
@@ -23,7 +23,7 @@ Gazebo 左右双 MID360（每颗由前/后 180° GPU LiDAR 拼接）+ 水平 IMU
 | 功能 | 实现 | 说明 |
 |---|---|---|
 | 全向底盘 | `sentry_omni` + Fortress `MecanumDrive` | 接收转换后的车体系速度，可测试 X/Y/yaw |
-| 差速底盘 | `sentry_diff` + Fortress `DiffDrive` | 将世界系 MPC 命令转换为前进/转向，允许倒车 |
+| 差速底盘 | `sentry_diff` + Fortress `DiffDrive` | 模型保留；当前导航仅支持 omni，差速导航显式拒绝 |
 | 双 MID360 | 左右镜像雷达 + pattern adapter | 合并为 `/livox/lidar`，消息类型与真机相同 |
 | IMU | Gazebo IMU + 仿真滤波器 | 200 Hz，输出 `/sim/imu` 给 Point-LIO |
 | 里程计 | Point-LIO | 导航使用 `/aft_mapped_to_init`，不是 Gazebo 真值 |
@@ -98,7 +98,7 @@ cd /home/alioth/2025-sentry-navi
 
 | 参数 | 可选值 | 默认值 | 作用 |
 |---|---|---|---|
-| 第 1 个位置参数 | `omni`、`diff` | `omni` | 选择全向或差速底盘 |
+| 第 1 个位置参数 | `omni`、`diff` | `omni` | 当前导航选择 omni；diff 资源保留但导航拒绝 |
 | 第 2 个位置参数 | `rmuc_2024`、`rmul_2024`、`rmuc_2025`、`rmuc_2026`、`rmul_2025` | `rmuc_2025` | 选择场地 |
 | `--headless` | 开关 | 关闭 | 不启动 Gazebo GUI，只运行 server |
 | `--no-rviz` | 开关 | 关闭 | 不启动 RViz |
@@ -114,7 +114,7 @@ cd /home/alioth/2025-sentry-navi
 ./simlation.bash omni rmuc_2026
 
 # 差速底盘 + RMUL 2025
-./simlation.bash diff rmul_2025
+# 差速导航尚未实现，不使用 diff 启动闭环导航。
 
 # 无 Gazebo GUI，也不启动 RViz
 ./simlation.bash omni rmuc_2024 --headless --no-rviz
@@ -170,7 +170,7 @@ Fast DDS 原有 512 KiB 共享内存段；扩大容量避免大消息发送失�
 | `/sim/imu` | `sensor_msgs/msg/Imu` | 仿真 IMU 滤波输出 |
 | `/aft_mapped_to_init` | `nav_msgs/msg/Odometry` | Point-LIO 里程计和导航状态 |
 | `/cloud_registered_full` | `sensor_msgs/msg/PointCloud2` | ROGMap 与 GICP 使用的完整点云 |
-| `/cmd_vel_mpc` | `geometry_msgs/msg/Twist` | MPC 输出的世界系速度 |
+| `/cmd_vel_mpc` | `geometry_msgs/msg/Twist` | MPC 输出的车体系速度 |
 | `/sim/cmd_vel` | `geometry_msgs/msg/Twist` | 转换后发送给 Gazebo 底盘的车体系速度 |
 | `/sim/ground_truth/odom` | `nav_msgs/msg/Odometry` | Gazebo 真值，仅用于验收 |
 
@@ -187,11 +187,12 @@ ros2 topic echo /sim/ground_truth/odom --once
 ```
 
 如果 `/cmd_vel_mpc` 有输出但车辆不动，再检查 `/sim/cmd_vel` 和
-`/aft_mapped_to_init`；适配器必须先收到有效里程计，才能把世界系速度旋转到车体系。
+适配器的超时状态；MPC 已输出车体系速度，适配器直接转发，不依赖 odom 做第二次旋转。
 
 ## 坐标、时间与速度语义
 
 - 全部节点启用 `/clock` 和 `use_sim_time`。
+- `config/nav2_sim.yaml` 使用与实车相同的机器人配置分组，由 navi2 launch 合并宿主参数。planner 独立于 LiDAR 进程启动，global costmap 从该进程继承完整参数；不再先创建空容器再加载 planner。
 - 左右 MID360 相对公共帧的位姿分别为
   `(-0.0496, +0.136, 0, -0.5835988, 0, 0)` 和
   `(-0.0496, -0.136, 0, +0.5835988, 0, 0)`；公共 LiDAR/IMU 帧位于车体中心
@@ -202,8 +203,8 @@ ros2 topic echo /sim/ground_truth/odom --once
 - Nav2 使用同时包络全向轮和差速轮的凸多边形 footprint；MINCO 优化安全距离为
   `0.45 m`，避免原先 `0.20/0.25 m` 低估车体后卡场地边角。
 - Point-LIO 继续发布当前仓库既有的 `camera_init -> aft_mapped` 与里程计话题。
-- MPC `/cmd_vel_mpc` 是世界坐标系速度；适配节点通过 Point-LIO yaw 转为车体系。
-- 差速模式不会把 `linear.y` 直接发送给底盘，而是生成转向角速度；目标在车后方时允许倒车。
+- MPC 在 odom 求解，`/cmd_vel_mpc` 为车体系速度；适配器直接转发。
+- 当前只允许 omni 导航；差速模型保留为仿真资源，需规划与控制成对实现后再接入。
 - MPC 命令超过 0.25 s 未刷新时，适配节点会向 Gazebo 发送一次零速度，避免底盘保持旧指令。
 - `/livox/lidar` 与真机相同使用 `livox_ros_driver2/msg/CustomMsg`：`offset_time`
   单位为纳秒，`line` 为 0～3，`tag` 为 `0x10`，所以 Point-LIO 配置为
@@ -267,7 +268,7 @@ sentry_simulation/resource/models/rmuc_2026/meshes/rmuc_2026_collision.stl
 
 ### 有导航目标，但小车不动
 
-依次检查 `/aft_mapped_to_init`、`/cmd_vel_mpc`、`/sim/cmd_vel`。没有里程计时速度适配器不会转发命令；只有 `/cmd_vel_mpc` 没有 `/sim/cmd_vel` 时，重点检查适配器和里程计；两者都有但 Gazebo 不动时，再检查底盘 plugin 和实体名称。
+依次检查 `/aft_mapped_to_init`、`/cmd_vel_mpc`、`/sim/cmd_vel`。没有新鲜里程计时 MPC 输出零；只有 `/cmd_vel_mpc` 没有 `/sim/cmd_vel` 时，重点检查适配器进程与订阅；两者都有但 Gazebo 不动时，再检查底盘 plugin 和实体名称。
 
 ### 里程计 Z 发散或 ROGMap 把地面投成障碍
 

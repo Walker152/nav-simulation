@@ -46,6 +46,11 @@ def _launch_setup(context, package_share):
 
     if chassis_type not in ("omni", "diff"):
         raise RuntimeError("chassis_type must be 'omni' or 'diff'")
+    if chassis_type != "omni":
+        raise RuntimeError(
+            "navigation currently supports only the omni vehicle model; "
+            "the differential simulator model remains available for non-navigation tests"
+        )
 
     worlds_config_path = os.path.join(package_share, "config", "worlds.yaml")
     with open(worlds_config_path, encoding="utf-8") as stream:
@@ -77,6 +82,9 @@ def _launch_setup(context, package_share):
     configured_nav2_params = ReplaceString(
         source_file=nav2_params_path,
         replacements={"<simulation_share>": package_share},
+    )
+    nav2_host_params = os.path.join(
+        get_package_share_directory("navi2"), "params", "nav2_host.yaml"
     )
 
     x = float(spawn["x"])
@@ -171,18 +179,6 @@ def _launch_setup(context, package_share):
         ],
     )
 
-    # Keep the synchronous planner callback out of the high-rate point-cloud
-    # executor.  A goal may trigger global search and MINCO optimization, so
-    # sharing this container can delay LiDAR/odom processing and make the
-    # simulation appear unresponsive.
-    planner_container = ComposableNodeContainer(
-        name="simulation_planner_container",
-        namespace="",
-        package="rclcpp_components",
-        executable="component_container_mt",
-        output="screen",
-    )
-
     navigation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
@@ -192,9 +188,9 @@ def _launch_setup(context, package_share):
         launch_arguments={
             "use_sim_time": "true",
             "params_file": configured_nav2_params,
+            "host_params_file": nav2_host_params,
             "autostart": "true",
             "use_composition": "False",
-            "planner_container_name": "simulation_planner_container",
             "log_level": LaunchConfiguration("log_level"),
         }.items(),
     )
@@ -287,7 +283,6 @@ def _launch_setup(context, package_share):
         bridge,
         imu_filter,
         point_lio_container,
-        planner_container,
         *localization_actions,
         Node(
             package="nav2_map_server",
