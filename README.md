@@ -104,6 +104,10 @@ cd /home/alioth/nature_will
 | `--no-rviz` | 开关 | 关闭 | 不启动 RViz |
 | `--check` | 开关 | 关闭 | 只检查 ROS overlay 和依赖包 |
 
+RViz 随 launch 直接启动，导航初始化期间也能查看地图和状态。等终端出现
+`Managed nodes are active` 后再下发导航目标；窗口出现不代表导航已经就绪。
+`--no-rviz` 继续用于完全关闭 RViz。
+
 常用启动方式：
 
 ```bash

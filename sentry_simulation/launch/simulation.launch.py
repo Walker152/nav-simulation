@@ -8,7 +8,6 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
-    ExecuteProcess,
     GroupAction,
     IncludeLaunchDescription,
     OpaqueFunction,
@@ -257,17 +256,16 @@ def _launch_setup(context, package_share):
             parameters=[{"use_sim_time": True}],
         ))
 
-    # RViz exposes the navigation goal tool before bt_navigator is active.
-    # Delay startup to avoid rejecting the first goal during lifecycle startup.
+    # Keep the diagnostic UI available while navigation is still initializing.
+    # A lifecycle service timeout must not prevent RViz from starting.
     rviz_config = os.path.join(get_package_share_directory("navi2"), "config", "our.rviz")
-    rviz = ExecuteProcess(
+    rviz = Node(
         condition=IfCondition(LaunchConfiguration("rviz")),
-        cmd=[
-            "bash", "-c",
-            "until ros2 lifecycle get /bt_navigator 2>/dev/null | grep -q '^active \\[3\\]'; "
-            f"do sleep 0.2; done; exec rviz2 -d '{rviz_config}' --ros-args -p use_sim_time:=true",
-        ],
+        package="rviz2",
+        executable="rviz2",
         name="rviz2",
+        arguments=["-d", rviz_config],
+        parameters=[{"use_sim_time": True}],
         output="screen",
     )
 

@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import importlib.util
+import json
 import math
 import os
 import signal
@@ -13,8 +14,12 @@ import unittest
 from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
-from launch import LaunchContext
-from launch.actions import ExecuteProcess, IncludeLaunchDescription
+from launch import LaunchContext, LaunchDescription, LaunchService
+from launch.actions import (
+    ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler, Shutdown, TimerAction,
+)
+from launch.event_handlers import OnProcessExit
+from launch_ros.substitutions import ExecutableInPackage
 import yaml
 
 
@@ -557,13 +562,55 @@ class SimulationContractTest(unittest.TestCase):
         self.assertEqual(planner_params["rog_map"]["ros_callback"]["update_period_ms"], 100)
         self.assertTrue(planner_params["rog_map"]["visualization"]["enable"])
 
-    def test_rviz_waits_for_navigation_lifecycle(self):
-        """The first RViz goal must not race bt_navigator activation."""
-        launch_source = (
-            PACKAGE_ROOT / "launch" / "simulation.launch.py"
-        ).read_text(encoding="utf-8")
-        self.assertIn("ros2 lifecycle get /bt_navigator", launch_source)
-        self.assertIn("exec rviz2", launch_source)
+    def test_rviz_starts_when_navigation_is_unavailable_and_honors_disable(self):
+        """A failed lifecycle query must not prevent opening the diagnostic UI."""
+        spec = importlib.util.spec_from_file_location(
+            "sentry_simulation_launch", PACKAGE_ROOT / "launch" / "simulation.launch.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with TemporaryDirectory(prefix="rviz launch ") as directory:
+            directory = Path(directory)
+            output = directory / "rviz_args.json"
+            executable = directory / "rviz2"
+            # Replace only external executables: run the actual launch action and
+            # command construction without requiring a display or navigation stack.
+            executable.write_text(
+                "#!/usr/bin/python3\nimport json, sys, yaml\n"
+                "from pathlib import Path\n"
+                "args = sys.argv[1:]\n"
+                "params = [yaml.safe_load(Path(args[i+1]).read_text()) "
+                "for i, arg in enumerate(args) if arg == '--params-file']\n"
+                f"Path({str(output)!r}).write_text(json.dumps([args, params]))\n")
+            executable.chmod(0o755)
+            cli = directory / "ros2"
+            cli.write_text("#!/bin/sh\nexit 1\n")
+            cli.chmod(0o755)
+            module.get_package_share_directory = lambda name: str(directory)
+            for enabled in (True, False):
+                with self.subTest(rviz=enabled):
+                    output.unlink(missing_ok=True)
+                    service = LaunchService()
+                    service.context.launch_configurations.update({
+                        "world": "rmuc_2024", "chassis_type": "omni", "headless": "true",
+                        "rviz": str(enabled).lower(), "use_icp": "false", "log_level": "info",
+                        "params_file": str(PACKAGE_ROOT / "config" / "nav2_sim.yaml"),
+                        "sigterm_timeout": "0.1", "sigkill_timeout": "0.1",
+                    })
+                    service.context.environment["PATH"] = f"{directory}:{os.environ['PATH']}"
+                    rviz = module._launch_setup(service.context, str(PACKAGE_ROOT))[-1]
+                    service.include_launch_description(LaunchDescription([
+                        RegisterEventHandler(OnProcessExit(target_action=rviz,
+                            on_exit=[Shutdown(reason="RViz probe completed")])),
+                        rviz, TimerAction(period=2.0, actions=[Shutdown(reason="probe deadline")]),
+                    ]))
+                    with patch.object(ExecutableInPackage, "perform", return_value=str(executable)):
+                        service.run()
+                    self.assertEqual(output.exists(), enabled,
+                                     "RViz must start even without an active bt_navigator")
+                    if enabled:
+                        args, params = json.loads(output.read_text())
+                        self.assertEqual(args[args.index("-d") + 1], str(directory / "config" / "our.rviz"))
+                        self.assertTrue(params[0]["/**"]["ros__parameters"]["use_sim_time"])
 
     def test_compact_chassis_and_dual_mid360_mounts_follow_description(self):
         visual_dir = PACKAGE_ROOT / "resource" / "models" / "pb2025_visuals" / "meshes"
