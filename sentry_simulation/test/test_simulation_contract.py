@@ -271,8 +271,7 @@ class SimulationContractTest(unittest.TestCase):
                 "minco_planner",
                 "minco_controller",
                 "rog_map",
-                "nav2_bringup",
-                "spatio_temporal_voxel_layer",
+                "nav2_rviz_plugins",
             }
             <= dependencies
         )
