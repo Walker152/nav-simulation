@@ -137,6 +137,20 @@ ros2 launch sentry_simulation simulation.launch.py \
 
 直接 `ros2 launch` 使用 install tree；新增或替换资源后应重新执行 symlink-install 构建。根目录 `simlation.bash` 会额外指定源码侧 simulation share 和模型搜索路径，适合当前仓库日常启动。
 
+### 仿真点云传输
+
+`simulation.launch.py` 默认给本次仿真进程设置 `FASTRTPS_DEFAULT_PROFILES_FILE`，
+加载 `sentry_simulation/config/fastdds_shm.xml`。该配置为每个 Fast DDS participant
+提供 16 MiB 的共享内存段，并保留 UDPv4 传输。四路 GPU LiDAR 的单条原始点云约 1.38 MB，超过
+Fast DDS 原有 512 KiB 共享内存段；扩大容量避免大消息发送失败造成点云缺帧和四路
+同步等待。配置不改变点云 QoS、同步容差、传感器频率或实车启动链路。
+
+环境变量只在仿真 launch 的作用域内生效，不会覆盖同一父 launch 中其他组件的环境。
+如果启动环境已经设置了非空 `FASTRTPS_DEFAULT_PROFILES_FILE`，仿真沿用该配置；
+使用其他 RMW 实现时该 Fast DDS 配置不生效。若设置了 `ROS_LOCALHOST_ONLY=1`，
+仿真不会自动加载此配置，以保留已有的本机通信限制；此时如需扩大 SHM，应由用户
+提供同时保留本机限制的 DDS profile。
+
 ## 导航使用方法
 
 完整闭环的推荐检查顺序：

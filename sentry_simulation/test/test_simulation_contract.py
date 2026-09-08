@@ -10,9 +10,11 @@ import subprocess
 from tempfile import TemporaryDirectory
 import time
 import unittest
+from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
 from launch import LaunchContext
+from launch.actions import ExecuteProcess, IncludeLaunchDescription
 import yaml
 
 
@@ -54,6 +56,96 @@ def read_pgm(path):
 
 
 class SimulationContractTest(unittest.TestCase):
+    def _simulation_process_environments(self, environment):
+        launch_path = PACKAGE_ROOT / "launch" / "simulation.launch.py"
+        spec = importlib.util.spec_from_file_location("sentry_simulation_launch", launch_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        resolve_share = module.get_package_share_directory
+        module.get_package_share_directory = lambda name: (
+            str(PACKAGE_ROOT) if name == "sentry_simulation" else resolve_share(name)
+        )
+        process_environments = []
+
+        def transport_environment(context):
+            return {
+                name: context.environment[name]
+                for name in ("FASTRTPS_DEFAULT_PROFILES_FILE", "ROS_LOCALHOST_ONLY")
+                if name in context.environment
+            }
+
+        def visit(actions, context):
+            for action in actions:
+                # Observe the environment at each subprocess / included launch boundary,
+                # but do not start Gazebo or ROS nodes in this contract test.
+                if isinstance(action, (ExecuteProcess, IncludeLaunchDescription)):
+                    process_environments.append(transport_environment(context))
+                else:
+                    visit(action.execute(context) or [], context)
+
+        with patch.dict(os.environ, environment):
+            for name in ("FASTRTPS_DEFAULT_PROFILES_FILE", "ROS_LOCALHOST_ONLY"):
+                if name not in environment:
+                    os.environ.pop(name, None)
+            os.environ["SENTRY_SIMULATION_SHARE"] = str(PACKAGE_ROOT)
+            context = LaunchContext()
+            visit(module.generate_launch_description().entities, context)
+            final_environment = transport_environment(context)
+        self.assertGreaterEqual(len(process_environments), 10)
+        return process_environments, final_environment
+
+    def test_simulation_default_fastdds_profile_supports_large_clouds(self):
+        environments, _ = self._simulation_process_environments({})
+        profile_path = PACKAGE_ROOT / "config" / "fastdds_shm.xml"
+        for environment in environments:
+            self.assertEqual(
+                environment.get("FASTRTPS_DEFAULT_PROFILES_FILE"), str(profile_path)
+            )
+        namespace = {"dds": "http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles"}
+        root = ET.parse(profile_path).getroot()
+        transports = {
+            node.findtext("dds:transport_id", namespaces=namespace): node
+            for node in root.findall("dds:transport_descriptors/dds:transport_descriptor", namespace)
+        }
+        participant = root.find("dds:participant[@is_default_profile='true']/dds:rtps", namespace)
+        self.assertIsNotNone(participant)
+        self.assertEqual(participant.findtext("dds:useBuiltinTransports", namespaces=namespace), "false")
+        selected = [
+            transports[node.text]
+            for node in participant.findall("dds:userTransports/dds:transport_id", namespace)
+        ]
+        self.assertEqual(
+            {node.findtext("dds:type", namespaces=namespace) for node in selected},
+            {"SHM", "UDPv4"},
+        )
+        shm = next(node for node in selected if node.findtext("dds:type", namespaces=namespace) == "SHM")
+        self.assertGreaterEqual(
+            int(shm.findtext("dds:segment_size", namespaces=namespace)),
+            16 * 1024 * 1024,
+            "the SHM segment must hold simultaneous multi-megabyte lidar frames",
+        )
+
+    def test_simulation_preserves_explicit_fastdds_profile(self):
+        profile = "/tmp/operator-fastdds.xml"
+        environments, final_environment = self._simulation_process_environments(
+            {"FASTRTPS_DEFAULT_PROFILES_FILE": profile}
+        )
+        for environment in [*environments, final_environment]:
+            self.assertEqual(environment.get("FASTRTPS_DEFAULT_PROFILES_FILE"), profile)
+
+    def test_simulation_default_fastdds_profile_does_not_escape_launch_group(self):
+        environments, final_environment = self._simulation_process_environments({})
+        self.assertIn("FASTRTPS_DEFAULT_PROFILES_FILE", environments[0])
+        self.assertNotIn("FASTRTPS_DEFAULT_PROFILES_FILE", final_environment)
+
+    def test_simulation_preserves_localhost_only_transport_behavior(self):
+        environments, final_environment = self._simulation_process_environments(
+            {"ROS_LOCALHOST_ONLY": "1"}
+        )
+        for environment in [*environments, final_environment]:
+            self.assertNotIn("FASTRTPS_DEFAULT_PROFILES_FILE", environment)
+            self.assertEqual(environment["ROS_LOCALHOST_ONLY"], "1")
+
     def test_command_adapter_exits_cleanly_on_sigint(self):
         environment = os.environ.copy()
         environment["PYTHONPATH"] = os.pathsep.join(

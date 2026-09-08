@@ -9,8 +9,10 @@ from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
     ExecuteProcess,
+    GroupAction,
     IncludeLaunchDescription,
     OpaqueFunction,
+    SetEnvironmentVariable,
 )
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -25,6 +27,18 @@ def _as_bool(value: str) -> bool:
 
 
 def _launch_setup(context, package_share):
+    transport_actions = []
+    # The default 512 KiB SHM segment cannot hold one raw GPU lidar frame.
+    # Keep operator profiles and localhost-only transport restrictions intact.
+    if (
+        not context.environment.get("FASTRTPS_DEFAULT_PROFILES_FILE")
+        and context.environment.get("ROS_LOCALHOST_ONLY") != "1"
+    ):
+        transport_actions.append(SetEnvironmentVariable(
+            "FASTRTPS_DEFAULT_PROFILES_FILE",
+            os.path.join(package_share, "config", "fastdds_shm.xml"),
+        ))
+
     world_name = LaunchConfiguration("world").perform(context)
     chassis_type = LaunchConfiguration("chassis_type").perform(context)
     headless = _as_bool(LaunchConfiguration("headless").perform(context))
@@ -267,6 +281,7 @@ def _launch_setup(context, package_share):
     )
 
     return [
+        *transport_actions,
         gazebo,
         spawn_robot,
         bridge,
@@ -325,5 +340,8 @@ def generate_launch_description():
         DeclareLaunchArgument("rviz", default_value="true"),
         DeclareLaunchArgument("use_icp", default_value="true"),
         DeclareLaunchArgument("log_level", default_value="info"),
-        OpaqueFunction(function=_launch_setup, args=[package_share]),
+        GroupAction(
+            actions=[OpaqueFunction(function=_launch_setup, args=[package_share])],
+            scoped=True,
+        ),
     ])
