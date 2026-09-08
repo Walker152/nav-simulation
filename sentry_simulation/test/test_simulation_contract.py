@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import importlib.util
+import json
 import math
 import os
 import signal
@@ -13,8 +14,13 @@ import unittest
 from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
-from launch import LaunchContext
-from launch.actions import ExecuteProcess, IncludeLaunchDescription
+from launch import LaunchContext, LaunchDescription, LaunchService
+from launch.actions import (
+    ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler, Shutdown, TimerAction,
+)
+from launch.event_handlers import OnProcessExit
+from launch_ros.substitutions import ExecutableInPackage
+from launch.utilities import perform_substitutions
 import yaml
 
 
@@ -62,9 +68,13 @@ class SimulationContractTest(unittest.TestCase):
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         resolve_share = module.get_package_share_directory
-        module.get_package_share_directory = lambda name: (
-            str(PACKAGE_ROOT) if name == "sentry_simulation" else resolve_share(name)
-        )
+        source_shares = {
+            "sentry_simulation": PACKAGE_ROOT,
+            "navi2": REPO_ROOT / "src" / "navigation" / "navi2_bringup",
+        }
+        module.get_package_share_directory = lambda name: str(
+            source_shares[name]
+        ) if name in source_shares else resolve_share(name)
         process_environments = []
 
         def transport_environment(context):
@@ -180,7 +190,7 @@ class SimulationContractTest(unittest.TestCase):
         environment.pop("AMENT_TRACE_SETUP_FILES", None)
         result = subprocess.run(
             [
-                str(REPO_ROOT / "simlation.bash"),
+                str(REPO_ROOT / "src" / "scripts" / "simlation.bash"),
                 "omni",
                 "rmuc_2025",
                 "--check",
@@ -197,7 +207,7 @@ class SimulationContractTest(unittest.TestCase):
     def test_shell_preflight_accepts_options_before_positionals(self):
         result = subprocess.run(
             [
-                str(REPO_ROOT / "simlation.bash"),
+                str(REPO_ROOT / "src" / "scripts" / "simlation.bash"),
                 "--check",
                 "--headless",
                 "--no-rviz",
@@ -216,7 +226,7 @@ class SimulationContractTest(unittest.TestCase):
 
     def test_required_entrypoints_exist(self):
         required = [
-            REPO_ROOT / "simlation.bash",
+            REPO_ROOT / "src" / "scripts" / "simlation.bash",
             SIM_ROOT / "README.md",
             PACKAGE_ROOT / "package.xml",
             PACKAGE_ROOT / "CMakeLists.txt",
@@ -229,7 +239,7 @@ class SimulationContractTest(unittest.TestCase):
         self.assertEqual(missing, [], f"missing simulation entrypoints: {missing}")
 
     def test_shell_entrypoint_checks_the_complete_runtime_overlay(self):
-        script = (REPO_ROOT / "simlation.bash").read_text(encoding="utf-8")
+        script = (REPO_ROOT / "src" / "scripts" / "simlation.bash").read_text(encoding="utf-8")
         for package in (
             "sentry_simulation",
             "ros_gz_sim",
@@ -537,41 +547,114 @@ class SimulationContractTest(unittest.TestCase):
         for token in ("PatternRay", "pattern_file", "pattern_points_per_frame"):
             self.assertIn(token, adapter_source)
 
-    def test_simulation_isolates_planner_and_disables_expensive_realtime_outputs(self):
-        launch_source = (
-            PACKAGE_ROOT / "launch" / "simulation.launch.py"
-        ).read_text(encoding="utf-8")
-        self.assertIn('name="simulation_planner_container"', launch_source)
-        self.assertIn('"planner_container_name": "simulation_planner_container"', launch_source)
+    def test_simulation_loads_planner_into_lidar_container_with_costmap_parameters(self):
+        spec = importlib.util.spec_from_file_location(
+            "sentry_simulation_launch", PACKAGE_ROOT / "launch" / "simulation.launch.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        resolve_share = module.get_package_share_directory
+        module.get_package_share_directory = lambda name: str(
+            REPO_ROOT / "src" / "navigation" / "navi2_bringup"
+        ) if name == "navi2" else resolve_share(name)
+        context = LaunchContext()
+        context.launch_configurations.update({
+            "world": "rmuc_2024", "chassis_type": "omni", "headless": "true",
+            "rviz": "false", "use_icp": "false", "log_level": "info",
+            "params_file": str(PACKAGE_ROOT / "config" / "nav2_sim.yaml"),
+        })
+        containers = []
+
+        def capture_container(**kwargs):
+            containers.append(kwargs)
+            return kwargs
+
+        with patch.object(module, "ComposableNodeContainer", side_effect=capture_container):
+            actions = module._launch_setup(context, str(PACKAGE_ROOT))
+        navigation = next(action for action in actions
+                          if isinstance(action, IncludeLaunchDescription)
+                          and "params_file" in dict(action.launch_arguments))
+        self.assertEqual(dict(navigation.launch_arguments)["planner_container_name"],
+                         containers[0]["name"])
+        component_names = {perform_substitutions(context, node.node_name)
+                           for node in containers[0]["composable_node_descriptions"]}
+        self.assertIn("laserMapping", component_names)
+        arguments = containers[0]["arguments"]
+        process_file = Path(arguments[arguments.index("--params-file") + 1])
+        try:
+            costmap = yaml.safe_load(process_file.read_text())["global_costmap"]["global_costmap"]["ros__parameters"]
+            self.assertEqual(costmap["plugins"], ["static_layer", "inflation_layer"])
+            self.assertEqual(costmap["global_frame"], "map")
+            self.assertTrue(costmap["use_sim_time"])
+            self.assertEqual(len(json.loads(costmap["footprint"])), 16)
+        finally:
+            process_file.unlink()
 
         params = yaml.safe_load(
             (PACKAGE_ROOT / "config" / "nav2_sim.yaml").read_text(encoding="utf-8")
         )
-        self.assertEqual(
-            params["controller_server"]["ros__parameters"]["controller_frequency"],
-            20.0,
-        )
-        self.assertFalse(
-            params["local_costmap"]["local_costmap"]["ros__parameters"][
-                "always_send_full_costmap"
-            ]
-        )
-        self.assertFalse(
-            params["global_costmap"]["global_costmap"]["ros__parameters"][
-                "always_send_full_costmap"
-            ]
-        )
-        planner_params = params["planner_server"]["ros__parameters"]["MincoPlanner"]
+        self.assertEqual(params["controller"]["frequency"], 20.0)
+        planner_params = params["planner"]
         self.assertEqual(planner_params["rog_map"]["ros_callback"]["update_period_ms"], 100)
         self.assertTrue(planner_params["rog_map"]["visualization"]["enable"])
 
-    def test_rviz_waits_for_navigation_lifecycle(self):
-        """The first RViz goal must not race bt_navigator activation."""
-        launch_source = (
-            PACKAGE_ROOT / "launch" / "simulation.launch.py"
-        ).read_text(encoding="utf-8")
-        self.assertIn("ros2 lifecycle get /bt_navigator", launch_source)
-        self.assertIn("exec rviz2", launch_source)
+    def test_rviz_starts_when_navigation_is_unavailable_and_honors_disable(self):
+        """A failed lifecycle query must not prevent opening the diagnostic UI."""
+        spec = importlib.util.spec_from_file_location(
+            "sentry_simulation_launch", PACKAGE_ROOT / "launch" / "simulation.launch.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with TemporaryDirectory(prefix="rviz launch ") as directory:
+            directory = Path(directory)
+            output = directory / "rviz_args.json"
+            executable = directory / "rviz2"
+            # Replace only external executables: run the actual launch action and
+            # command construction without requiring a display or navigation stack.
+            executable.write_text(
+                "#!/usr/bin/python3\nimport json, sys, yaml\n"
+                "from pathlib import Path\n"
+                "args = sys.argv[1:]\n"
+                "params = [yaml.safe_load(Path(args[i+1]).read_text()) "
+                "for i, arg in enumerate(args) if arg == '--params-file']\n"
+                f"Path({str(output)!r}).write_text(json.dumps([args, params]))\n")
+            executable.chmod(0o755)
+            cli = directory / "ros2"
+            cli.write_text("#!/bin/sh\nexit 1\n")
+            cli.chmod(0o755)
+            module.get_package_share_directory = lambda name: str(directory)
+            # The simulation now assembles nested costmap parameters before
+            # creating its lidar container. Keep that real boundary in this probe.
+            navigation_share = REPO_ROOT / "src" / "navigation" / "navi2_bringup"
+            for relative in ("launch/navigation_parameters.py", "params/nav2_host.yaml"):
+                target = directory / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text((navigation_share / relative).read_text())
+            for enabled in (True, False):
+                with self.subTest(rviz=enabled):
+                    output.unlink(missing_ok=True)
+                    service = LaunchService()
+                    service.context.launch_configurations.update({
+                        "world": "rmuc_2024", "chassis_type": "omni", "headless": "true",
+                        "rviz": str(enabled).lower(), "use_icp": "false", "log_level": "info",
+                        "params_file": str(PACKAGE_ROOT / "config" / "nav2_sim.yaml"),
+                        "sigterm_timeout": "0.1", "sigkill_timeout": "0.1",
+                    })
+                    service.context.environment["PATH"] = f"{directory}:{os.environ['PATH']}"
+                    actions = module._launch_setup(service.context, str(PACKAGE_ROOT))
+                    rviz = actions[-1]
+                    service.include_launch_description(LaunchDescription([
+                        *[action for action in actions if isinstance(action, RegisterEventHandler)],
+                        RegisterEventHandler(OnProcessExit(target_action=rviz,
+                            on_exit=[Shutdown(reason="RViz probe completed")])),
+                        rviz, TimerAction(period=2.0, actions=[Shutdown(reason="probe deadline")]),
+                    ]))
+                    with patch.object(ExecutableInPackage, "perform", return_value=str(executable)):
+                        service.run()
+                    self.assertEqual(output.exists(), enabled,
+                                     "RViz must start even without an active bt_navigator")
+                    if enabled:
+                        args, params = json.loads(output.read_text())
+                        self.assertEqual(args[args.index("-d") + 1], str(directory / "config" / "our.rviz"))
+                        self.assertTrue(params[0]["/**"]["ros__parameters"]["use_sim_time"])
 
     def test_compact_chassis_and_dual_mid360_mounts_follow_description(self):
         visual_dir = PACKAGE_ROOT / "resource" / "models" / "pb2025_visuals" / "meshes"
@@ -1007,66 +1090,82 @@ class SimulationContractTest(unittest.TestCase):
         text = config_path.read_text(encoding="utf-8")
         self.assertNotIn("use_sim_time: False", text)
         params = yaml.safe_load(text)
-        planner = params["planner_server"]["ros__parameters"]["MincoPlanner"]
+        self.assertEqual(set(params), {"frames", "odometry", "vehicle", "planner", "controller"})
+        planner = params["planner"]
         self.assertFalse(planner["rog_map"]["projection"]["prior_map"]["enable"])
-        local_stvl = params["local_costmap"]["local_costmap"]["ros__parameters"][
-            "stvl_layer"
-        ]
-        self.assertEqual(local_stvl["mid360"]["topic"], "/cloud_registered")
-        controller = params["controller_server"]["ros__parameters"]["FollowPath"]
-        self.assertAlmostEqual(controller["lidar_offset_x"], 0.0)
-        self.assertAlmostEqual(controller["lidar_offset_y"], 0.0)
-        self.assertAlmostEqual(controller["lidar_roll_offset"], 0.0)
-        planner = params["planner_server"]["ros__parameters"]["MincoPlanner"]
-        self.assertAlmostEqual(planner["lidar_offset_x"], 0.0)
-        self.assertAlmostEqual(planner["lidar_offset_y"], 0.0)
-
-        local = params["local_costmap"]["local_costmap"]["ros__parameters"]
-        global_costmap = params["global_costmap"]["global_costmap"]["ros__parameters"]
-        self.assertEqual(
-            local["global_frame"],
-            "map",
-            "simulation goal checking must not timestamp-transform map paths through dynamic GICP TF",
-        )
-        expected_footprint = (
-            '[[0.30, 0.00], [0.296, 0.22], [0.274, 0.274], [0.22, 0.296], '
-            '[0.00, 0.32], [-0.22, 0.296], [-0.274, 0.274], [-0.296, 0.22], '
-            '[-0.30, 0.00], [-0.296, -0.22], [-0.274, -0.274], [-0.22, -0.296], '
-            '[0.00, -0.32], [0.22, -0.296], [0.274, -0.274], [0.296, -0.22]]'
-        )
-        self.assertEqual(local["footprint"], expected_footprint)
-        self.assertEqual(global_costmap["footprint"], expected_footprint)
-        self.assertGreaterEqual(local["inflation_layer"]["inflation_radius"], 0.50)
+        self.assertEqual(params["frames"], {"map": "map", "odom": "camera_init", "base": "base_link"})
+        model = ET.parse(PACKAGE_ROOT / "resource" / "models" / "sentry_omni" / "model.sdf").getroot().find("model")
+        base_pose = [float(v) for v in model.findtext("link[@name='base_link']/pose").split()]
+        imu_pose = [float(v) for v in model.findtext("link[@name='sim_lidar']/pose").split()]
+        # Fusion does not move the IMU. Point-LIO's planar navigation base
+        # preserves odom Z while offsetting XY to the chassis center.
+        sensor_xyz = params["odometry"]["sensor_in_base"]["xyz"]
+        self.assertEqual(sensor_xyz[:2], [imu_pose[i] - base_pose[i] for i in (0, 1)])
+        self.assertEqual(sensor_xyz[2], 0.0)
+        self.assertEqual(params["controller"]["q_cross"], 12.0)
         self.assertNotIn("corridor", planner)
         self.assertNotIn("use_nav2_global_search", planner["priormap"])
         self.assertNotIn("opt_freq", planner["minco_optimizer"])
         self.assertAlmostEqual(planner["minco_optimizer"]["safe_dist"], 0.45)
 
         projection = planner["rog_map"]["projection"]
-        self.assertAlmostEqual(projection["surface_height_delta_max"], 0.25)
-        self.assertAlmostEqual(projection["wall_height_delta_min"], 0.50)
-        self.assertAlmostEqual(projection["tunnel_height_delta_min"], 0.26)
+        self.assertAlmostEqual(projection["surface_height_delta_max"], 0.1)
+        self.assertAlmostEqual(projection["wall_height_delta_min"], 0.30)
+        self.assertAlmostEqual(projection["tunnel_height_delta_min"], 0.25)
         self.assertAlmostEqual(projection["obstacle_hold_time"], 0.0)
 
-    def test_behavior_trees_are_packaged_and_do_not_depend_on_source_cwd(self):
-        config_path = PACKAGE_ROOT / "config" / "nav2_sim.yaml"
-        params = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-        bt_params = params["bt_navigator"]["ros__parameters"]
-        for key in (
-            "default_nav_through_poses_bt_xml",
-            "default_nav_to_pose_bt_xml",
-        ):
-            configured_path = bt_params[key]
-            self.assertTrue(configured_path.startswith("<simulation_share>/behavior_tree/"))
-            packaged_path = PACKAGE_ROOT / configured_path.split("/behavior_tree/", 1)[1]
-            packaged_path = PACKAGE_ROOT / "behavior_tree" / packaged_path.name
-            self.assertTrue(packaged_path.is_file())
+        assembler_path = (
+            REPO_ROOT / "src" / "navigation" / "navi2_bringup" / "launch"
+            / "navigation_parameters.py"
+        )
+        spec = importlib.util.spec_from_file_location("navigation_parameters", assembler_path)
+        assembler = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(assembler)
+        resolved = assembler.load_navigation_parameters(
+            config_path,
+            REPO_ROOT / "src" / "navigation" / "navi2_bringup" / "params" / "nav2_host.yaml",
+            use_sim_time=True,
+        )
+        costmap = resolved["global_costmap"]["global_costmap"]["ros__parameters"]
+        self.assertNotIn("robot_radius", costmap)
+        self.assertEqual(yaml.safe_load(costmap["footprint"]), params["vehicle"]["footprint"])
+        self.assertNotIn(
+            "footprint",
+            resolved["planner_server"]["ros__parameters"]["MincoPlanner"]["minco"]["vehicle"],
+        )
 
-        launch_text = (
-            PACKAGE_ROOT / "launch" / "simulation.launch.py"
-        ).read_text(encoding="utf-8")
-        self.assertIn("ReplaceString", launch_text)
-        self.assertIn('"<simulation_share>": package_share', launch_text)
+    def test_simulation_forwards_selected_robot_file_without_relocating_it(self):
+        launch_path = PACKAGE_ROOT / "launch" / "simulation.launch.py"
+        spec = importlib.util.spec_from_file_location("sentry_simulation_launch", launch_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        resolve_share = module.get_package_share_directory
+        module.get_package_share_directory = lambda name: str(
+            REPO_ROOT / "src" / "navigation" / "navi2_bringup"
+        ) if name == "navi2" else resolve_share(name)
+        with TemporaryDirectory() as directory:
+            profile = Path(directory) / "robot profile.yaml"
+            profile.write_text((PACKAGE_ROOT / "config" / "nav2_sim.yaml").read_text())
+            context = LaunchContext()
+            context.launch_configurations.update({
+                "world": "rmuc_2024", "chassis_type": "omni", "headless": "true",
+                "rviz": "false", "use_icp": "false", "log_level": "info",
+                "params_file": str(profile),
+            })
+            actions = module._launch_setup(context, str(PACKAGE_ROOT))
+            navigation = next(action for action in actions
+                              if isinstance(action, IncludeLaunchDescription)
+                              and "params_file" in dict(action.launch_arguments))
+            arguments = dict(navigation.launch_arguments)
+            self.assertEqual(arguments["params_file"], str(profile))
+            self.assertEqual(arguments["use_sim_time"], "true")
+            self.assertIn("host_params_file", arguments)
+
+    def test_cmd_adapter_forwards_body_command_without_odometry_rotation(self):
+        source = (PACKAGE_ROOT / "sentry_simulation" / "cmd_vel_adapter.py").read_text()
+        self.assertNotIn("Odometry", source)
+        self.assertNotIn("adapt_command", source)
+        self.assertIn("self._publisher.publish(message)", source)
 
     def test_launch_runs_full_pipeline_without_communication(self):
         launch_path = PACKAGE_ROOT / "launch" / "simulation.launch.py"
@@ -1079,7 +1178,7 @@ class SimulationContractTest(unittest.TestCase):
         self.assertNotIn("package=\"communication\"", launch_text)
         self.assertNotIn("package='communication'", launch_text)
 
-    def test_launch_setup_instantiates_for_every_chassis_and_world(self):
+    def test_launch_setup_instantiates_omni_for_every_world_and_rejects_diff(self):
         launch_path = PACKAGE_ROOT / "launch" / "simulation.launch.py"
         spec = importlib.util.spec_from_file_location("sentry_simulation_launch", launch_path)
         module = importlib.util.module_from_spec(spec)
@@ -1097,27 +1196,31 @@ class SimulationContractTest(unittest.TestCase):
             }
             module.get_package_share_directory = lambda name: shares[name]
 
-            for chassis_type in ("omni", "diff"):
-                for world in (
+            for world in (
                     "rmuc_2024",
                     "rmul_2024",
                     "rmuc_2025",
                     "rmuc_2026",
                     "rmul_2025",
                 ):
-                    context = LaunchContext()
-                    context.launch_configurations.update(
-                        {
+                context = LaunchContext()
+                context.launch_configurations.update(
+                    {
                             "world": world,
-                            "chassis_type": chassis_type,
+                            "chassis_type": "omni",
                             "headless": "true",
                             "rviz": "false",
                             "use_icp": "true",
                             "log_level": "info",
-                        }
-                    )
-                    actions = module._launch_setup(context, str(PACKAGE_ROOT))
-                    self.assertGreaterEqual(len(actions), 10)
+                            "params_file": str(PACKAGE_ROOT / "config" / "nav2_sim.yaml"),
+                    }
+                )
+                actions = module._launch_setup(context, str(PACKAGE_ROOT))
+                self.assertGreaterEqual(len(actions), 10)
+
+            context.launch_configurations["chassis_type"] = "diff"
+            with self.assertRaisesRegex(RuntimeError, "navigation currently supports only"):
+                module._launch_setup(context, str(PACKAGE_ROOT))
 
     def test_pointcloud_adapter_preserves_simulation_contract(self):
         source_path = PACKAGE_ROOT / "src" / "pointcloud_adapter.cpp"

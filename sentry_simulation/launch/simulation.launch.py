@@ -2,24 +2,26 @@
 
 import math
 import os
+import importlib.util
+from pathlib import Path
 
 import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
-    ExecuteProcess,
     GroupAction,
     IncludeLaunchDescription,
     OpaqueFunction,
+    RegisterEventHandler,
     SetEnvironmentVariable,
 )
 from launch.conditions import IfCondition
+from launch.event_handlers import OnShutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import ComposableNodeContainer, Node
 from launch_ros.descriptions import ComposableNode
-from nav2_common.launch import ReplaceString
 
 
 def _as_bool(value: str) -> bool:
@@ -46,6 +48,11 @@ def _launch_setup(context, package_share):
 
     if chassis_type not in ("omni", "diff"):
         raise RuntimeError("chassis_type must be 'omni' or 'diff'")
+    if chassis_type != "omni":
+        raise RuntimeError(
+            "navigation currently supports only the omni vehicle model; "
+            "the differential simulator model remains available for non-navigation tests"
+        )
 
     worlds_config_path = os.path.join(package_share, "config", "worlds.yaml")
     with open(worlds_config_path, encoding="utf-8") as stream:
@@ -73,11 +80,18 @@ def _launch_setup(context, package_share):
         "scan_mode",
         "mid360-real-centr.csv",
     )
-    nav2_params_path = os.path.join(package_share, "config", "nav2_sim.yaml")
-    configured_nav2_params = ReplaceString(
-        source_file=nav2_params_path,
-        replacements={"<simulation_share>": package_share},
+    nav2_params_path = LaunchConfiguration("params_file").perform(context)
+    nav2_host_params = os.path.join(
+        get_package_share_directory("navi2"), "params", "nav2_host.yaml"
     )
+    assembler_path = Path(get_package_share_directory("navi2")) / "launch" / "navigation_parameters.py"
+    spec = importlib.util.spec_from_file_location("navigation_parameters", assembler_path)
+    assembler = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(assembler)
+    process_params_file = assembler.write_navigation_parameters(
+        assembler.load_navigation_parameters(nav2_params_path, nav2_host_params, use_sim_time=True))
+    cleanup_params = RegisterEventHandler(OnShutdown(on_shutdown=[OpaqueFunction(
+        function=lambda context: Path(process_params_file).unlink(missing_ok=True))]))
 
     x = float(spawn["x"])
     y = float(spawn["y"])
@@ -137,6 +151,10 @@ def _launch_setup(context, package_share):
         package="rclcpp_components",
         executable="component_container_mt",
         output="screen",
+        # Nested global_costmap reads process arguments, not PlannerServer's
+        # component-only overrides. Load the same robot contract before startup.
+        arguments=["--ros-args", "--params-file", process_params_file,
+                   "--remap", "/tf:=tf", "--remap", "/tf_static:=tf_static"],
         composable_node_descriptions=[
             ComposableNode(
                 package="sentry_simulation",
@@ -171,18 +189,6 @@ def _launch_setup(context, package_share):
         ],
     )
 
-    # Keep the synchronous planner callback out of the high-rate point-cloud
-    # executor.  A goal may trigger global search and MINCO optimization, so
-    # sharing this container can delay LiDAR/odom processing and make the
-    # simulation appear unresponsive.
-    planner_container = ComposableNodeContainer(
-        name="simulation_planner_container",
-        namespace="",
-        package="rclcpp_components",
-        executable="component_container_mt",
-        output="screen",
-    )
-
     navigation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
@@ -191,10 +197,11 @@ def _launch_setup(context, package_share):
         ),
         launch_arguments={
             "use_sim_time": "true",
-            "params_file": configured_nav2_params,
+            "params_file": nav2_params_path,
+            "host_params_file": nav2_host_params,
             "autostart": "true",
             "use_composition": "False",
-            "planner_container_name": "simulation_planner_container",
+            "planner_container_name": "livox_pointlio_container",
             "log_level": LaunchConfiguration("log_level"),
         }.items(),
     )
@@ -266,28 +273,27 @@ def _launch_setup(context, package_share):
             parameters=[{"use_sim_time": True}],
         ))
 
-    # RViz exposes the navigation goal tool before bt_navigator is active.
-    # Delay startup to avoid rejecting the first goal during lifecycle startup.
+    # Keep the diagnostic UI available while navigation is still initializing.
+    # A lifecycle service timeout must not prevent RViz from starting.
     rviz_config = os.path.join(get_package_share_directory("navi2"), "config", "our.rviz")
-    rviz = ExecuteProcess(
+    rviz = Node(
         condition=IfCondition(LaunchConfiguration("rviz")),
-        cmd=[
-            "bash", "-c",
-            "until ros2 lifecycle get /bt_navigator 2>/dev/null | grep -q '^active \\[3\\]'; "
-            f"do sleep 0.2; done; exec rviz2 -d '{rviz_config}' --ros-args -p use_sim_time:=true",
-        ],
+        package="rviz2",
+        executable="rviz2",
         name="rviz2",
+        arguments=["-d", rviz_config],
+        parameters=[{"use_sim_time": True}],
         output="screen",
     )
 
     return [
+        cleanup_params,
         *transport_actions,
         gazebo,
         spawn_robot,
         bridge,
         imu_filter,
         point_lio_container,
-        planner_container,
         *localization_actions,
         Node(
             package="nav2_map_server",
@@ -340,6 +346,10 @@ def generate_launch_description():
         DeclareLaunchArgument("rviz", default_value="true"),
         DeclareLaunchArgument("use_icp", default_value="true"),
         DeclareLaunchArgument("log_level", default_value="info"),
+        DeclareLaunchArgument(
+            "params_file", default_value=os.path.join(package_share, "config", "nav2_sim.yaml"),
+            description="Robot navigation profile; navi2 merges host parameters automatically",
+        ),
         GroupAction(
             actions=[OpaqueFunction(function=_launch_setup, args=[package_share])],
             scoped=True,
