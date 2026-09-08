@@ -142,7 +142,7 @@ git diff --check
 
 ### Checks performed
 
-Modifier 自检已执行，独立审计由父 Agent 安排：
+Modifier 自检后，root 已独立审阅最终提交并复核：
 
 - [x] 关键路径与单一关节所有权检查
 - [x] scoped diff / git diff --check
@@ -150,7 +150,7 @@ Modifier 自检已执行，独立审计由父 Agent 安排：
 - [x] XML 与几何/限制/传感器契约检查
 - [x] 6 项新静态测试、7 项既有纯 kinematics 测试
 - [x] 记录无 colcon 的原因；记录隔离物理进程、命令与原始失败/成功日志
-- [ ] 父 Agent 独立审阅最终提交
+- [x] 父 Agent 独立审阅最终提交
 
 ### Issues found
 
@@ -158,6 +158,10 @@ Modifier 自检已执行，独立审计由父 Agent 安排：
 
 ### Final result
 
-**PASS（Modifier 限域验证）；独立 Auditor 尚待父 Agent 审阅。**
+**PASS（独立复核完成，限定物理资产和本节平地测试）。**
+
+root 重跑 6 项模型测试与 `ign sdf -k`，均通过；逐项阅读模型、测试和当前入口。另从原始 JSONL 以正弦/余弦反演公式重算 58,778 个正式阶段关节样本，最大角 .4921305767318049、关节速率 .19799999926430426、中心速率 .2054851236637521，与探针结果一致。统计截止最后 `right_stop` 的 `phase_end`，随后 finally 停车收到的 1 条额外关节样本不混入原阶段统计。source SDF SHA 与 manifest 一致；重新检查 PGID 453064 仍无进程。
+
+独立核对脚本/结果及完整失败与成功轮均归档至 `/home/alioth/nature_will/validation_artifacts/20260908_minco_ackermann_foundation/physics`。后续正常运动参考暂取可跟踪中心速率 .13 rad/s；它与物理上界 .3 的含义不同，尤其全零回正不能假定限于 .13。
 
 未验收：MINCO Ack 规划/控制、正式 launch/YAML 路由、传感器点云/定位、障碍物环境、倒车/泊车、任意零速持角或真实车辆。没有推送、合并或创建 PR。
