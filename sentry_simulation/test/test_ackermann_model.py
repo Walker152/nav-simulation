@@ -1,0 +1,134 @@
+"""Static physical contracts for the standalone Ackermann asset (no ROS nodes)."""
+
+from pathlib import Path
+import math
+import unittest
+import xml.etree.ElementTree as ET
+
+
+MODELS = Path(__file__).resolve().parents[1] / "resource" / "models"
+
+
+def numbers(element, path):
+    return tuple(float(value) for value in element.findtext(path).split())
+
+
+class AckermannModelTest(unittest.TestCase):
+    def setUp(self):
+        path = MODELS / "sentry_ackermann" / "model.sdf"
+        self.assertTrue(path.is_file(), "standalone Ackermann model asset is missing")
+        self.model = ET.parse(path).getroot().find("model")
+        self.links = {link.get("name"): link for link in self.model.findall("link")}
+        self.joints = {joint.get("name"): joint for joint in self.model.findall("joint")}
+
+    def test_model_config_resolves_the_sdf_asset(self):
+        config = ET.parse(MODELS / "sentry_ackermann" / "model.config").getroot()
+        self.assertEqual(config.findtext("sdf"), "model.sdf")
+        self.assertEqual(self.model.get("name"), "sentry")
+        self.assertEqual(self.model.findtext("self_collide"), "false")
+
+    def test_rear_axle_origin_matches_plugin_geometry_and_round_wheels(self):
+        self.assertEqual(numbers(self.links["base_link"], "pose")[:2], (0.0, 0.0))
+        for name, xy in {
+            "rear_left_wheel": (0.0, 0.22), "rear_right_wheel": (0.0, -0.22),
+            "front_left_wheel": (0.44, 0.22), "front_right_wheel": (0.44, -0.22),
+        }.items():
+            with self.subTest(wheel=name):
+                wheel = self.links[name]
+                pose = numbers(wheel, "pose")
+                self.assertEqual(pose[:2], xy)
+                self.assertAlmostEqual(pose[2], 0.076)
+                self.assertAlmostEqual(pose[3], -math.pi / 2, places=8)
+                cylinder = wheel.find("collision/geometry/cylinder")
+                self.assertIsNotNone(cylinder, "a no-slip wheel cannot reuse the omni sphere")
+                self.assertAlmostEqual(float(cylinder.findtext("radius")), 0.076)
+                self.assertGreater(float(cylinder.findtext("length")), 0.0)
+                self.assertIsNone(wheel.find("collision/surface/friction/ode/fdir1"))
+        base = self.links["base_link"]
+        for path in ("inertial/pose", "collision/pose", "visual/pose"):
+            self.assertAlmostEqual(numbers(base, path)[0], 0.22)
+        drive = self.model.find("plugin[@name='ignition::gazebo::systems::AckermannSteering']")
+        self.assertIsNotNone(drive)
+        for key in ("wheel_base", "wheel_separation", "kingpin_width"):
+            self.assertAlmostEqual(float(drive.findtext(key)), 0.44)
+        self.assertAlmostEqual(float(drive.findtext("wheel_radius")), 0.076)
+
+    def test_front_wheels_roll_about_independent_steering_knuckles(self):
+        for side in ("left", "right"):
+            steer = self.joints[f"front_{side}_steering_joint"]
+            roll = self.joints[f"front_{side}_joint"]
+            self.assertEqual(steer.get("type"), "revolute")
+            self.assertEqual(steer.findtext("parent"), "base_link")
+            self.assertEqual(steer.findtext("child"), f"front_{side}_knuckle")
+            self.assertEqual(numbers(steer, "axis/xyz"), (0.0, 0.0, 1.0))
+            self.assertEqual(numbers(self.links[f"front_{side}_knuckle"], "pose")[3:], (0.0, 0.0, 0.0))
+            self.assertEqual(roll.get("type"), "revolute")
+            self.assertEqual(roll.findtext("parent"), f"front_{side}_knuckle")
+            self.assertEqual(roll.findtext("child"), f"front_{side}_wheel")
+            self.assertEqual(numbers(roll, "axis/xyz"), (0.0, 0.0, 1.0))
+        for joint in self.joints.values():
+            self.assertIn(joint.findtext("parent"), self.links)
+            self.assertIn(joint.findtext("child"), self.links)
+
+    def test_steering_limits_cover_inner_angle_and_conservatively_limit_center_rate(self):
+        drive = self.model.find("plugin[@name='ignition::gazebo::systems::AckermannSteering']")
+        effective_center_max = math.atan(math.sin(float(drive.findtext("steering_limit"))))
+        self.assertAlmostEqual(effective_center_max, 0.4, places=10)
+        # Independent planar Ackermann geometry; these limits concern physical joints.
+        t = math.tan(0.4)
+        inner_angle = math.atan(t / (1.0 - 0.5 * t))
+        for side in ("left", "right"):
+            limit = self.joints[f"front_{side}_steering_joint"].find("axis/limit")
+            lower, upper = float(limit.findtext("lower")), float(limit.findtext("upper"))
+            velocity, effort = float(limit.findtext("velocity")), float(limit.findtext("effort"))
+            self.assertLess(lower, -inner_angle)
+            self.assertGreater(upper, inner_angle)
+            self.assertLessEqual(upper, inner_angle + 0.05)
+            self.assertAlmostEqual(lower, -upper)
+            # Use the complete mechanical angular range conservatively, including
+            # clearance beyond the center command envelope. The outer-wheel
+            # Jacobian is the minimum over +/-upper for this geometry.
+            t_margin = math.tan(upper)
+            minimum_jacobian = (1.0 + t_margin * t_margin) / (
+                (1.0 + 0.5 * t_margin) ** 2 + t_margin * t_margin
+            )
+            self.assertGreater(velocity, 0.0)
+            self.assertLessEqual(velocity, 0.3 * minimum_jacobian * 0.99)
+            self.assertTrue(math.isfinite(effort) and effort > 0.0)
+
+    def test_only_official_ackermann_owns_rear_drive_and_front_steering(self):
+        actuator_plugins = [p for p in self.model.findall("plugin") if any(
+            name in p.get("name", "") for name in
+            ("Drive", "AckermannSteering", "JointController", "JointPositionController")
+        )]
+        self.assertEqual(len(actuator_plugins), 1, "each joint must have a single command owner")
+        drive = actuator_plugins[0]
+        self.assertEqual(drive.get("name"), "ignition::gazebo::systems::AckermannSteering")
+        self.assertEqual(drive.findtext("left_joint"), "rear_left_joint")
+        self.assertEqual(drive.findtext("right_joint"), "rear_right_joint")
+        self.assertEqual(drive.findtext("left_steering_joint"), "front_left_steering_joint")
+        self.assertEqual(drive.findtext("right_steering_joint"), "front_right_steering_joint")
+        self.assertEqual(drive.findtext("topic"), "/sentry/cmd_vel")
+        state = self.model.find("plugin[@name='ignition::gazebo::systems::JointStatePublisher']")
+        self.assertIsNotNone(state)
+        self.assertEqual({node.text for node in state.findall("joint_name")}, {
+            "front_left_steering_joint", "front_right_steering_joint",
+        })
+        self.assertEqual(state.findtext("topic"), "/sentry/steering_joint_state")
+        self.assertIsNone(state.find("update_rate"), "installed Gazebo 6.18 does not read update_rate")
+
+    def test_sensor_extrinsics_and_measurement_contract_match_omni(self):
+        omni = ET.parse(MODELS / "sentry_omni" / "model.sdf").getroot().find("model")
+        for name in ("sim_lidar", "sim_lidar_left", "sim_lidar_right"):
+            original = omni.find(f"link[@name='{name}']")
+            self.assertEqual(ET.tostring(self.links[name]), ET.tostring(original))
+        self.assertEqual(numbers(self.links["sim_lidar"], "pose")[:2], (0.0, -0.2))
+        odometry = self.model.find("plugin[@name='ignition::gazebo::systems::OdometryPublisher']")
+        self.assertIsNotNone(odometry)
+        self.assertEqual(odometry.findtext("odom_topic"), "/sentry/ground_truth_odometry")
+        self.assertEqual(odometry.findtext("robot_base_frame"), "sentry/base_link")
+        self.assertEqual(odometry.findtext("dimensions"), "3")
+
+
+if __name__ == "__main__":
+    unittest.main()
