@@ -23,6 +23,7 @@ from launch.actions import (
 )
 from launch.event_handlers import OnProcessExit
 from launch_ros.substitutions import ExecutableInPackage
+from launch_ros.utilities import evaluate_parameters
 from launch.utilities import perform_substitutions
 import yaml
 
@@ -538,8 +539,6 @@ class SimulationContractTest(unittest.TestCase):
         for token in (
             "pattern_file",
             "mid360-real-centr.csv",
-            '"pattern_points_per_frame": 20000',
-            '"sync_tolerance_ms": 5.0',
             '"scan_period": 0.1',
         ):
             self.assertIn(token, launch_source)
@@ -1327,6 +1326,29 @@ class SimulationContractTest(unittest.TestCase):
                           if isinstance(action, IncludeLaunchDescription)
                           and "params_file" in dict(action.launch_arguments))
         self.assertEqual(dict(navigation.launch_arguments)["params_file"], str(profile))
+
+    def test_snapshot_adapter_cadence_follows_the_resolved_vehicle(self):
+        ack = SOURCE_ROOT / "navigation/navi2_bringup/params/ackermann_prototype.yaml"
+        for profile, chassis, points, tolerance in (
+                (ack, "", 2000, 0.0), ("", "ackermann", 2000, 0.0),
+                ("", "omni", 20000, 5.0)):
+            with self.subTest(profile=str(profile), chassis=chassis):
+                _, actions, _ = self._ack_launch(profile, chassis)
+                container = next(action for action in actions if isinstance(action, dict)
+                                 and action.get("name") == "livox_pointlio_container")
+                context = LaunchContext()
+                components = {perform_substitutions(context, node.node_name): node
+                              for node in container["composable_node_descriptions"]}
+                parameters, = evaluate_parameters(context, components["pointcloud_adapter"].parameters)
+                self.assertEqual((parameters["pattern_points_per_frame"],
+                                  parameters["sync_tolerance_ms"]), (points, tolerance))
+                self.assertIs(type(parameters["pattern_points_per_frame"]), int)
+                self.assertIs(type(parameters["sync_tolerance_ms"]), float)
+                self.assertEqual(parameters["scan_period"], 0.1)
+                self.assertEqual(parameters["output_topic"], "/livox/lidar")
+                self.assertEqual(parameters["output_frame_id"], "sim_lidar")
+                self.assertEqual(evaluate_parameters(context, components["laserMapping"].parameters),
+                                 (PACKAGE_ROOT / "config/point_lio_sim.yaml",))
 
     def test_ack_legacy_selector_requires_the_same_profile_model(self):
         ack = SOURCE_ROOT / "navigation/navi2_bringup/params/ackermann_prototype.yaml"

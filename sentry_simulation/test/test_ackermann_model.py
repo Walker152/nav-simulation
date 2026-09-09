@@ -117,10 +117,18 @@ class AckermannModelTest(unittest.TestCase):
         self.assertEqual(state.findtext("topic"), "/sentry/steering_joint_state")
         self.assertIsNone(state.find("update_rate"), "installed Gazebo 6.18 does not read update_rate")
 
-    def test_sensor_extrinsics_and_measurement_contract_match_omni(self):
+    def test_sensor_geometry_and_imu_contract_match_omni(self):
         omni = ET.parse(MODELS / "sentry_omni" / "model.sdf").getroot().find("model")
         for name in ("sim_lidar", "sim_lidar_left", "sim_lidar_right"):
             original = omni.find(f"link[@name='{name}']")
+            # Only the GPU sampling cadence/grid differs. Compare every other
+            # sensor, mount, collision, FOV and range value, including the IMU.
+            for link in (self.links[name], original):
+                for sensor in link.findall("sensor[@type='gpu_lidar']"):
+                    sensor.remove(sensor.find("update_rate"))
+                    for axis in ("horizontal", "vertical"):
+                        scan = sensor.find(f"lidar/scan/{axis}")
+                        scan.remove(scan.find("samples"))
             self.assertEqual(ET.tostring(self.links[name]), ET.tostring(original))
         self.assertEqual(numbers(self.links["sim_lidar"], "pose")[:2], (0.0, -0.2))
         odometry = self.model.find("plugin[@name='ignition::gazebo::systems::OdometryPublisher']")
@@ -128,6 +136,24 @@ class AckermannModelTest(unittest.TestCase):
         self.assertEqual(odometry.findtext("odom_topic"), "/sentry/ground_truth_odometry")
         self.assertEqual(odometry.findtext("robot_base_frame"), "sentry/base_link")
         self.assertEqual(odometry.findtext("dimensions"), "3")
+
+    def test_ack_snapshot_cadence_keeps_the_omni_ray_budget(self):
+        for model, expected in ((self.model, (100, 120, 36)), (
+                ET.parse(MODELS / "sentry_omni" / "model.sdf").getroot().find("model"),
+                (10, 360, 120))):
+            sensors = model.findall(".//sensor[@type='gpu_lidar']")
+            self.assertEqual(len(sensors), 4)
+            rays_per_second = 0
+            for sensor in sensors:
+                with self.subTest(sensor=sensor.get("name"), cadence=expected[0]):
+                    sampling = tuple(int(sensor.findtext(path)) for path in (
+                        "update_rate", "lidar/scan/horizontal/samples",
+                        "lidar/scan/vertical/samples"))
+                    rays_per_second += math.prod(sampling)
+                    self.assertEqual(sampling, expected)
+                    for axis in ("horizontal", "vertical"):
+                        self.assertEqual(float(sensor.findtext(f"lidar/scan/{axis}/resolution")), 1.0)
+            self.assertEqual(rays_per_second, 1_728_000)
 
 
 if __name__ == "__main__":
