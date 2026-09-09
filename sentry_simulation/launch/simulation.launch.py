@@ -46,11 +46,11 @@ def _launch_setup(context, package_share):
     headless = _as_bool(LaunchConfiguration("headless").perform(context))
     use_icp = _as_bool(LaunchConfiguration("use_icp").perform(context))
 
-    if chassis_type not in ("omni", "diff"):
-        raise RuntimeError("chassis_type must be 'omni' or 'diff'")
-    if chassis_type != "omni":
+    if chassis_type not in ("", "omni", "ackermann", "diff"):
+        raise RuntimeError("chassis_type must be empty, 'omni', or 'ackermann'")
+    if chassis_type == "diff":
         raise RuntimeError(
-            "navigation currently supports only the omni vehicle model; "
+            "navigation currently supports only omni and ackermann vehicle models; "
             "the differential simulator model remains available for non-navigation tests"
         )
 
@@ -66,9 +66,6 @@ def _launch_setup(context, package_share):
     spawn = world_config["spawn"]
     world_path = os.path.join(package_share, world_config["world"])
     map_path = os.path.join(package_share, world_config["map"])
-    model_path = os.path.join(
-        package_share, "resource", "models", f"sentry_{chassis_type}", "model.sdf"
-    )
     bridge_path = os.path.join(package_share, "config", "ros_gz_bridge.yaml")
     point_lio_path = os.path.join(package_share, "config", "point_lio_sim.yaml")
     gicp_path = os.path.join(package_share, "config", "gicp_sim.yaml")
@@ -81,6 +78,9 @@ def _launch_setup(context, package_share):
         "mid360-real-centr.csv",
     )
     nav2_params_path = LaunchConfiguration("params_file").perform(context)
+    if not nav2_params_path:
+        profile = "nav2_ackermann_sim.yaml" if chassis_type == "ackermann" else "nav2_sim.yaml"
+        nav2_params_path = os.path.join(package_share, "config", profile)
     nav2_host_params = os.path.join(
         get_package_share_directory("navi2"), "params", "nav2_host.yaml"
     )
@@ -88,8 +88,18 @@ def _launch_setup(context, package_share):
     spec = importlib.util.spec_from_file_location("navigation_parameters", assembler_path)
     assembler = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(assembler)
-    process_params_file = assembler.write_navigation_parameters(
-        assembler.load_navigation_parameters(nav2_params_path, nav2_host_params, use_sim_time=True))
+    resolved_params = assembler.load_navigation_parameters(
+        nav2_params_path, nav2_host_params, use_sim_time=True)
+    # The selected robot profile owns the model. The legacy selector may choose
+    # a default profile, but must never silently override its vehicle contract.
+    vehicle_model = resolved_params["planner_server"]["ros__parameters"][
+        "MincoPlanner"]["minco"]["vehicle"]["model"]
+    if chassis_type and chassis_type != vehicle_model:
+        raise RuntimeError(
+            f"chassis_type '{chassis_type}' does not match vehicle.model '{vehicle_model}'")
+    model_path = os.path.join(
+        package_share, "resource", "models", f"sentry_{vehicle_model}", "model.sdf")
+    process_params_file = assembler.write_navigation_parameters(resolved_params)
     cleanup_params = RegisterEventHandler(OnShutdown(on_shutdown=[OpaqueFunction(
         function=lambda context: Path(process_params_file).unlink(missing_ok=True))]))
 
@@ -319,7 +329,7 @@ def _launch_setup(context, package_share):
             executable="sentry_sim_cmd_adapter",
             name="sentry_sim_cmd_adapter",
             output="screen",
-            parameters=[{"use_sim_time": True, "chassis_type": chassis_type}],
+            parameters=[{"use_sim_time": True, "chassis_type": vehicle_model}],
         ),
         rviz,
     ]
@@ -340,15 +350,16 @@ def generate_launch_description():
             description="rmuc_2024, rmul_2024, rmuc_2025, rmuc_2026, or rmul_2025",
         ),
         DeclareLaunchArgument(
-            "chassis_type", default_value="omni", description="omni or diff"
+            "chassis_type", default_value="",
+            description="Optional omni/ackermann profile selector; must match vehicle.model"
         ),
         DeclareLaunchArgument("headless", default_value="false"),
         DeclareLaunchArgument("rviz", default_value="true"),
         DeclareLaunchArgument("use_icp", default_value="true"),
         DeclareLaunchArgument("log_level", default_value="info"),
         DeclareLaunchArgument(
-            "params_file", default_value=os.path.join(package_share, "config", "nav2_sim.yaml"),
-            description="Robot navigation profile; navi2 merges host parameters automatically",
+            "params_file", default_value="",
+            description="Robot profile; empty selects the legacy chassis profile (default omni)",
         ),
         GroupAction(
             actions=[OpaqueFunction(function=_launch_setup, args=[package_share])],

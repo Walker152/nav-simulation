@@ -19,8 +19,8 @@ class SentrySimCmdAdapter(Node):
         self.declare_parameter("command_timeout", 0.25)
 
         self._chassis_type = str(self.get_parameter("chassis_type").value)
-        if self._chassis_type != "omni":
-            raise ValueError("navigation command forwarding currently supports only omni")
+        if self._chassis_type not in ("omni", "ackermann"):
+            raise ValueError("navigation command forwarding supports only omni and ackermann")
         self._command_timeout = float(self.get_parameter("command_timeout").value)
         if self._command_timeout <= 0.0:
             raise ValueError("command_timeout must be positive")

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from contextlib import ExitStack
 from pathlib import Path
 import importlib.util
 import json
@@ -8,6 +9,8 @@ import os
 import signal
 import struct
 import subprocess
+import sys
+from types import SimpleNamespace
 from tempfile import TemporaryDirectory
 import time
 import unittest
@@ -24,8 +27,9 @@ from launch.utilities import perform_substitutions
 import yaml
 
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
-SIM_ROOT = REPO_ROOT / "src" / "simulation"
+SOURCE_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = SOURCE_ROOT.parent
+SIM_ROOT = SOURCE_ROOT / "simulation"
 PACKAGE_ROOT = SIM_ROOT / "sentry_simulation"
 
 
@@ -70,7 +74,7 @@ class SimulationContractTest(unittest.TestCase):
         resolve_share = module.get_package_share_directory
         source_shares = {
             "sentry_simulation": PACKAGE_ROOT,
-            "navi2": REPO_ROOT / "src" / "navigation" / "navi2_bringup",
+            "navi2": SOURCE_ROOT / "navigation" / "navi2_bringup",
         }
         module.get_package_share_directory = lambda name: str(
             source_shares[name]
@@ -190,7 +194,7 @@ class SimulationContractTest(unittest.TestCase):
         environment.pop("AMENT_TRACE_SETUP_FILES", None)
         result = subprocess.run(
             [
-                str(REPO_ROOT / "src" / "scripts" / "simlation.bash"),
+                str(SOURCE_ROOT / "scripts" / "simlation.bash"),
                 "omni",
                 "rmuc_2025",
                 "--check",
@@ -207,7 +211,7 @@ class SimulationContractTest(unittest.TestCase):
     def test_shell_preflight_accepts_options_before_positionals(self):
         result = subprocess.run(
             [
-                str(REPO_ROOT / "src" / "scripts" / "simlation.bash"),
+                str(SOURCE_ROOT / "scripts" / "simlation.bash"),
                 "--check",
                 "--headless",
                 "--no-rviz",
@@ -226,7 +230,7 @@ class SimulationContractTest(unittest.TestCase):
 
     def test_required_entrypoints_exist(self):
         required = [
-            REPO_ROOT / "src" / "scripts" / "simlation.bash",
+            SOURCE_ROOT / "scripts" / "simlation.bash",
             SIM_ROOT / "README.md",
             PACKAGE_ROOT / "package.xml",
             PACKAGE_ROOT / "CMakeLists.txt",
@@ -239,7 +243,7 @@ class SimulationContractTest(unittest.TestCase):
         self.assertEqual(missing, [], f"missing simulation entrypoints: {missing}")
 
     def test_shell_entrypoint_checks_the_complete_runtime_overlay(self):
-        script = (REPO_ROOT / "src" / "scripts" / "simlation.bash").read_text(encoding="utf-8")
+        script = (SOURCE_ROOT / "scripts" / "simlation.bash").read_text(encoding="utf-8")
         for package in (
             "sentry_simulation",
             "ros_gz_sim",
@@ -553,7 +557,7 @@ class SimulationContractTest(unittest.TestCase):
         spec.loader.exec_module(module)
         resolve_share = module.get_package_share_directory
         module.get_package_share_directory = lambda name: str(
-            REPO_ROOT / "src" / "navigation" / "navi2_bringup"
+            SOURCE_ROOT / "navigation" / "navi2_bringup"
         ) if name == "navi2" else resolve_share(name)
         context = LaunchContext()
         context.launch_configurations.update({
@@ -622,7 +626,7 @@ class SimulationContractTest(unittest.TestCase):
             module.get_package_share_directory = lambda name: str(directory)
             # The simulation now assembles nested costmap parameters before
             # creating its lidar container. Keep that real boundary in this probe.
-            navigation_share = REPO_ROOT / "src" / "navigation" / "navi2_bringup"
+            navigation_share = SOURCE_ROOT / "navigation" / "navi2_bringup"
             for relative in ("launch/navigation_parameters.py", "params/nav2_host.yaml"):
                 target = directory / relative
                 target.parent.mkdir(parents=True, exist_ok=True)
@@ -1114,7 +1118,7 @@ class SimulationContractTest(unittest.TestCase):
         self.assertAlmostEqual(projection["obstacle_hold_time"], 0.0)
 
         assembler_path = (
-            REPO_ROOT / "src" / "navigation" / "navi2_bringup" / "launch"
+            SOURCE_ROOT / "navigation" / "navi2_bringup" / "launch"
             / "navigation_parameters.py"
         )
         spec = importlib.util.spec_from_file_location("navigation_parameters", assembler_path)
@@ -1122,7 +1126,7 @@ class SimulationContractTest(unittest.TestCase):
         spec.loader.exec_module(assembler)
         resolved = assembler.load_navigation_parameters(
             config_path,
-            REPO_ROOT / "src" / "navigation" / "navi2_bringup" / "params" / "nav2_host.yaml",
+            SOURCE_ROOT / "navigation" / "navi2_bringup" / "params" / "nav2_host.yaml",
             use_sim_time=True,
         )
         costmap = resolved["global_costmap"]["global_costmap"]["ros__parameters"]
@@ -1140,7 +1144,7 @@ class SimulationContractTest(unittest.TestCase):
         spec.loader.exec_module(module)
         resolve_share = module.get_package_share_directory
         module.get_package_share_directory = lambda name: str(
-            REPO_ROOT / "src" / "navigation" / "navi2_bringup"
+            SOURCE_ROOT / "navigation" / "navi2_bringup"
         ) if name == "navi2" else resolve_share(name)
         with TemporaryDirectory() as directory:
             profile = Path(directory) / "robot profile.yaml"
@@ -1191,7 +1195,7 @@ class SimulationContractTest(unittest.TestCase):
             )
             shares = {
                 "ros_gz_sim": str(fake_ros_gz_share),
-                "navi2": str(REPO_ROOT / "src" / "navigation" / "navi2_bringup"),
+                "navi2": str(SOURCE_ROOT / "navigation" / "navi2_bringup"),
             }
             module.get_package_share_directory = lambda name: shares[name]
 
@@ -1269,6 +1273,186 @@ class SimulationContractTest(unittest.TestCase):
             source,
             "an instantaneous Gazebo depth snapshot must not be assigned a fake scan sweep",
         )
+
+
+    def _ack_launch(self, profile, chassis=""):
+        spec = importlib.util.spec_from_file_location(
+            "sentry_ack_launch", PACKAGE_ROOT / "launch" / "simulation.launch.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        resolve = module.get_package_share_directory
+        module.get_package_share_directory = lambda name: str(
+            SOURCE_ROOT / "navigation" / "navi2_bringup"
+        ) if name == "navi2" else resolve(name)
+        context = LaunchContext()
+        context.launch_configurations.update({
+            "world": "rmuc_2024", "chassis_type": chassis, "headless": "true",
+            "rviz": "false", "use_icp": "false", "log_level": "info",
+            "params_file": str(profile),
+        })
+        nodes, containers = [], []
+        # Only intercept process creation. Real launch setup/assembler writes the
+        # process YAML, including parameters inherited by nested global_costmap.
+        with patch.object(module, "Node", side_effect=lambda **kw: nodes.append(kw) or kw), \
+                patch.object(module, "ComposableNodeContainer",
+                             side_effect=lambda **kw: containers.append(kw) or kw):
+            actions = module._launch_setup(context, str(PACKAGE_ROOT))
+        argv = containers[0]["arguments"]
+        parameter_file = Path(argv[argv.index("--params-file") + 1])
+        try:
+            resolved = yaml.safe_load(parameter_file.read_text())
+        finally:
+            parameter_file.unlink()
+        return nodes, actions, resolved
+
+    def test_ack_profile_drives_model_adapter_and_nested_costmap(self):
+        # Existing valid Ack profile establishes actual launch behavior before
+        # the new online profile is added; this input is not a physics fixture.
+        profile = SOURCE_ROOT / "navigation/navi2_bringup/params/ackermann_prototype.yaml"
+        nodes, actions, resolved = self._ack_launch(profile)
+        spawn = next(node for node in nodes if node.get("name") == "spawn_sentry")
+        self.assertEqual(Path(spawn["arguments"][1]).parent.name, "sentry_ackermann")
+        adapter = [node for node in nodes if node.get("executable") == "sentry_sim_cmd_adapter"]
+        self.assertEqual(len(adapter), 1)
+        self.assertEqual(adapter[0]["parameters"][0]["chassis_type"], "ackermann")
+        planner = resolved["planner_server"]["ros__parameters"]["MincoPlanner"]
+        controller = resolved["controller_server"]["ros__parameters"]["FollowPath"]
+        self.assertEqual(planner["minco"], controller["minco"])
+        self.assertEqual(planner["minco"]["vehicle"]["model"], "ackermann")
+        costmap = resolved["global_costmap"]["global_costmap"]["ros__parameters"]
+        self.assertEqual(json.loads(costmap["footprint"]),
+                         [[-.083, -.276], [.519, -.276], [.519, .276], [-.083, .276]])
+        self.assertTrue(costmap["track_unknown_space"])
+        navigation = next(action for action in actions
+                          if isinstance(action, IncludeLaunchDescription)
+                          and "params_file" in dict(action.launch_arguments))
+        self.assertEqual(dict(navigation.launch_arguments)["params_file"], str(profile))
+
+    def test_ack_legacy_selector_requires_the_same_profile_model(self):
+        ack = SOURCE_ROOT / "navigation/navi2_bringup/params/ackermann_prototype.yaml"
+        omni = PACKAGE_ROOT / "config/nav2_sim.yaml"
+        self._ack_launch(ack, "ackermann")
+        for profile, chassis in ((ack, "omni"), (omni, "ackermann")):
+            with self.subTest(chassis=chassis), self.assertRaisesRegex(RuntimeError, "does not match"):
+                self._ack_launch(profile, chassis)
+        with self.assertRaises(RuntimeError):
+            self._ack_launch(omni, "diff")
+
+    def test_ack_online_profile_uses_estimated_registered_input_and_real_joints(self):
+        nodes, _, resolved = self._ack_launch("", "ackermann")
+        planner = resolved["planner_server"]["ros__parameters"]["MincoPlanner"]
+        controller = resolved["controller_server"]["ros__parameters"]["FollowPath"]
+        common = planner["minco"]
+        self.assertEqual(common["frames"], {"map_frame": "map", "odom_frame": "camera_init", "base_frame": "base_link"})
+        self.assertEqual(common["odom_topic"], "/aft_mapped_to_init")
+        self.assertEqual(common["odom_child_frame"], "body")
+        self.assertEqual(common["sensor_in_base"]["xyz"], [0., -.2, 0.])
+        callback = planner["rog_map"]["ros_callback"]
+        self.assertEqual(callback["odom_topic"], common["odom_topic"])
+        self.assertTrue(callback["enable"])
+        self.assertEqual(callback["cloud_topic"], "/cloud_registered_full")
+        self.assertEqual(callback["update_period_ms"], 100)
+        self.assertFalse(planner["rog_map"]["projection"]["prior_map"]["enable"])
+        model = ET.parse(PACKAGE_ROOT / "resource/models/sentry_ackermann/model.sdf")
+        drive = model.find(".//plugin[@name='ignition::gazebo::systems::AckermannSteering']")
+        geometry = common["vehicle"]["ackermann"]
+        self.assertEqual(geometry["wheel_base"], float(drive.findtext("wheel_base")))
+        self.assertEqual(geometry["front_track"], float(drive.findtext("kingpin_width")))
+        feedback = controller["ackermann"]["feedback"]
+        self.assertEqual(feedback["topic"], "/sim/steering_joint_states")
+        self.assertEqual(feedback["left_joint"], "front_left_steering_joint")
+        self.assertEqual(feedback["right_joint"], "front_right_steering_joint")
+        self.assertEqual(planner["ackermann"]["stationary"], controller["ackermann"]["stationary"])
+        self.assertEqual([node["name"] for node in nodes].count("sentry_sim_cmd_adapter"), 1)
+
+    def test_ack_bridge_has_one_real_joint_mapping_and_one_command_sink(self):
+        entries = yaml.safe_load((PACKAGE_ROOT / "config/ros_gz_bridge.yaml").read_text())
+        joints = [entry for entry in entries if entry["ros_topic_name"] == "/sim/steering_joint_states"]
+        self.assertEqual(joints, [{"ros_topic_name": "/sim/steering_joint_states",
+            "gz_topic_name": "/sentry/steering_joint_state", "ros_type_name": "sensor_msgs/msg/JointState",
+            "gz_type_name": "ignition.msgs.Model", "direction": "GZ_TO_ROS"}])
+        commands = [entry for entry in entries if entry["gz_topic_name"] == "/sentry/cmd_vel"]
+        self.assertEqual(len(commands), 1)
+        self.assertEqual(commands[0]["ros_topic_name"], "/sim/cmd_vel")
+        self.assertEqual(commands[0]["direction"], "ROS_TO_GZ")
+
+    def test_ack_adapter_preserves_command_and_timeout_without_ros_node(self):
+        from geometry_msgs.msg import Twist
+        from rclpy.node import Node
+        spec = importlib.util.spec_from_file_location(
+            "sentry_ack_adapter", PACKAGE_ROOT / "sentry_simulation/cmd_vel_adapter.py")
+        module = importlib.util.module_from_spec(spec)
+        with patch.object(sys, "path", [str(PACKAGE_ROOT), *sys.path]):
+            spec.loader.exec_module(module)
+        clock = SimpleNamespace(nanoseconds=1_000_000_000)
+        sent, timers, subscriptions, publishers = [], [], [], []
+        values = {"chassis_type": "ackermann"}
+        # Only replace ROS transport/lifetime facilities; execute the real
+        # constructor, callback, clock arithmetic and watchdog state machine.
+        with ExitStack() as stack:
+            replacements = {
+                "__init__": lambda self, name: None,
+                "declare_parameter": lambda self, key, value: values.setdefault(key, value),
+                "get_parameter": lambda self, key: SimpleNamespace(value=values[key]),
+                "create_publisher": lambda self, typ, topic, depth:
+                    publishers.append((typ, topic, depth)) or SimpleNamespace(publish=sent.append),
+                "create_subscription": lambda self, typ, topic, callback, depth:
+                    subscriptions.append((typ, topic, callback, depth)),
+                "create_timer": lambda self, period, callback: timers.append((period, callback)),
+                "get_clock": lambda self: SimpleNamespace(now=lambda: clock),
+                "get_logger": lambda self: SimpleNamespace(warning=lambda message: None),
+            }
+            for name, value in replacements.items():
+                stack.enter_context(patch.object(Node, name, value))
+            adapter = module.SentrySimCmdAdapter()
+            command = Twist()
+            command.linear.x = .23
+            command.angular.z = -.11
+            subscriptions[0][2](command)
+            self.assertIs(sent[0], command)
+            self.assertEqual(publishers, [(Twist, "/sim/cmd_vel", 10)])
+            self.assertEqual(subscriptions[0][1], "/cmd_vel_mpc")
+            self.assertEqual(timers[0][0], .05)
+            clock.nanoseconds = 1_249_000_000
+            timers[0][1]()
+            self.assertEqual(len(sent), 1)
+            clock.nanoseconds = 1_251_000_000
+            timers[0][1]()
+            self.assertEqual(sent[-1], Twist())
+            timers[0][1]()
+            self.assertEqual(len(sent), 2)
+            values["chassis_type"] = "diff"
+            with self.assertRaises(ValueError):
+                module.SentrySimCmdAdapter()
+
+    def test_ack_shell_passes_selected_profile_without_starting_ros(self):
+        with TemporaryDirectory(prefix="ack shell ") as directory:
+            workspace = Path(directory)
+            script = workspace / "src/scripts/simlation.bash"
+            script.parent.mkdir(parents=True)
+            script.write_bytes((SOURCE_ROOT / "scripts/simlation.bash").read_bytes())
+            script.chmod(0o755)
+            (workspace / "install").mkdir()
+            fake_bin = workspace / "bin"
+            fake_bin.mkdir()
+            output = workspace / "argv.json"
+            ros2 = fake_bin / "ros2"
+            ros2.write_text("#!/usr/bin/python3\nimport json, sys\nfrom pathlib import Path\n"
+                "if sys.argv[1] == 'launch':\n"
+                f"    Path({str(output)!r}).write_text(json.dumps(sys.argv[1:]))\n")
+            ros2.chmod(0o755)
+            (workspace / "install/setup.bash").write_text(f'export PATH="{fake_bin}:$PATH"\n')
+            for args, expected in ((["ackermann", "rmuc_2024", "--headless"], None),
+                                   (["--params-file", str(workspace / "custom profile.yaml"),
+                                     "--headless"], str(workspace / "custom profile.yaml"))):
+                output.unlink(missing_ok=True)
+                result = subprocess.run([str(script), *args], capture_output=True, text=True, timeout=10)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                argv = json.loads(output.read_text())
+                selected = next(arg.partition(":=")[2] for arg in argv if arg.startswith("params_file:="))
+                self.assertEqual(selected, expected or str(workspace / "src/simulation/sentry_simulation/config/nav2_ackermann_sim.yaml"))
+                chassis = next(arg.partition(":=")[2] for arg in argv if arg.startswith("chassis_type:="))
+                self.assertEqual(chassis, "ackermann" if expected is None else "")
 
 
 if __name__ == "__main__":

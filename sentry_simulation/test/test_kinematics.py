@@ -6,15 +6,7 @@ from pathlib import Path
 import unittest
 
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
-KINEMATICS_PATH = (
-    REPO_ROOT
-    / "src"
-    / "simulation"
-    / "sentry_simulation"
-    / "sentry_simulation"
-    / "kinematics.py"
-)
+KINEMATICS_PATH = Path(__file__).resolve().parents[1] / "sentry_simulation" / "kinematics.py"
 
 
 def load_kinematics_module():
