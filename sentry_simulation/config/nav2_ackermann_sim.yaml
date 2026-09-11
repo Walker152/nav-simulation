@@ -14,7 +14,7 @@ frames:
 odometry:
   topic: /aft_mapped_to_init
   child_frame: body
-  timeout: 0.05
+  timeout: 0.5
   sensor_in_base:
     xyz:
     - 0.0
