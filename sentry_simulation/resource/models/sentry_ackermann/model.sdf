@@ -121,20 +121,20 @@
       <visual name="visual"><pose>0 0 0 0 0 3.14159265359</pose><geometry><mesh><uri>model://mid360/meshes/mid360.dae</uri></mesh></geometry></visual>
       <sensor name="sim_lidar_left_front" type="gpu_lidar">
         <pose>0 0 0.03 0 0 0</pose>
-        <topic>/sim/lidar/left/front</topic><update_rate>100</update_rate><always_on>true</always_on><visualize>false</visualize>
+        <topic>/sim/lidar/left/front</topic><update_rate>10</update_rate><always_on>true</always_on><visualize>false</visualize>
         <ignition_frame_id>sim_lidar_left</ignition_frame_id>
         <lidar>
-          <scan><horizontal><samples>120</samples><resolution>1</resolution><min_angle>-1.57079632679</min_angle><max_angle>1.57079632679</max_angle></horizontal><vertical><samples>36</samples><resolution>1</resolution><min_angle>-0.1274090354</min_angle><max_angle>0.9128076904</max_angle></vertical></scan>
+          <scan><horizontal><samples>360</samples><resolution>1</resolution><min_angle>-1.57079632679</min_angle><max_angle>1.57079632679</max_angle></horizontal><vertical><samples>120</samples><resolution>1</resolution><min_angle>-0.1274090354</min_angle><max_angle>0.9128076904</max_angle></vertical></scan>
           <range><min>0.10</min><max>40.0</max><resolution>0.01</resolution></range>
           <noise><type>gaussian</type><mean>0.0</mean><stddev>0.0</stddev></noise>
         </lidar>
       </sensor>
       <sensor name="sim_lidar_left_rear" type="gpu_lidar">
         <pose>0 0 0.03 0 0 3.14159265359</pose>
-        <topic>/sim/lidar/left/rear</topic><update_rate>100</update_rate><always_on>true</always_on><visualize>false</visualize>
+        <topic>/sim/lidar/left/rear</topic><update_rate>10</update_rate><always_on>true</always_on><visualize>false</visualize>
         <ignition_frame_id>sim_lidar_left</ignition_frame_id>
         <lidar>
-          <scan><horizontal><samples>120</samples><resolution>1</resolution><min_angle>-1.57079632679</min_angle><max_angle>1.57079632679</max_angle></horizontal><vertical><samples>36</samples><resolution>1</resolution><min_angle>-0.1274090354</min_angle><max_angle>0.9128076904</max_angle></vertical></scan>
+          <scan><horizontal><samples>360</samples><resolution>1</resolution><min_angle>-1.57079632679</min_angle><max_angle>1.57079632679</max_angle></horizontal><vertical><samples>120</samples><resolution>1</resolution><min_angle>-0.1274090354</min_angle><max_angle>0.9128076904</max_angle></vertical></scan>
           <range><min>0.10</min><max>40.0</max><resolution>0.01</resolution></range>
           <noise><type>gaussian</type><mean>0.0</mean><stddev>0.0</stddev></noise>
         </lidar>
@@ -149,20 +149,20 @@
       <visual name="visual"><pose>0 0 0 0 0 3.14159265359</pose><geometry><mesh><uri>model://mid360/meshes/mid360.dae</uri></mesh></geometry></visual>
       <sensor name="sim_lidar_right_front" type="gpu_lidar">
         <pose>0 0 0.03 0 0 0</pose>
-        <topic>/sim/lidar/right/front</topic><update_rate>100</update_rate><always_on>true</always_on><visualize>false</visualize>
+        <topic>/sim/lidar/right/front</topic><update_rate>10</update_rate><always_on>true</always_on><visualize>false</visualize>
         <ignition_frame_id>sim_lidar_right</ignition_frame_id>
         <lidar>
-          <scan><horizontal><samples>120</samples><resolution>1</resolution><min_angle>-1.57079632679</min_angle><max_angle>1.57079632679</max_angle></horizontal><vertical><samples>36</samples><resolution>1</resolution><min_angle>-0.1274090354</min_angle><max_angle>0.9128076904</max_angle></vertical></scan>
+          <scan><horizontal><samples>360</samples><resolution>1</resolution><min_angle>-1.57079632679</min_angle><max_angle>1.57079632679</max_angle></horizontal><vertical><samples>120</samples><resolution>1</resolution><min_angle>-0.1274090354</min_angle><max_angle>0.9128076904</max_angle></vertical></scan>
           <range><min>0.10</min><max>40.0</max><resolution>0.01</resolution></range>
           <noise><type>gaussian</type><mean>0.0</mean><stddev>0.0</stddev></noise>
         </lidar>
       </sensor>
       <sensor name="sim_lidar_right_rear" type="gpu_lidar">
         <pose>0 0 0.03 0 0 3.14159265359</pose>
-        <topic>/sim/lidar/right/rear</topic><update_rate>100</update_rate><always_on>true</always_on><visualize>false</visualize>
+        <topic>/sim/lidar/right/rear</topic><update_rate>10</update_rate><always_on>true</always_on><visualize>false</visualize>
         <ignition_frame_id>sim_lidar_right</ignition_frame_id>
         <lidar>
-          <scan><horizontal><samples>120</samples><resolution>1</resolution><min_angle>-1.57079632679</min_angle><max_angle>1.57079632679</max_angle></horizontal><vertical><samples>36</samples><resolution>1</resolution><min_angle>-0.1274090354</min_angle><max_angle>0.9128076904</max_angle></vertical></scan>
+          <scan><horizontal><samples>360</samples><resolution>1</resolution><min_angle>-1.57079632679</min_angle><max_angle>1.57079632679</max_angle></horizontal><vertical><samples>120</samples><resolution>1</resolution><min_angle>-0.1274090354</min_angle><max_angle>0.9128076904</max_angle></vertical></scan>
           <range><min>0.10</min><max>40.0</max><resolution>0.01</resolution></range>
           <noise><type>gaussian</type><mean>0.0</mean><stddev>0.0</stddev></noise>
         </lidar>

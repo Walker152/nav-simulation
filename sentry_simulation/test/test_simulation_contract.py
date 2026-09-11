@@ -1330,7 +1330,7 @@ class SimulationContractTest(unittest.TestCase):
     def test_snapshot_adapter_cadence_follows_the_resolved_vehicle(self):
         ack = SOURCE_ROOT / "navigation/navi2_bringup/params/ackermann_prototype.yaml"
         for profile, chassis, points, tolerance in (
-                (ack, "", 2000, 0.0), ("", "ackermann", 2000, 0.0),
+                (ack, "", 20000, 5.0), ("", "ackermann", 20000, 5.0),
                 ("", "omni", 20000, 5.0)):
             with self.subTest(profile=str(profile), chassis=chassis):
                 _, actions, _ = self._ack_launch(profile, chassis)

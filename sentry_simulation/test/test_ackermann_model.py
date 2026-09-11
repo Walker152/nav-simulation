@@ -138,7 +138,7 @@ class AckermannModelTest(unittest.TestCase):
         self.assertEqual(odometry.findtext("dimensions"), "3")
 
     def test_ack_snapshot_cadence_keeps_the_omni_ray_budget(self):
-        for model, expected in ((self.model, (100, 120, 36)), (
+        for model, expected in ((self.model, (10, 360, 120)), (
                 ET.parse(MODELS / "sentry_omni" / "model.sdf").getroot().find("model"),
                 (10, 360, 120))):
             sensors = model.findall(".//sensor[@type='gpu_lidar']")
