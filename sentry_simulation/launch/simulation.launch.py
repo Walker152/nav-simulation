@@ -79,24 +79,20 @@ def _launch_setup(context, package_share):
     )
     nav2_params_path = LaunchConfiguration("params_file").perform(context)
     if not nav2_params_path:
-        profile = "nav2_ackermann_sim.yaml" if chassis_type == "ackermann" else "nav2_sim.yaml"
-        nav2_params_path = os.path.join(package_share, "config", profile)
-    nav2_host_params = os.path.join(
-        get_package_share_directory("navi2"), "params", "nav2_host.yaml"
-    )
+        nav2_params_path = os.path.join(
+            get_package_share_directory("navi2"), "params", "navigation.yaml")
     assembler_path = Path(get_package_share_directory("navi2")) / "launch" / "navigation_parameters.py"
     spec = importlib.util.spec_from_file_location("navigation_parameters", assembler_path)
     assembler = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(assembler)
     resolved_params = assembler.load_navigation_parameters(
-        nav2_params_path, nav2_host_params, use_sim_time=True)
-    # The selected robot profile owns the model. The legacy selector may choose
-    # a default profile, but must never silently override its vehicle contract.
+        nav2_params_path, profile="simulation", use_sim_time=True)
+    # planner.model owns the paired model; chassis_type only checks consistency.
     vehicle_model = resolved_params["planner_server"]["ros__parameters"][
         "MincoPlanner"]["minco"]["vehicle"]["model"]
     if chassis_type and chassis_type != vehicle_model:
         raise RuntimeError(
-            f"chassis_type '{chassis_type}' does not match vehicle.model '{vehicle_model}'")
+            f"chassis_type '{chassis_type}' does not match planner.model '{vehicle_model}'")
     model_path = os.path.join(
         package_share, "resource", "models", f"sentry_{vehicle_model}", "model.sdf")
     process_params_file = assembler.write_navigation_parameters(resolved_params)
@@ -208,7 +204,7 @@ def _launch_setup(context, package_share):
         launch_arguments={
             "use_sim_time": "true",
             "params_file": nav2_params_path,
-            "host_params_file": nav2_host_params,
+            "profile": "simulation",
             "autostart": "true",
             "use_composition": "False",
             "planner_container_name": "livox_pointlio_container",
@@ -351,7 +347,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             "chassis_type", default_value="",
-            description="Optional omni/ackermann profile selector; must match vehicle.model"
+            description="Optional omni/ackermann consistency check; must match planner.model"
         ),
         DeclareLaunchArgument("headless", default_value="false"),
         DeclareLaunchArgument("rviz", default_value="true"),
@@ -359,7 +355,7 @@ def generate_launch_description():
         DeclareLaunchArgument("log_level", default_value="info"),
         DeclareLaunchArgument(
             "params_file", default_value="",
-            description="Robot profile; empty selects the legacy chassis profile (default omni)",
+            description="Unified navigation YAML; empty uses navi2/params/navigation.yaml",
         ),
         GroupAction(
             actions=[OpaqueFunction(function=_launch_setup, args=[package_share])],
