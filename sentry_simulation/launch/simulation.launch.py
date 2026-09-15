@@ -86,7 +86,7 @@ def _launch_setup(context, package_share):
     assembler = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(assembler)
     resolved_params = assembler.load_navigation_parameters(
-        nav2_params_path, profile="simulation", use_sim_time=True, prior_map=map_path)
+        nav2_params_path, profile="simulation", use_sim_time=True)
     # planner.model owns the paired model; chassis_type only checks consistency.
     vehicle_model = resolved_params["planner_server"]["ros__parameters"][
         "MincoPlanner"]["minco"]["vehicle"]["model"]
@@ -201,11 +201,12 @@ def _launch_setup(context, package_share):
                 get_package_share_directory("navi2"), "launch", "navigation_launch.py"
             )
         ),
+        # The outer simulation launch owns the static map server below.
+        # Keep the nested navigation launch focused on planner/controller nodes.
         launch_arguments={
             "use_sim_time": "true",
             "params_file": nav2_params_path,
             "profile": "simulation",
-            "projection_prior_map": map_path,
             "autostart": "true",
             "use_composition": "False",
             "planner_container_name": "livox_pointlio_container",
