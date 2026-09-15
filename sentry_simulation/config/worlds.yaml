@@ -2,8 +2,8 @@ rmuc_2024:
   world: resource/worlds/rmuc_2024_world.sdf
   map: maps/rmuc_2024.yaml
   spawn_clearance: 0.0
-  # Current real-vehicle RMUC ICP initial pose.
-  spawn: {x: 4.234, y: 7.3, z: 0.0, yaw: 0.04}
+  # This mesh's floor is at z=0.10 m; start wheel bottoms just above it.
+  spawn: {x: 4.234, y: 7.3, z: 0.11, yaw: 0.04}
   # The available model cloud describes the newer RMUC geometry.
   icp: {enable: false}
 

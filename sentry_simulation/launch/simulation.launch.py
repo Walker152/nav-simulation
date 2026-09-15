@@ -86,7 +86,7 @@ def _launch_setup(context, package_share):
     assembler = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(assembler)
     resolved_params = assembler.load_navigation_parameters(
-        nav2_params_path, profile="simulation", use_sim_time=True)
+        nav2_params_path, profile="simulation", use_sim_time=True, prior_map=map_path)
     # planner.model owns the paired model; chassis_type only checks consistency.
     vehicle_model = resolved_params["planner_server"]["ros__parameters"][
         "MincoPlanner"]["minco"]["vehicle"]["model"]
@@ -205,6 +205,7 @@ def _launch_setup(context, package_share):
             "use_sim_time": "true",
             "params_file": nav2_params_path,
             "profile": "simulation",
+            "projection_prior_map": map_path,
             "autostart": "true",
             "use_composition": "False",
             "planner_container_name": "livox_pointlio_container",
