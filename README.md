@@ -98,8 +98,9 @@ cd /home/alioth/nature_will
 
 | 参数 | 可选值 | 默认值 | 作用 |
 |---|---|---|---|
-| 第 1 个位置参数 | `omni`、`diff` | `omni` | 当前导航选择 omni；diff 资源保留但导航拒绝 |
+| 第 1 个位置参数 | `omni`、`ackermann`、`diff` | `omni` | 默认统一 YAML 的底盘选择；diff 资源保留但导航拒绝 |
 | 第 2 个位置参数 | `rmuc_2024`、`rmul_2024`、`rmuc_2025`、`rmuc_2026`、`rmul_2025` | `rmuc_2025` | 选择场地 |
+| `--params-file PATH` | 任意统一导航 YAML | 空 | 显式参数文件；此时第 1 个参数必须与 `planner.model` 一致 |
 | `--headless` | 开关 | 关闭 | 不启动 Gazebo GUI，只运行 server |
 | `--no-rviz` | 开关 | 关闭 | 不启动 RViz |
 | `--check` | 开关 | 关闭 | 只检查 ROS overlay 和依赖包 |
@@ -113,6 +114,9 @@ RViz 随 launch 直接启动，导航初始化期间也能查看地图和状态�
 ```bash
 # 全向底盘 + RMUC 2025（默认）
 ./src/scripts/simlation.bash omni rmuc_2025
+
+# 阿克曼底盘 + RMUC 2024（使用统一 YAML 的运行时模型选择）
+./src/scripts/simlation.bash ackermann rmuc_2024 --headless --no-rviz
 
 # 全向底盘 + RMUC 2026 点云重建场地
 ./src/scripts/simlation.bash omni rmuc_2026
@@ -143,8 +147,9 @@ ros2 launch sentry_simulation simulation.launch.py \
 
 ### 导航参数与对照验证
 
-默认读取 [config/nav2_sim.yaml](sentry_simulation/config/nav2_sim.yaml)，按
-`frames / odometry / vehicle / planner / controller` 分组；Nav2 宿主和
+默认读取 `navi2/params/navigation.yaml`，按
+`frames / odometry / planner / controller / omni / ackermann` 分组；脚本的
+`omni` 或 `ackermann` 参数选择对应模型，Nav2 宿主和
 `use_sim_time=true` 由 launch 统一装配。保留 20 Hz 控制、0.05 s MPC 步长、
 Q/R、车辆能力、ROG 更新周期和 footprint。共享测量原点为
 `sensor_in_base.xyz: [0, -0.2, 0]`，匹配 Point-LIO 当前平面导航 base。

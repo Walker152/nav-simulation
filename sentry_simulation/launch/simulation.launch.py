@@ -78,6 +78,7 @@ def _launch_setup(context, package_share):
         "mid360-real-centr.csv",
     )
     nav2_params_path = LaunchConfiguration("params_file").perform(context)
+    using_default_params = not nav2_params_path
     if not nav2_params_path:
         nav2_params_path = os.path.join(
             get_package_share_directory("navi2"), "params", "navigation.yaml")
@@ -86,11 +87,13 @@ def _launch_setup(context, package_share):
     assembler = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(assembler)
     resolved_params = assembler.load_navigation_parameters(
-        nav2_params_path, profile="simulation", use_sim_time=True)
-    # planner.model owns the paired model; chassis_type only checks consistency.
+        nav2_params_path, profile="simulation", use_sim_time=True,
+        model=chassis_type if using_default_params and chassis_type else None)
+    # planner.model owns an explicit params file; chassis_type selects the
+    # model only for the repository's default unified simulation config.
     vehicle_model = resolved_params["planner_server"]["ros__parameters"][
         "MincoPlanner"]["minco"]["vehicle"]["model"]
-    if chassis_type and chassis_type != vehicle_model:
+    if chassis_type and not using_default_params and chassis_type != vehicle_model:
         raise RuntimeError(
             f"chassis_type '{chassis_type}' does not match planner.model '{vehicle_model}'")
     model_path = os.path.join(
@@ -207,6 +210,7 @@ def _launch_setup(context, package_share):
             "use_sim_time": "true",
             "params_file": nav2_params_path,
             "profile": "simulation",
+            "model": vehicle_model,
             "autostart": "true",
             "use_composition": "False",
             "planner_container_name": "livox_pointlio_container",
@@ -349,7 +353,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             "chassis_type", default_value="",
-            description="Optional omni/ackermann consistency check; must match planner.model"
+            description="omni/ackermann selector for the default config; explicit params must match"
         ),
         DeclareLaunchArgument("headless", default_value="false"),
         DeclareLaunchArgument("rviz", default_value="true"),
