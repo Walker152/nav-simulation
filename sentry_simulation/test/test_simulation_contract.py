@@ -6,6 +6,7 @@ import importlib.util
 import json
 import math
 import os
+import re
 import signal
 import struct
 import subprocess
@@ -305,11 +306,17 @@ class SimulationContractTest(unittest.TestCase):
             self.assertIn("gpu_lidar", sensor_types)
             self.assertIn("imu", sensor_types)
 
-    def test_mecanum_drive2_plugin_is_built_and_packaged(self):
+    def test_chassis_plugins_are_built_and_packaged(self):
         cmake = (PACKAGE_ROOT / "CMakeLists.txt").read_text(encoding="utf-8")
         self.assertIn("find_package(ignition-gazebo6 REQUIRED)", cmake)
         self.assertIn("add_library(MecanumDrive2 SHARED", cmake)
-        self.assertIn("install(TARGETS MecanumDrive2 LIBRARY DESTINATION plugins)", cmake)
+        self.assertIn("add_library(AckermannBicycle SHARED", cmake)
+        plugin_targets = set()
+        for block in re.findall(r"install\s*\(\s*TARGETS\s+([^)]*)\)", cmake):
+            match = re.fullmatch(r"(.*?)\s+LIBRARY\s+DESTINATION\s+plugins\s*", block, re.S)
+            if match:
+                plugin_targets.update(match.group(1).split())
+        self.assertLessEqual({"MecanumDrive2", "AckermannBicycle"}, plugin_targets)
 
     def test_omni_wheels_form_a_square_and_use_chassis_wrench_drive(self):
         root = ET.parse(
@@ -1376,7 +1383,7 @@ class SimulationContractTest(unittest.TestCase):
         self.assertEqual(callback["update_period_ms"], 100)
         self.assertFalse(planner["rog_map"]["projection"]["prior_map"]["enable"])
         model = ET.parse(PACKAGE_ROOT / "resource/models/sentry_ackermann/model.sdf")
-        drive = model.find(".//plugin[@name='ignition::gazebo::systems::AckermannSteering']")
+        drive = model.find(".//plugin[@name='sentry_simulation::AckermannBicycle']")
         geometry = common["vehicle"]["ackermann"]
         self.assertEqual(geometry["wheel_base"], float(drive.findtext("wheel_base")))
         self.assertEqual(geometry["front_track"], float(drive.findtext("kingpin_width")))
@@ -1386,6 +1393,24 @@ class SimulationContractTest(unittest.TestCase):
         self.assertEqual(feedback["right_joint"], "front_right_steering_joint")
         self.assertEqual(planner["ackermann"]["stationary"], controller["ackermann"]["stationary"])
         self.assertEqual([node["name"] for node in nodes].count("sentry_sim_cmd_adapter"), 1)
+
+    def test_ack_model_has_one_ideal_owner_and_independent_feedback(self):
+        model = ET.parse(PACKAGE_ROOT / "resource/models/sentry_ackermann/model.sdf")
+        owners = [p for p in model.findall(".//plugin")
+                  if p.findtext("topic") == "/sentry/cmd_vel"]
+        self.assertEqual(len(owners), 1)
+        drive = owners[0]
+        self.assertEqual(drive.attrib["name"], "sentry_simulation::AckermannBicycle")
+        self.assertAlmostEqual(float(drive.findtext("steering_limit")), .4)
+        self.assertEqual(drive.findtext("left_joint"), "rear_left_joint")
+        self.assertEqual(drive.findtext("right_joint"), "rear_right_joint")
+        self.assertIsNone(drive.find("odom_topic"))
+        self.assertIsNone(drive.find("tf_topic"))
+        feedback = model.find(".//plugin[@name='ignition::gazebo::systems::JointStatePublisher']")
+        self.assertEqual({j.text for j in feedback.findall("joint_name")},
+                         {"front_left_steering_joint", "front_right_steering_joint"})
+        truth = model.find(".//plugin[@name='ignition::gazebo::systems::OdometryPublisher']")
+        self.assertEqual(truth.findtext("odom_topic"), "/sentry/ground_truth_odometry")
 
     def test_ack_bridge_has_one_real_joint_mapping_and_one_command_sink(self):
         entries = yaml.safe_load((PACKAGE_ROOT / "config/ros_gz_bridge.yaml").read_text())

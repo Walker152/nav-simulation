@@ -74,9 +74,8 @@
     </link>
 
     <!-- Center delta=0.4 gives an inner-wheel angle of 0.492132 rad, so
-         +/-0.52 leaves mechanical clearance. This is an uncalibrated prototype;
-         use Gazebo's 1 rad/s Ackermann baseline instead of imposing a second
-         planner steering-rate envelope in the simulator. -->
+         +/-0.52 leaves mechanical clearance. The ideal actuator resets steering
+         position directly, intentionally bypassing steering slew and effort. -->
     <joint name="front_left_steering_joint" type="revolute">
       <parent>base_link</parent><child>front_left_knuckle</child>
       <axis><xyz>0 0 1</xyz><limit><lower>-0.52</lower><upper>0.52</upper><effort>50</effort><velocity>1.0</velocity></limit><dynamics><damping>0.05</damping></dynamics></axis>
@@ -167,18 +166,15 @@
     <joint name="sim_lidar_right_joint" type="fixed"><parent>base_link</parent><child>sim_lidar_right</child></joint>
 
     <!-- Rear wheel drive and front steering have one command owner.
-         Gazebo 6.18 uses R_min=L/sin(limit), so limit=asin(tan(0.4)).
+         steering_limit is the center bicycle angle, not the inner wheel angle.
          Twist remains rear-axle forward speed and yaw rate; zero requests recentering. -->
-    <plugin filename="ignition-gazebo-ackermann-steering-system" name="ignition::gazebo::systems::AckermannSteering">
+    <plugin filename="AckermannBicycle" name="sentry_simulation::AckermannBicycle">
       <left_joint>rear_left_joint</left_joint><right_joint>rear_right_joint</right_joint>
       <left_steering_joint>front_left_steering_joint</left_steering_joint>
       <right_steering_joint>front_right_steering_joint</right_steering_joint>
       <wheel_base>0.44</wheel_base><wheel_separation>0.44</wheel_separation><kingpin_width>0.44</kingpin_width>
-      <wheel_radius>0.076</wheel_radius><steering_limit>0.436525365377011</steering_limit>
+      <wheel_radius>0.076</wheel_radius><steering_limit>0.4</steering_limit>
       <topic>/sentry/cmd_vel</topic>
-      <odom_topic>/sentry/wheel_odometry</odom_topic><tf_topic>/sentry/wheel_odometry_tf</tf_topic>
-      <frame_id>sentry/odom</frame_id><child_frame_id>sentry/base_link</child_frame_id>
-      <odom_publish_frequency>50</odom_publish_frequency>
     </plugin>
     <plugin filename="ignition-gazebo-joint-state-publisher-system" name="ignition::gazebo::systems::JointStatePublisher">
       <joint_name>front_left_steering_joint</joint_name>

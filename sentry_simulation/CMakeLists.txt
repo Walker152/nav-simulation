@@ -36,6 +36,11 @@ target_include_directories(MecanumDrive2 PRIVATE plugins/mecanum_drive2)
 target_link_libraries(MecanumDrive2
   ignition-gazebo6::ignition-gazebo6)
 
+add_library(AckermannBicycle SHARED
+  plugins/ackermann_bicycle/AckermannBicycle.cc)
+target_compile_features(AckermannBicycle PUBLIC cxx_std_17)
+target_link_libraries(AckermannBicycle ignition-gazebo6::ignition-gazebo6)
+
 ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS sentry_simulation/cmd_vel_adapter.py
   DESTINATION lib/${PROJECT_NAME}
@@ -48,7 +53,7 @@ install(TARGETS pointcloud_adapter_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
-install(TARGETS MecanumDrive2 LIBRARY DESTINATION plugins)
+install(TARGETS MecanumDrive2 AckermannBicycle LIBRARY DESTINATION plugins)
 install(DIRECTORY behavior_tree config launch maps resource
   DESTINATION share/${PROJECT_NAME})
 install(FILES ../README.md ../THIRD_PARTY_NOTICES.md

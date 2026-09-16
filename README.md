@@ -147,6 +147,25 @@ ros2 launch sentry_simulation simulation.launch.py \
 
 ### 导航参数与对照验证
 
+Ackermann 仿真使用 `AckermannBicycle` 单一底盘命令插件：同一曲率同时设置左右前轮角和后轮差速，
+`steering_limit=0.4` 表示自行车中心转角。前轮转向位置直接重置并保持，滚动关节保持自由；这有意
+取消旧内置插件约 1 秒的转向伺服，不用于模拟实车有限转向响应。车身惯性、轮胎接触、碰撞、传感器
+及原 groundtruth/关节反馈仍由 Gazebo 物理系统产生；插件不强制车身位姿，也不自行发布 odom/TF。
+零速纯 yaw 请求停车回正，非有限输入也停车回正。原命令 adapter 继续负责超时停车。
+
+修改插件后先构建并 source 对应 install，使 Gazebo 能找到插件；可独立运行真实物理回归：
+
+```bash
+python3 src/simulation/sentry_simulation/test/ackermann_physics_regression.py --output /tmp/ack_physics_check
+```
+
+回归自建唯一 IGN 分区和无传感器空地 world，保留原模型全部物理实体，结束只清理自身进程；
+输出真实轮角、后轮速度、groundtruth CSV 和断言摘要。`--smoke` 仅检查直行通信。
+`--nonfinite` 单独从运动状态测试 NaN/Inf 输入停车，只用于新插件，不对旧插件执行。
+测试检查转向和实际车身响应，轮角到位并不单独证明导航闭环成功。
+正倒车之间先停车稳定；直接从 +0.6 跳到 −0.6 m/s 且同时回正的极端输入曾产生约 200 ms
+接触瞬态，未通过 150 ms 车身门。该限制保留，测试没有通过强制车身状态或放宽响应门消除它。
+
 默认读取 `navi2/params/navigation.yaml`，按
 `frames / odometry / planner / controller / omni / ackermann` 分组；脚本的
 `omni` 或 `ackermann` 参数选择对应模型，Nav2 宿主和
