@@ -70,7 +70,7 @@ class AckermannModelTest(unittest.TestCase):
             self.assertIn(joint.findtext("parent"), self.links)
             self.assertIn(joint.findtext("child"), self.links)
 
-    def test_steering_limits_cover_inner_angle_and_conservatively_limit_center_rate(self):
+    def test_steering_limits_cover_inner_angle_without_a_planner_rate_bottleneck(self):
         drive = self.model.find("plugin[@name='ignition::gazebo::systems::AckermannSteering']")
         effective_center_max = math.atan(math.sin(float(drive.findtext("steering_limit"))))
         self.assertAlmostEqual(effective_center_max, 0.4, places=10)
@@ -85,15 +85,11 @@ class AckermannModelTest(unittest.TestCase):
             self.assertGreater(upper, inner_angle)
             self.assertLessEqual(upper, inner_angle + 0.05)
             self.assertAlmostEqual(lower, -upper)
-            # Use the complete mechanical angular range conservatively, including
-            # clearance beyond the center command envelope. The outer-wheel
-            # Jacobian is the minimum over +/-upper for this geometry.
-            t_margin = math.tan(upper)
-            minimum_jacobian = (1.0 + t_margin * t_margin) / (
-                (1.0 + 0.5 * t_margin) ** 2 + t_margin * t_margin
-            )
-            self.assertGreater(velocity, 0.0)
-            self.assertLessEqual(velocity, 0.3 * minimum_jacobian * 0.99)
+            # This prototype has no independently calibrated steering actuator.
+            # Keep the joint at least as responsive as Gazebo's official
+            # Ackermann example instead of recreating a planner steering-rate
+            # limit in the SDF and making commanded yaw lag for several seconds.
+            self.assertGreaterEqual(velocity, 1.0)
             self.assertTrue(math.isfinite(effort) and effort > 0.0)
 
     def test_only_official_ackermann_owns_rear_drive_and_front_steering(self):

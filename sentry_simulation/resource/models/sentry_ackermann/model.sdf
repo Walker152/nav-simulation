@@ -3,7 +3,7 @@
   <model name="sentry" xmlns:ignition="http://ignitionrobotics.org/schema">
     <!-- Independent simulation prototype, not measured hardware parameters.
          Rear-axle XY origin; wheelbase/track 0.44 m, wheel radius 0.076 m.
-         The navigation envelope is center steering +/-0.4 rad, rate 0.3 rad/s.
+         The navigation envelope is center steering +/-0.4 rad.
          Existing sensor coordinates remain in this model frame. -->
     <self_collide>false</self_collide>
 
@@ -73,17 +73,13 @@
       <visual name="visual"><geometry><cylinder><radius>0.076</radius><length>0.04</length></cylinder></geometry></visual>
     </link>
 
-    <!-- Center delta=0.4 gives the inner wheel 0.492132 rad. Mechanical
-         +/-0.52 rad leaves 0.027868 rad clearance. Max dq/d(delta)=1.472248:
-         center rate 0.3 would require 0.441674 rad/s at the inner joint.
-         Instead use 0.198 rad/s conservatively: over +/-0.52 rad the minimum
-         Ackermann Jacobian is 0.669826, and 0.3*J_min=0.200948 rad/s.
-         The 1.47% margin also covers zero-command recentering. This reduces
-         attainable center rates; fixed P=1 tracking is not instantaneous.
-         Finite effort is required for DART SERVO position-limit enforcement. -->
+    <!-- Center delta=0.4 gives an inner-wheel angle of 0.492132 rad, so
+         +/-0.52 leaves mechanical clearance. This is an uncalibrated prototype;
+         use Gazebo's 1 rad/s Ackermann baseline instead of imposing a second
+         planner steering-rate envelope in the simulator. -->
     <joint name="front_left_steering_joint" type="revolute">
       <parent>base_link</parent><child>front_left_knuckle</child>
-      <axis><xyz>0 0 1</xyz><limit><lower>-0.52</lower><upper>0.52</upper><effort>50</effort><velocity>0.198</velocity></limit><dynamics><damping>0.05</damping></dynamics></axis>
+      <axis><xyz>0 0 1</xyz><limit><lower>-0.52</lower><upper>0.52</upper><effort>50</effort><velocity>1.0</velocity></limit><dynamics><damping>0.05</damping></dynamics></axis>
     </joint>
     <joint name="front_left_joint" type="revolute">
       <parent>front_left_knuckle</parent><child>front_left_wheel</child>
@@ -91,7 +87,7 @@
     </joint>
     <joint name="front_right_steering_joint" type="revolute">
       <parent>base_link</parent><child>front_right_knuckle</child>
-      <axis><xyz>0 0 1</xyz><limit><lower>-0.52</lower><upper>0.52</upper><effort>50</effort><velocity>0.198</velocity></limit><dynamics><damping>0.05</damping></dynamics></axis>
+      <axis><xyz>0 0 1</xyz><limit><lower>-0.52</lower><upper>0.52</upper><effort>50</effort><velocity>1.0</velocity></limit><dynamics><damping>0.05</damping></dynamics></axis>
     </joint>
     <joint name="front_right_joint" type="revolute">
       <parent>front_right_knuckle</parent><child>front_right_wheel</child>
