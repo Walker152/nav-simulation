@@ -27,11 +27,11 @@ class AckermannModelTest(unittest.TestCase):
         self.assertEqual(self.model.get("name"), "sentry")
         self.assertEqual(self.model.findtext("self_collide"), "false")
 
-    def test_rear_axle_origin_matches_plugin_geometry_and_round_wheels(self):
+    def test_center_origin_preserves_plugin_geometry_and_round_wheels(self):
         self.assertEqual(numbers(self.links["base_link"], "pose")[:2], (0.0, 0.0))
         for name, xy in {
-            "rear_left_wheel": (0.0, 0.22), "rear_right_wheel": (0.0, -0.22),
-            "front_left_wheel": (0.44, 0.22), "front_right_wheel": (0.44, -0.22),
+            "rear_left_wheel": (-0.22, 0.22), "rear_right_wheel": (-0.22, -0.22),
+            "front_left_wheel": (0.22, 0.22), "front_right_wheel": (0.22, -0.22),
         }.items():
             with self.subTest(wheel=name):
                 wheel = self.links[name]
@@ -46,8 +46,8 @@ class AckermannModelTest(unittest.TestCase):
                 self.assertIsNone(wheel.find("collision/surface/friction/ode/fdir1"))
         base = self.links["base_link"]
         for path in ("inertial/pose", "collision/pose", "visual/pose"):
-            self.assertAlmostEqual(numbers(base, path)[0], 0.22)
-        drive = self.model.find("plugin[@name='ignition::gazebo::systems::AckermannSteering']")
+            self.assertAlmostEqual(numbers(base, path)[0], 0.0)
+        drive = self.model.find("plugin[@name='sentry_simulation::AckermannBicycle']")
         self.assertIsNotNone(drive)
         for key in ("wheel_base", "wheel_separation", "kingpin_width"):
             self.assertAlmostEqual(float(drive.findtext(key)), 0.44)
@@ -62,6 +62,8 @@ class AckermannModelTest(unittest.TestCase):
             self.assertEqual(steer.findtext("child"), f"front_{side}_knuckle")
             self.assertEqual(numbers(steer, "axis/xyz"), (0.0, 0.0, 1.0))
             self.assertEqual(numbers(self.links[f"front_{side}_knuckle"], "pose")[3:], (0.0, 0.0, 0.0))
+            self.assertEqual(numbers(self.links[f"front_{side}_knuckle"], "pose")[:3],
+                             numbers(self.links[f"front_{side}_wheel"], "pose")[:3])
             self.assertEqual(roll.get("type"), "revolute")
             self.assertEqual(roll.findtext("parent"), f"front_{side}_knuckle")
             self.assertEqual(roll.findtext("child"), f"front_{side}_wheel")
@@ -71,8 +73,8 @@ class AckermannModelTest(unittest.TestCase):
             self.assertIn(joint.findtext("child"), self.links)
 
     def test_steering_limits_cover_inner_angle_without_a_planner_rate_bottleneck(self):
-        drive = self.model.find("plugin[@name='ignition::gazebo::systems::AckermannSteering']")
-        effective_center_max = math.atan(math.sin(float(drive.findtext("steering_limit"))))
+        drive = self.model.find("plugin[@name='sentry_simulation::AckermannBicycle']")
+        effective_center_max = float(drive.findtext("steering_limit"))
         self.assertAlmostEqual(effective_center_max, 0.4, places=10)
         # Independent planar Ackermann geometry; these limits concern physical joints.
         t = math.tan(0.4)
@@ -92,14 +94,15 @@ class AckermannModelTest(unittest.TestCase):
             self.assertGreaterEqual(velocity, 1.0)
             self.assertTrue(math.isfinite(effort) and effort > 0.0)
 
-    def test_only_official_ackermann_owns_rear_drive_and_front_steering(self):
+    def test_only_ideal_ackermann_owns_rear_drive_and_front_steering(self):
         actuator_plugins = [p for p in self.model.findall("plugin") if any(
             name in p.get("name", "") for name in
-            ("Drive", "AckermannSteering", "JointController", "JointPositionController")
+            ("Drive", "AckermannSteering", "AckermannBicycle",
+             "JointController", "JointPositionController")
         )]
         self.assertEqual(len(actuator_plugins), 1, "each joint must have a single command owner")
         drive = actuator_plugins[0]
-        self.assertEqual(drive.get("name"), "ignition::gazebo::systems::AckermannSteering")
+        self.assertEqual(drive.get("name"), "sentry_simulation::AckermannBicycle")
         self.assertEqual(drive.findtext("left_joint"), "rear_left_joint")
         self.assertEqual(drive.findtext("right_joint"), "rear_right_joint")
         self.assertEqual(drive.findtext("left_steering_joint"), "front_left_steering_joint")
@@ -115,8 +118,20 @@ class AckermannModelTest(unittest.TestCase):
 
     def test_sensor_geometry_and_imu_contract_match_omni(self):
         omni = ET.parse(MODELS / "sentry_omni" / "model.sdf").getroot().find("model")
+        chassis = self.links["base_link"]
+        omni_chassis = omni.find("link[@name='base_link']")
+        chassis_center = tuple(a + b for a, b in zip(
+            numbers(chassis, "pose")[:3], numbers(chassis, "collision/pose")[:3]))
+        omni_center = tuple(a + b for a, b in zip(
+            numbers(omni_chassis, "pose")[:3], numbers(omni_chassis, "collision/pose")[:3]))
         for name in ("sim_lidar", "sim_lidar_left", "sim_lidar_right"):
             original = omni.find(f"link[@name='{name}']")
+            # Equal model-frame sensor poses alone missed the displaced chassis.
+            # Compare the actual mounting position relative to each chassis.
+            self.assertEqual(
+                tuple(p - c for p, c in zip(numbers(self.links[name], "pose")[:3], chassis_center)),
+                tuple(p - c for p, c in zip(numbers(original, "pose")[:3], omni_center)),
+                name)
             # Only the GPU sampling cadence/grid differs. Compare every other
             # sensor, mount, collision, FOV and range value, including the IMU.
             for link in (self.links[name], original):

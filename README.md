@@ -258,24 +258,27 @@ ros2 topic echo /sim/ground_truth/odom --once
 ## 坐标、时间与速度语义
 
 - 全部节点启用 `/clock` 和 `use_sim_time`。
-- `config/nav2_sim.yaml` 使用与实车相同的机器人配置分组，由 navi2 launch 合并宿主参数。planner 与 Point-LIO、点云适配器保持在 `livox_pointlio_container` 同一进程。启动容器前将机器人配置与 `nav2_host.yaml` 合成为进程级 ROS 参数，使 planner 内部创建的 global costmap 也能继承完整配置；退出时删除本次临时参数文件。
+- `navigation/navi2_bringup/params/navigation.yaml` 的 simulation profile 由 navi2 launch 组装参数。planner 与 Point-LIO、点云适配器保持在 `livox_pointlio_container` 同一进程；容器继承同一份进程级 ROS 参数，退出时删除临时参数文件。
 - 融合 LiDAR/IMU link 在模型中的位姿为 `(0,-0.2,0.3,0,0,0)`，
   物理 base_link 位于 `(0,0,0.2,0,0,0)`。适配器将左右测量点转换到该 IMU 公共帧，
   不会把里程计原点移到车体中心。
+- omni 与 Ackermann 的模型 XY 原点都是机械车体中心；Ackermann 后轴为 `x=-0.22 m`、前轴为 `x=+0.22 m`，轴距保持 `0.44 m`。车壳、惯性原点和碰撞盒居中，左右 MID360 保持与 omni 相同的安装坐标。仿真 profile 的 `centre_offset=0.22` 表示后轴到中心的距离；其他 profile 的值不用于该 SDF。
 - 2025/2026 场地通过 `map -> pcd_map -> camera_init` 接入一次性 GICP；超时会回退到同一
   实车初始位姿。2024 场地直接发布 `map -> camera_init`。两种路径的定位原点 Z 都为零。
 - planner/controller 共用 `[0,-0.2,0]` 平面外参，位置及旋转引起的杆臂速度一起修正。
   Z 为零是沿用 Point-LIO 导航 base 与 body 等高的约定；与 Gazebo 物理 link 的三维外参不同。
-- Nav2 使用同时包络全向轮和差速轮的凸多边形 footprint；MINCO 优化安全距离为
-  `0.45 m`，避免原先 `0.20/0.25 m` 低估车体后卡场地边角。
+- Nav2 footprint 与分层碰撞安装位置相对车体中心；Ackermann 的矩形尺寸、安全距离和二维 guide 半径分别由导航配置控制，不改变后轴运动学参考点。
 - Point-LIO 发布 `camera_init -> body` 和 `camera_init -> base_link`；Odometry 为
   `camera_init / body`。当前 base TF 仅保留 yaw，三维坡面 TF 的统一不在这次参数修正范围。
-- MPC 在 odom 求解，`/cmd_vel_mpc` 为车体系速度；适配器直接转发。
-- 当前只允许 omni 导航；差速模型保留为仿真资源，需规划与控制成对实现后再接入。
+- MPC 对外位姿、参考轨迹和预测均为中心；Ackermann 内部自行车模型仍在后轴求解。中心车体系 `/cmd_vel_mpc` 为 `(v, 0.22*w, w)`，其中 `v` 是后轴有符号纵向速度。适配器直接转发，理想 Ackermann actuator 只用 `linear.x` 和 `angular.z`；`linear.y` 是旋转产生的中心速度，不是独立侧移命令。
+- `/sim/ground_truth/odom` 发布模型原点的中心 XY 位姿和中心车体系速度，转弯时 `vy≈0.22*w`。Z 仍为模型原点，与物理 base_link、Point-LIO 导航 base 的高度约定不同。
+- 导航支持 omni 与 Ackermann；差速模型保留为非导航仿真资源。
 - MPC 命令超过 0.25 s 未刷新时，适配节点会向 Gazebo 发送一次零速度，避免底盘保持旧指令。
 - `/livox/lidar` 与真机相同使用 `livox_ros_driver2/msg/CustomMsg`：`offset_time`
   单位为纳秒，`line` 为 0～3，`tag` 为 `0x10`，所以 Point-LIO 配置为
   `lidar_type: 1`、`scan_line: 4`、`timestamp_unit: 3`。
+
+独立物理回归 `sentry_simulation/test/ackermann_physics_regression.py` 在 headless 平面世界中读取真实轮状态与 groundtruth；从 SDF 后轮位置确定中心到后轴距离，保留中心真值 CSV，再转换回后轴检查无侧滑与圆弧误差，同时核对中心侧向速度和圆弧。显式运行主套件与 `--nonfinite` 组，不会随普通 pytest 启动 Gazebo。
 
 ## STEP / CAD 资源是否需要
 

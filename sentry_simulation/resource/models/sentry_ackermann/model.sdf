@@ -2,20 +2,21 @@
 <sdf version="1.7">
   <model name="sentry" xmlns:ignition="http://ignitionrobotics.org/schema">
     <!-- Independent simulation prototype, not measured hardware parameters.
-         Rear-axle XY origin; wheelbase/track 0.44 m, wheel radius 0.076 m.
+         Mechanical-center XY origin; rear/front axles at x=-/+0.22 m.
+         Wheelbase/track 0.44 m, wheel radius 0.076 m.
          The navigation envelope is center steering +/-0.4 rad.
-         Existing sensor coordinates remain in this model frame. -->
+         Sensor mounting matches sentry_omni in this centered model frame. -->
     <self_collide>false</self_collide>
 
     <link name="base_link">
       <pose>0 0 0.20 0 0 0</pose>
       <inertial>
-        <pose>0.22 0 0 0 0 0</pose>
+        <pose>0 0 0 0 0 0</pose>
         <mass>35.0</mass>
         <inertia><ixx>0.583333</ixx><iyy>0.583333</iyy><izz>0.933333</izz></inertia>
       </inertial>
       <collision name="base_collision">
-        <pose>0.22 0 -0.04 0 0 0</pose>
+        <pose>0 0 -0.04 0 0 0</pose>
         <geometry><box><size>0.40 0.40 0.16</size></box></geometry>
         <surface>
           <friction><ode><mu>0.8</mu><mu2>0.8</mu2></ode></friction>
@@ -23,17 +24,17 @@
         </surface>
       </collision>
       <visual name="base_visual">
-        <pose>0.22 0 -0.175736785 0 0 0</pose>
+        <pose>0 0 -0.175736785 0 0 0</pose>
         <geometry><mesh><uri>model://pb2025_visuals/meshes/chassis_base.dae</uri><scale>1 1 0.852565282</scale></mesh></geometry>
       </visual>
     </link>
 
     <link name="front_left_knuckle">
-      <pose>0.44 0.22 0.076 0 0 0</pose>
+      <pose>0.22 0.22 0.076 0 0 0</pose>
       <inertial><mass>0.15</mass><inertia><ixx>0.00004</ixx><iyy>0.00004</iyy><izz>0.00004</izz></inertia></inertial>
     </link>
     <link name="front_left_wheel">
-      <pose>0.44 0.22 0.076 -1.57079632679 0 0</pose>
+      <pose>0.22 0.22 0.076 -1.57079632679 0 0</pose>
       <inertial><mass>0.6</mass><inertia><ixx>0.0009464</ixx><iyy>0.0009464</iyy><izz>0.0017328</izz></inertia></inertial>
       <collision name="collision">
         <geometry><cylinder><radius>0.076</radius><length>0.04</length></cylinder></geometry>
@@ -42,11 +43,11 @@
       <visual name="visual"><geometry><cylinder><radius>0.076</radius><length>0.04</length></cylinder></geometry></visual>
     </link>
     <link name="front_right_knuckle">
-      <pose>0.44 -0.22 0.076 0 0 0</pose>
+      <pose>0.22 -0.22 0.076 0 0 0</pose>
       <inertial><mass>0.15</mass><inertia><ixx>0.00004</ixx><iyy>0.00004</iyy><izz>0.00004</izz></inertia></inertial>
     </link>
     <link name="front_right_wheel">
-      <pose>0.44 -0.22 0.076 -1.57079632679 0 0</pose>
+      <pose>0.22 -0.22 0.076 -1.57079632679 0 0</pose>
       <inertial><mass>0.6</mass><inertia><ixx>0.0009464</ixx><iyy>0.0009464</iyy><izz>0.0017328</izz></inertia></inertial>
       <collision name="collision">
         <geometry><cylinder><radius>0.076</radius><length>0.04</length></cylinder></geometry>
@@ -55,7 +56,7 @@
       <visual name="visual"><geometry><cylinder><radius>0.076</radius><length>0.04</length></cylinder></geometry></visual>
     </link>
     <link name="rear_left_wheel">
-      <pose>0 0.22 0.076 -1.57079632679 0 0</pose>
+      <pose>-0.22 0.22 0.076 -1.57079632679 0 0</pose>
       <inertial><mass>0.6</mass><inertia><ixx>0.0009464</ixx><iyy>0.0009464</iyy><izz>0.0017328</izz></inertia></inertial>
       <collision name="collision">
         <geometry><cylinder><radius>0.076</radius><length>0.04</length></cylinder></geometry>
@@ -64,7 +65,7 @@
       <visual name="visual"><geometry><cylinder><radius>0.076</radius><length>0.04</length></cylinder></geometry></visual>
     </link>
     <link name="rear_right_wheel">
-      <pose>0 -0.22 0.076 -1.57079632679 0 0</pose>
+      <pose>-0.22 -0.22 0.076 -1.57079632679 0 0</pose>
       <inertial><mass>0.6</mass><inertia><ixx>0.0009464</ixx><iyy>0.0009464</iyy><izz>0.0017328</izz></inertia></inertial>
       <collision name="collision">
         <geometry><cylinder><radius>0.076</radius><length>0.04</length></cylinder></geometry>
@@ -167,7 +168,9 @@
 
     <!-- Rear wheel drive and front steering have one command owner.
          steering_limit is the center bicycle angle, not the inner wheel angle.
-         Twist remains rear-axle forward speed and yaw rate; zero requests recentering. -->
+         Center Twist has vx=v_rear, vy=0.22*w, wz=w. The actuator uses only
+         vx/wz; vy is the rigid-body center velocity, not an independent DOF.
+         Zero requests recentering. -->
     <plugin filename="AckermannBicycle" name="sentry_simulation::AckermannBicycle">
       <left_joint>rear_left_joint</left_joint><right_joint>rear_right_joint</right_joint>
       <left_steering_joint>front_left_steering_joint</left_steering_joint>
@@ -181,6 +184,7 @@
       <joint_name>front_right_steering_joint</joint_name>
       <topic>/sentry/steering_joint_state</topic>
     </plugin>
+    <!-- The publisher measures the model origin: center XY, original model Z. -->
     <plugin filename="ignition-gazebo-odometry-publisher-system" name="ignition::gazebo::systems::OdometryPublisher">
       <odom_frame>sentry/odom</odom_frame><robot_base_frame>sentry/base_link</robot_base_frame>
       <dimensions>3</dimensions><odom_publish_frequency>100</odom_publish_frequency>

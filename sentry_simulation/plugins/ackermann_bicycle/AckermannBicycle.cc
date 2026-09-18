@@ -131,6 +131,8 @@ private:
   void OnCommand(const ignition::msgs::Twist & message)
   {
     std::lock_guard<std::mutex> lock(command_mutex);
+    // At the center, body vx equals rear-axle speed. Center vy=d*w is a
+    // consequence of rigid-body rotation, not an independently driven input.
     const double v = message.linear().x();
     const double w = message.angular().z();
     const bool valid = std::isfinite(v) && std::isfinite(w);

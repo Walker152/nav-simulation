@@ -5,6 +5,7 @@ Requires Gazebo Fortress's ign CLI only (Python standard library).
 The input SDF is unmodified except removal of visuals/sensors and adding rear
 joint observations. This catches slow steering, wrong reverse signs and a
 wheel-only fix whose actual body motion still violates the bicycle contract.
+Groundtruth stays at the model center; rear-axle checks remove its lever arm.
 """
 import argparse
 import csv
@@ -33,6 +34,14 @@ def stop(process):
 
 def prepare(model_path, directory):
     model = ET.parse(model_path).getroot().find('model')
+    wheel_x = {name: float(model.findtext(f"link[@name='{name}_wheel']/pose").split()[0])
+               for name in ('rear_left', 'rear_right', 'front_left', 'front_right')}
+    wheelbase = float(model.findtext("plugin[@name='sentry_simulation::AckermannBicycle']/wheel_base"))
+    if (not all(math.isfinite(x) for x in wheel_x.values()) or
+            not math.isclose(wheel_x['rear_left'], wheel_x['rear_right'], abs_tol=1e-9) or
+            not math.isclose(wheel_x['front_left'], wheel_x['front_right'], abs_tol=1e-9) or
+            not math.isclose(wheel_x['front_left'] - wheel_x['rear_left'], wheelbase, abs_tol=1e-9)):
+        raise ValueError('regression requires aligned axles matching the plugin wheelbase')
     for parent in model.iter():
         for child in list(parent):
             if child.tag in ('visual', 'sensor'):
@@ -51,9 +60,10 @@ def prepare(model_path, directory):
       </collision></link></model></world></sdf>''')
     root.find('world').append(model)
     ET.ElementTree(root).write(directory / 'world.sdf', encoding='unicode')
+    return -wheel_x['rear_left']
 
 
-def analyze(directory, rows, events):
+def analyze(directory, rows, events, centre_offset):
     failures, results = [], []
     joints, truth = rows['joints'], rows['truth']
     for index, event in enumerate(events):
@@ -79,30 +89,40 @@ def analyze(directory, rows, events):
         yaw_error = abs(response[3] - event['w'])
         steady = [r for r in body if end - .5 <= r[0]]
         vx = sum(r[1] for r in steady) / len(steady)
-        vy = max(abs(r[2]) for r in steady)
+        # vx is unchanged by an x-axis shift; center vy includes omega x r.
+        vy = max(abs(r[2] - centre_offset*r[3]) for r in steady)
+        center_vy_error = max(abs(r[2] - centre_offset*event['w']) for r in steady)
         checks = {'wheel_50ms': wheel_error <= .005,
                   'body_150ms': yaw_error <= max(.03, .15 * abs(event['w'])),
                   'direction_150ms': abs(event['w']) < .03 or response[3] * event['w'] > 0,
                   'steady_speed': abs(vx-event['v']) <= max(.015, .05*abs(event['v'])),
-                  'steady_lateral': vy <= .02}
+                  'steady_lateral': vy <= .02,
+                  'center_lateral': center_vy_error <= .02}
         a = min(body, key=lambda r: abs(r[0] - (end - 1.1)))
         b = min(body, key=lambda r: abs(r[0] - (a[0] + 1)))
         dt, v, w = b[0]-a[0], event['v'], event['w']
         dx = v*dt if abs(w) < 1e-10 else v*math.sin(w*dt)/w
         dy = 0 if abs(w) < 1e-10 else v*(1-math.cos(w*dt))/w
-        x = a[4] + math.cos(a[6])*dx - math.sin(a[6])*dy
-        y = a[5] + math.sin(a[6])*dx + math.cos(a[6])*dy
-        position_error = math.hypot(b[4]-x, b[5]-y)
+        x = a[4] - centre_offset*math.cos(a[6]) + math.cos(a[6])*dx - math.sin(a[6])*dy
+        y = a[5] - centre_offset*math.sin(a[6]) + math.sin(a[6])*dx + math.cos(a[6])*dy
+        position_error = math.hypot(b[4]-centre_offset*math.cos(b[6])-x,
+                                    b[5]-centre_offset*math.sin(b[6])-y)
+        center_position_error = math.hypot(
+            b[4]-x-centre_offset*math.cos(a[6]+w*dt),
+            b[5]-y-centre_offset*math.sin(a[6]+w*dt))
         heading_error = abs(math.remainder(b[6]-a[6]-w*dt, 2*math.pi))
         checks['arc_position'] = position_error <= .04
+        checks['center_arc_position'] = center_position_error <= .04
         checks['arc_heading'] = heading_error <= .05
         result = dict(event, execution=t0, wheel_error_50ms=wheel_error,
                       yaw_error_150ms=yaw_error, steady_vx=vx, steady_max_vy=vy,
+                      center_lateral_error=center_vy_error,
                       arc_position_error=position_error, arc_heading_error=heading_error,
+                      center_arc_position_error=center_position_error,
                       checks=checks)
         results.append(result)
         failures.extend(event['name'] + ': ' + name for name, ok in checks.items() if not ok)
-    report = {'results': results, 'failures': failures}
+    report = {'centre_offset': centre_offset, 'results': results, 'failures': failures}
     (directory/'summary.json').write_text(json.dumps(report, indent=2))
     print(json.dumps(report, indent=2), flush=True)
     return 1 if failures else 0
@@ -122,9 +142,10 @@ def main():
     directory.mkdir(parents=True, exist_ok=True)
     partition = 'ack_regression_' + uuid.uuid4().hex
     env = dict(os.environ, IGN_PARTITION=partition)
-    prepare(args.model, directory)
+    centre_offset = prepare(args.model, directory)
     (directory/'manifest.json').write_text(json.dumps({'partition': partition,
-        'model': str(args.model.resolve()), 'physics_step': .001}, indent=2))
+        'model': str(args.model.resolve()), 'physics_step': .001,
+        'truth_reference': 'model_center', 'centre_offset': centre_offset}, indent=2))
     rows = {'joints': [], 'truth': []}
     lock, processes, threads, files = threading.Lock(), [], [], []
 
@@ -140,7 +161,8 @@ def main():
             with open(directory/(name+'.csv'), 'w') as output:
                 writer = csv.writer(output)
                 writer.writerow(['sim', 'left', 'right', 'rear_left_rate', 'rear_right_rate']
-                                if name == 'joints' else ['sim', 'vx', 'vy', 'w', 'x', 'y', 'yaw'])
+                                if name == 'joints' else
+                                ['sim', 'center_vx', 'center_vy', 'w', 'center_x', 'center_y', 'yaw'])
                 for line in process.stdout:
                     try:
                         message = json.loads(line)
@@ -215,6 +237,7 @@ def main():
             command_v = 'nan' if name == 'nan_stop' else v
             if name == 'inf_stop':
                 command_w = 'inf'
+            command_y = centre_offset*command_w if isinstance(command_w, (float, int)) else 0.0
             tangent = math.tan(delta)
             rear = [v*(1-.5*tangent)/.076, v*(1+.5*tangent)/.076]
             # Fortress CLI is one-shot; retry only after the previous writer
@@ -223,7 +246,7 @@ def main():
             for attempt in range(3):
                 publisher = subprocess.Popen(['ign', 'topic', '-t', '/sentry/cmd_vel',
                     '-m', 'ignition.msgs.Twist', '-p',
-                    f'linear: {{x: {command_v}}} angular: {{z: {command_w}}}'], env=env,
+                    f'linear: {{x: {command_v} y: {command_y}}} angular: {{z: {command_w}}}'], env=env,
                     stdout=subprocess.DEVNULL, stderr=log, start_new_session=True)
                 processes.append(publisher)
                 publisher.wait(timeout=5)
@@ -237,7 +260,7 @@ def main():
             else:
                 raise RuntimeError('no expected rear response after three publishes')
             events.append({'name': name, 'v': v, 'w': w, 'sent_v': command_v,
-                'sent_w': command_w, 'before': before, 'after': simtime(),
+                'sent_vy': command_y, 'sent_w': command_w, 'before': before, 'after': simtime(),
                 'angles': [math.atan(tangent/(1-.5*tangent)), math.atan(tangent/(1+.5*tangent))],
                 'rear': rear})
             (directory/'events.json').write_text(json.dumps(events, indent=2))
@@ -253,7 +276,7 @@ def main():
             file.close()
         (directory/'cleanup.json').write_text(json.dumps([
             {'pid': p.pid, 'returncode': p.poll()} for p in processes], indent=2))
-    return analyze(directory, rows, events)
+    return analyze(directory, rows, events, centre_offset)
 
 
 if __name__ == '__main__':

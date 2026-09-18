@@ -67,6 +67,7 @@ ament_export_dependencies(livox_ros_driver2 pcl_conversions rclcpp rclcpp_compon
 if(BUILD_TESTING)
   find_package(ament_cmake_pytest REQUIRED)
   ament_add_pytest_test(simulation_kinematics test/test_kinematics.py)
+  ament_add_pytest_test(simulation_ackermann_model test/test_ackermann_model.py)
   ament_add_pytest_test(simulation_imu_filter test/test_imu_filter.py)
   ament_add_pytest_test(simulation_contract test/test_simulation_contract.py)
 endif()
