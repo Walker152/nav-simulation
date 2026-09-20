@@ -23,6 +23,7 @@ from launch.actions import (
     ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler, Shutdown, TimerAction,
 )
 from launch.event_handlers import OnProcessExit
+from launch_ros.actions import RosTimer, SetUseSimTime
 from launch_ros.substitutions import ExecutableInPackage
 from launch_ros.utilities import evaluate_parameters
 from launch.utilities import perform_substitutions
@@ -82,6 +83,7 @@ class SimulationContractTest(unittest.TestCase):
             source_shares[name]
         ) if name in source_shares else resolve_share(name)
         process_environments = []
+        delayed_actions = []
 
         def transport_environment(context):
             return {
@@ -96,6 +98,16 @@ class SimulationContractTest(unittest.TestCase):
                 # but do not start Gazebo or ROS nodes in this contract test.
                 if isinstance(action, (ExecuteProcess, IncludeLaunchDescription)):
                     process_environments.append(transport_environment(context))
+                elif isinstance(action, SetUseSimTime):
+                    # Clock ownership is exercised by the real startup regression;
+                    # this environment-only walk must not start a ROS executor.
+                    continue
+                elif isinstance(action, RegisterEventHandler) and isinstance(
+                    action.event_handler, OnProcessExit
+                ):
+                    delayed_actions.extend(action.event_handler.describe()[1])
+                elif isinstance(action, RosTimer):
+                    visit(action.actions, context)
                 else:
                     visit(action.execute(context) or [], context)
 
@@ -106,6 +118,8 @@ class SimulationContractTest(unittest.TestCase):
             os.environ["SENTRY_SIMULATION_SHARE"] = str(PACKAGE_ROOT)
             context = LaunchContext()
             visit(module.generate_launch_description().entities, context)
+            # Spawn completion occurs after the outer scoped group has returned.
+            visit(delayed_actions, context)
             final_environment = transport_environment(context)
         self.assertGreaterEqual(len(process_environments), 10)
         return process_environments, final_environment

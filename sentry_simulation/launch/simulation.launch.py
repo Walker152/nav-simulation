@@ -17,10 +17,10 @@ from launch.actions import (
     SetEnvironmentVariable,
 )
 from launch.conditions import IfCondition
-from launch.event_handlers import OnShutdown
+from launch.event_handlers import OnProcessExit, OnShutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import ComposableNodeContainer, Node
+from launch_ros.actions import ComposableNodeContainer, Node, RosTimer, SetUseSimTime
 from launch_ros.descriptions import ComposableNode
 
 
@@ -198,6 +198,16 @@ def _launch_setup(context, package_share):
         ],
     )
 
+    # Point-LIO assumes a stationary IMU during gravity initialization. Start
+    # after the spawned chassis has settled, measured in simulation time.
+    start_localization = RegisterEventHandler(OnProcessExit(
+        target_action=spawn_robot,
+        on_exit=[RosTimer(period=1.0, actions=[GroupAction(
+            # The outer group's environment has been restored by this event.
+            actions=[*transport_actions, point_lio_container], scoped=True,
+        )])],
+    ))
+
     navigation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
@@ -301,11 +311,12 @@ def _launch_setup(context, package_share):
     return [
         cleanup_params,
         *transport_actions,
+        SetUseSimTime(True),
+        start_localization,
         gazebo,
         spawn_robot,
         bridge,
         imu_filter,
-        point_lio_container,
         *localization_actions,
         Node(
             package="nav2_map_server",
