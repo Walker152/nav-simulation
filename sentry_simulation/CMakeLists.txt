@@ -17,6 +17,11 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
+add_executable(simulation_container src/simulation_container.cpp)
+target_compile_features(simulation_container PRIVATE cxx_std_17)
+ament_target_dependencies(simulation_container rclcpp rclcpp_components)
+install(TARGETS simulation_container DESTINATION lib/${PROJECT_NAME})
+
 add_library(pointcloud_adapter_component SHARED src/pointcloud_adapter.cpp)
 target_compile_features(pointcloud_adapter_component PUBLIC cxx_std_17)
 target_include_directories(pointcloud_adapter_component PUBLIC
@@ -71,6 +76,8 @@ if(BUILD_TESTING)
   ament_add_pytest_test(simulation_imu_filter test/test_imu_filter.py)
   ament_add_pytest_test(simulation_contract test/test_simulation_contract.py)
   ament_add_pytest_test(simulation_home_indoor test/test_home_indoor.py)
+  ament_add_pytest_test(simulation_shutdown test/test_shutdown_contract.py TIMEOUT 45)
+  ament_add_pytest_test(simulation_container_shutdown test/test_container_shutdown.py)
 endif()
 
 ament_package()

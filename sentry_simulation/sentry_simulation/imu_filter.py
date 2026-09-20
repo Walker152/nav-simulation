@@ -4,7 +4,6 @@
 import math
 
 import rclpy
-from rclpy._rclpy_pybind11 import RCLError
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
@@ -168,8 +167,12 @@ def main(args=None):
     node = SimImuFilter()
     try:
         rclpy.spin(node)
-    except (KeyboardInterrupt, ExternalShutdownException, RCLError):
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
+    except RuntimeError:
+        # A signal can invalidate the context between executor readiness and take.
+        if node.context.ok():
+            raise
     finally:
         node.destroy_node()
         if rclpy.ok():

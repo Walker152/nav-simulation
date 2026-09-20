@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+  <!-- A response reader can be discovered after its request writer. Give
+       service replies time to match without changing sensor writer QoS. -->
+  <data_writer profile_name="service">
+    <qos>
+      <reliability>
+        <kind>RELIABLE</kind>
+        <max_blocking_time>
+          <sec>1</sec>
+          <nanosec>0</nanosec>
+        </max_blocking_time>
+      </reliability>
+    </qos>
+  </data_writer>
   <transport_descriptors>
     <transport_descriptor>
       <transport_id>simulation_udp</transport_id>

@@ -4,6 +4,7 @@ import importlib.util
 import math
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
@@ -29,6 +30,24 @@ class ImuFilterTest(unittest.TestCase):
             self.module,
             f"simulation IMU filter implementation is missing: {FILTER_PATH}",
         )
+
+    @patch.dict('os.environ', {'ROS_DOMAIN_ID': '194'})
+    def test_runtime_errors_are_ignored_only_after_context_shutdown(self):
+        from rclpy._rclpy_pybind11 import RCLError
+        for error_type in (RuntimeError, RCLError):
+            for context_stopped in (False, True):
+                with self.subTest(error_type=error_type, context_stopped=context_stopped):
+                    def failing_spin(node):
+                        if context_stopped:
+                            self.module.rclpy.shutdown()
+                        raise error_type('injected executor failure')
+                    with patch.object(self.module.rclpy, 'spin', side_effect=failing_spin):
+                        if context_stopped:
+                            self.module.main(args=[])
+                        else:
+                            with self.assertRaisesRegex(error_type, 'injected executor failure'):
+                                self.module.main(args=[])
+                    self.assertFalse(self.module.rclpy.ok())
 
     def test_out_of_range_sample_is_saturated_per_axis(self):
         self.require_module()

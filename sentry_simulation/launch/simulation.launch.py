@@ -10,6 +10,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
+    EmitEvent,
     GroupAction,
     IncludeLaunchDescription,
     OpaqueFunction,
@@ -18,7 +19,9 @@ from launch.actions import (
 )
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit, OnShutdown
+from launch.events import Shutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.logging import get_logger
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import ComposableNodeContainer, Node, RosTimer, SetUseSimTime
 from launch_ros.descriptions import ComposableNode
@@ -26,6 +29,14 @@ from launch_ros.descriptions import ComposableNode
 
 def _as_bool(value: str) -> bool:
     return value.strip().lower() in ("1", "true", "yes", "on")
+
+
+def _shutdown_on_container_exit(event, context):
+    if context.is_shutdown:
+        return []
+    reason = f"Simulation container exited unexpectedly (code {event.returncode})"
+    get_logger("sentry_simulation").error(reason)
+    return [EmitEvent(event=Shutdown(reason=reason))]
 
 
 def _launch_setup(context, package_share):
@@ -157,8 +168,8 @@ def _launch_setup(context, package_share):
     point_lio_container = ComposableNodeContainer(
         name="livox_pointlio_container",
         namespace="",
-        package="rclcpp_components",
-        executable="component_container_mt",
+        package="sentry_simulation",
+        executable="simulation_container",
         output="screen",
         # Nested global_costmap reads process arguments, not PlannerServer's
         # component-only overrides. Load the same robot contract before startup.
@@ -312,6 +323,10 @@ def _launch_setup(context, package_share):
         cleanup_params,
         *transport_actions,
         SetUseSimTime(True),
+        RegisterEventHandler(OnProcessExit(
+            target_action=point_lio_container,
+            on_exit=_shutdown_on_container_exit,
+        )),
         start_localization,
         gazebo,
         spawn_robot,
