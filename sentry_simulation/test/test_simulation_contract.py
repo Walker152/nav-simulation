@@ -792,7 +792,8 @@ class SimulationContractTest(unittest.TestCase):
             (PACKAGE_ROOT / "config" / "worlds.yaml").read_text(encoding="utf-8")
         )
         self.assertTrue(
-            all(item["spawn_clearance"] == 0.0 for item in catalog.values())
+            all(item["spawn_clearance"] == 0.0 for name, item in catalog.items()
+                if name != "home_indoor")
         )
         launch_source = (PACKAGE_ROOT / "launch" / "simulation.launch.py").read_text(
             encoding="utf-8"
@@ -808,7 +809,7 @@ class SimulationContractTest(unittest.TestCase):
 
     def test_all_world_files_are_valid_sdf(self):
         worlds_dir = PACKAGE_ROOT / "resource" / "worlds"
-        expected = {"rmuc_2024", "rmul_2024", "rmuc_2025", "rmuc_2026", "rmul_2025"}
+        expected = {"rmuc_2024", "rmul_2024", "rmuc_2025", "rmuc_2026", "rmul_2025", "home_indoor"}
         actual = {path.stem.removesuffix("_world") for path in worlds_dir.glob("*_world.sdf")}
         self.assertEqual(actual, expected)
         for world in worlds_dir.glob("*_world.sdf"):
@@ -938,7 +939,7 @@ class SimulationContractTest(unittest.TestCase):
         )
         self.assertEqual(
             set(catalog),
-            {"rmuc_2024", "rmul_2024", "rmuc_2025", "rmuc_2026", "rmul_2025"},
+            {"rmuc_2024", "rmul_2024", "rmuc_2025", "rmuc_2026", "rmul_2025", "home_indoor"},
         )
         for item in catalog.values():
             self.assertTrue((PACKAGE_ROOT / item["world"]).is_file())
@@ -987,6 +988,9 @@ class SimulationContractTest(unittest.TestCase):
                 (PACKAGE_ROOT / item["map"]).read_text(encoding="utf-8")
             )
             self.assertEqual(metadata["origin"], [0, 0, 0], name)
+            if name == "home_indoor":
+                # House geometry and spawn clearance have their own contract.
+                continue
             expected = (
                 {"x": 4.234, "y": 7.3, "z": 0.0, "yaw": 0.04}
                 if name.startswith("rmuc_")

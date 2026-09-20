@@ -1,0 +1,5110 @@
+<?xml version='1.0' encoding='utf-8'?>
+<sdf version="1.7">
+  <model name="home_indoor">
+    <static>true</static>
+    <link name="floor_ground">
+      <pose>6.6 5.4 -0.1 0 0 0</pose>
+      <collision name="floor_ground_collision">
+        <geometry>
+          <box>
+            <size>13.6 11.2 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="floor_ground_visual">
+        <geometry>
+          <box>
+            <size>13.6 11.2 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.68 0.55 0.39 1</ambient>
+          <diffuse>0.68 0.55 0.39 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="floor_upper">
+      <pose>5 4.5 2.5 0 0 0</pose>
+      <collision name="floor_upper_collision">
+        <geometry>
+          <box>
+            <size>10 9 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="floor_upper_visual">
+        <geometry>
+          <box>
+            <size>10 9 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.76 0.65 0.48 1</ambient>
+          <diffuse>0.76 0.65 0.48 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_west">
+      <pose>0 4.5 1.2 0 0 0</pose>
+      <collision name="f0_west_collision">
+        <geometry>
+          <box>
+            <size>0.18 9 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_west_visual">
+        <geometry>
+          <box>
+            <size>0.18 9 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_north">
+      <pose>5 9 1.2 0 0 0</pose>
+      <collision name="f0_north_collision">
+        <geometry>
+          <box>
+            <size>10 0.18 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_north_visual">
+        <geometry>
+          <box>
+            <size>10 0.18 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_south">
+      <pose>5 0 1.2 0 0 0</pose>
+      <collision name="f0_south_collision">
+        <geometry>
+          <box>
+            <size>10 0.18 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_south_visual">
+        <geometry>
+          <box>
+            <size>10 0.18 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_ramp_door_south">
+      <pose>10 0.085 1.2 0 0 0</pose>
+      <collision name="f0_ramp_door_south_collision">
+        <geometry>
+          <box>
+            <size>0.18 0.17 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_ramp_door_south_visual">
+        <geometry>
+          <box>
+            <size>0.18 0.17 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_ramp_door_north">
+      <pose>10 5.215 1.2 0 0 0</pose>
+      <collision name="f0_ramp_door_north_collision">
+        <geometry>
+          <box>
+            <size>0.18 7.57 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_ramp_door_north_visual">
+        <geometry>
+          <box>
+            <size>0.18 7.57 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_ramp_door_lintel">
+      <pose>10 0.8 2.3 0 0 0</pose>
+      <collision name="f0_ramp_door_lintel_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.26 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_ramp_door_lintel_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.26 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_ramp_door_jamb_-1">
+      <pose>10 0.21 1.05 0 0 0</pose>
+      <collision name="f0_ramp_door_jamb_-1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_ramp_door_jamb_-1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_ramp_door_jamb_1">
+      <pose>10 1.39 1.05 0 0 0</pose>
+      <collision name="f0_ramp_door_jamb_1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_ramp_door_jamb_1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_ramp_door_frame_top">
+      <pose>10 0.8 2.15 0 0 0</pose>
+      <collision name="f0_ramp_door_frame_top_collision">
+        <geometry>
+          <box>
+            <size>0.24 1.26 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_ramp_door_frame_top_visual">
+        <geometry>
+          <box>
+            <size>0.24 1.26 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_4.2_0_south">
+      <pose>4.2 0.86 1.2 0 0 0</pose>
+      <collision name="f0_room_4.2_0_south_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_4.2_0_south_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_4.2_0_north">
+      <pose>4.2 3.64 1.2 0 0 0</pose>
+      <collision name="f0_room_4.2_0_north_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_4.2_0_north_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_4.2_0_lintel">
+      <pose>4.2 2.25 2.3 0 0 0</pose>
+      <collision name="f0_room_4.2_0_lintel_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.06 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_4.2_0_lintel_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.06 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_4.2_0_jamb_-1">
+      <pose>4.2 1.76 1.05 0 0 0</pose>
+      <collision name="f0_room_4.2_0_jamb_-1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_4.2_0_jamb_-1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_4.2_0_jamb_1">
+      <pose>4.2 2.74 1.05 0 0 0</pose>
+      <collision name="f0_room_4.2_0_jamb_1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_4.2_0_jamb_1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_4.2_0_frame_top">
+      <pose>4.2 2.25 2.15 0 0 0</pose>
+      <collision name="f0_room_4.2_0_frame_top_collision">
+        <geometry>
+          <box>
+            <size>0.24 1.06 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_4.2_0_frame_top_visual">
+        <geometry>
+          <box>
+            <size>0.24 1.06 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_4.2_1_south">
+      <pose>4.2 5.36 1.2 0 0 0</pose>
+      <collision name="f0_room_4.2_1_south_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_4.2_1_south_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_4.2_1_north">
+      <pose>4.2 8.14 1.2 0 0 0</pose>
+      <collision name="f0_room_4.2_1_north_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_4.2_1_north_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_4.2_1_lintel">
+      <pose>4.2 6.75 2.3 0 0 0</pose>
+      <collision name="f0_room_4.2_1_lintel_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.06 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_4.2_1_lintel_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.06 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_4.2_1_jamb_-1">
+      <pose>4.2 6.26 1.05 0 0 0</pose>
+      <collision name="f0_room_4.2_1_jamb_-1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_4.2_1_jamb_-1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_4.2_1_jamb_1">
+      <pose>4.2 7.24 1.05 0 0 0</pose>
+      <collision name="f0_room_4.2_1_jamb_1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_4.2_1_jamb_1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_4.2_1_frame_top">
+      <pose>4.2 6.75 2.15 0 0 0</pose>
+      <collision name="f0_room_4.2_1_frame_top_collision">
+        <geometry>
+          <box>
+            <size>0.24 1.06 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_4.2_1_frame_top_visual">
+        <geometry>
+          <box>
+            <size>0.24 1.06 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_5.8_0_south">
+      <pose>5.8 0.835 1.2 0 0 0</pose>
+      <collision name="f0_room_5.8_0_south_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_5.8_0_south_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_5.8_0_north">
+      <pose>5.8 3.665 1.2 0 0 0</pose>
+      <collision name="f0_room_5.8_0_north_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_5.8_0_north_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_5.8_0_lintel">
+      <pose>5.8 2.25 2.3 0 0 0</pose>
+      <collision name="f0_room_5.8_0_lintel_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.16 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_5.8_0_lintel_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.16 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_5.8_0_jamb_-1">
+      <pose>5.8 1.71 1.05 0 0 0</pose>
+      <collision name="f0_room_5.8_0_jamb_-1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_5.8_0_jamb_-1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_5.8_0_jamb_1">
+      <pose>5.8 2.79 1.05 0 0 0</pose>
+      <collision name="f0_room_5.8_0_jamb_1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_5.8_0_jamb_1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_5.8_0_frame_top">
+      <pose>5.8 2.25 2.15 0 0 0</pose>
+      <collision name="f0_room_5.8_0_frame_top_collision">
+        <geometry>
+          <box>
+            <size>0.24 1.16 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_5.8_0_frame_top_visual">
+        <geometry>
+          <box>
+            <size>0.24 1.16 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_5.8_1_south">
+      <pose>5.8 5.335 1.2 0 0 0</pose>
+      <collision name="f0_room_5.8_1_south_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_5.8_1_south_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_5.8_1_north">
+      <pose>5.8 8.165 1.2 0 0 0</pose>
+      <collision name="f0_room_5.8_1_north_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_5.8_1_north_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_5.8_1_lintel">
+      <pose>5.8 6.75 2.3 0 0 0</pose>
+      <collision name="f0_room_5.8_1_lintel_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.16 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_5.8_1_lintel_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.16 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_5.8_1_jamb_-1">
+      <pose>5.8 6.21 1.05 0 0 0</pose>
+      <collision name="f0_room_5.8_1_jamb_-1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_5.8_1_jamb_-1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_5.8_1_jamb_1">
+      <pose>5.8 7.29 1.05 0 0 0</pose>
+      <collision name="f0_room_5.8_1_jamb_1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_5.8_1_jamb_1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_room_5.8_1_frame_top">
+      <pose>5.8 6.75 2.15 0 0 0</pose>
+      <collision name="f0_room_5.8_1_frame_top_collision">
+        <geometry>
+          <box>
+            <size>0.24 1.16 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_room_5.8_1_frame_top_visual">
+        <geometry>
+          <box>
+            <size>0.24 1.16 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_cross_wall_2.1">
+      <pose>2.1 4.5 1.2 0 0 0</pose>
+      <collision name="f0_cross_wall_2.1_collision">
+        <geometry>
+          <box>
+            <size>4.2 0.18 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_cross_wall_2.1_visual">
+        <geometry>
+          <box>
+            <size>4.2 0.18 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_cross_wall_7.9">
+      <pose>7.9 4.5 1.2 0 0 0</pose>
+      <collision name="f0_cross_wall_7.9_collision">
+        <geometry>
+          <box>
+            <size>4.2 0.18 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_cross_wall_7.9_visual">
+        <geometry>
+          <box>
+            <size>4.2 0.18 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f0_hall_console">
+      <pose>5 8.65 0.45 0 0 0</pose>
+      <collision name="f0_hall_console_collision">
+        <geometry>
+          <box>
+            <size>1 0.45 0.9</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f0_hall_console_visual">
+        <geometry>
+          <box>
+            <size>1 0.45 0.9</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_west">
+      <pose>0 4.5 3.8 0 0 0</pose>
+      <collision name="f1_west_collision">
+        <geometry>
+          <box>
+            <size>0.18 9 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_west_visual">
+        <geometry>
+          <box>
+            <size>0.18 9 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_north">
+      <pose>5 9 3.8 0 0 0</pose>
+      <collision name="f1_north_collision">
+        <geometry>
+          <box>
+            <size>10 0.18 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_north_visual">
+        <geometry>
+          <box>
+            <size>10 0.18 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_south">
+      <pose>5 0 3.8 0 0 0</pose>
+      <collision name="f1_south_collision">
+        <geometry>
+          <box>
+            <size>10 0.18 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_south_visual">
+        <geometry>
+          <box>
+            <size>10 0.18 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_ramp_door_south">
+      <pose>10 0.085 3.8 0 0 0</pose>
+      <collision name="f1_ramp_door_south_collision">
+        <geometry>
+          <box>
+            <size>0.18 0.17 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_ramp_door_south_visual">
+        <geometry>
+          <box>
+            <size>0.18 0.17 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_ramp_door_north">
+      <pose>10 5.215 3.8 0 0 0</pose>
+      <collision name="f1_ramp_door_north_collision">
+        <geometry>
+          <box>
+            <size>0.18 7.57 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_ramp_door_north_visual">
+        <geometry>
+          <box>
+            <size>0.18 7.57 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_ramp_door_lintel">
+      <pose>10 0.8 4.9 0 0 0</pose>
+      <collision name="f1_ramp_door_lintel_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.26 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_ramp_door_lintel_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.26 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_ramp_door_jamb_-1">
+      <pose>10 0.21 3.65 0 0 0</pose>
+      <collision name="f1_ramp_door_jamb_-1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_ramp_door_jamb_-1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_ramp_door_jamb_1">
+      <pose>10 1.39 3.65 0 0 0</pose>
+      <collision name="f1_ramp_door_jamb_1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_ramp_door_jamb_1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_ramp_door_frame_top">
+      <pose>10 0.8 4.75 0 0 0</pose>
+      <collision name="f1_ramp_door_frame_top_collision">
+        <geometry>
+          <box>
+            <size>0.24 1.26 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_ramp_door_frame_top_visual">
+        <geometry>
+          <box>
+            <size>0.24 1.26 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_4.2_0_south">
+      <pose>4.2 0.86 3.8 0 0 0</pose>
+      <collision name="f1_room_4.2_0_south_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_4.2_0_south_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_4.2_0_north">
+      <pose>4.2 3.64 3.8 0 0 0</pose>
+      <collision name="f1_room_4.2_0_north_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_4.2_0_north_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_4.2_0_lintel">
+      <pose>4.2 2.25 4.9 0 0 0</pose>
+      <collision name="f1_room_4.2_0_lintel_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.06 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_4.2_0_lintel_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.06 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_4.2_0_jamb_-1">
+      <pose>4.2 1.76 3.65 0 0 0</pose>
+      <collision name="f1_room_4.2_0_jamb_-1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_4.2_0_jamb_-1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_4.2_0_jamb_1">
+      <pose>4.2 2.74 3.65 0 0 0</pose>
+      <collision name="f1_room_4.2_0_jamb_1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_4.2_0_jamb_1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_4.2_0_frame_top">
+      <pose>4.2 2.25 4.75 0 0 0</pose>
+      <collision name="f1_room_4.2_0_frame_top_collision">
+        <geometry>
+          <box>
+            <size>0.24 1.06 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_4.2_0_frame_top_visual">
+        <geometry>
+          <box>
+            <size>0.24 1.06 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_4.2_1_south">
+      <pose>4.2 5.36 3.8 0 0 0</pose>
+      <collision name="f1_room_4.2_1_south_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_4.2_1_south_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_4.2_1_north">
+      <pose>4.2 8.14 3.8 0 0 0</pose>
+      <collision name="f1_room_4.2_1_north_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_4.2_1_north_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.72 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_4.2_1_lintel">
+      <pose>4.2 6.75 4.9 0 0 0</pose>
+      <collision name="f1_room_4.2_1_lintel_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.06 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_4.2_1_lintel_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.06 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_4.2_1_jamb_-1">
+      <pose>4.2 6.26 3.65 0 0 0</pose>
+      <collision name="f1_room_4.2_1_jamb_-1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_4.2_1_jamb_-1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_4.2_1_jamb_1">
+      <pose>4.2 7.24 3.65 0 0 0</pose>
+      <collision name="f1_room_4.2_1_jamb_1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_4.2_1_jamb_1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_4.2_1_frame_top">
+      <pose>4.2 6.75 4.75 0 0 0</pose>
+      <collision name="f1_room_4.2_1_frame_top_collision">
+        <geometry>
+          <box>
+            <size>0.24 1.06 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_4.2_1_frame_top_visual">
+        <geometry>
+          <box>
+            <size>0.24 1.06 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_5.8_0_south">
+      <pose>5.8 0.835 3.8 0 0 0</pose>
+      <collision name="f1_room_5.8_0_south_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_5.8_0_south_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_5.8_0_north">
+      <pose>5.8 3.665 3.8 0 0 0</pose>
+      <collision name="f1_room_5.8_0_north_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_5.8_0_north_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_5.8_0_lintel">
+      <pose>5.8 2.25 4.9 0 0 0</pose>
+      <collision name="f1_room_5.8_0_lintel_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.16 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_5.8_0_lintel_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.16 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_5.8_0_jamb_-1">
+      <pose>5.8 1.71 3.65 0 0 0</pose>
+      <collision name="f1_room_5.8_0_jamb_-1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_5.8_0_jamb_-1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_5.8_0_jamb_1">
+      <pose>5.8 2.79 3.65 0 0 0</pose>
+      <collision name="f1_room_5.8_0_jamb_1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_5.8_0_jamb_1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_5.8_0_frame_top">
+      <pose>5.8 2.25 4.75 0 0 0</pose>
+      <collision name="f1_room_5.8_0_frame_top_collision">
+        <geometry>
+          <box>
+            <size>0.24 1.16 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_5.8_0_frame_top_visual">
+        <geometry>
+          <box>
+            <size>0.24 1.16 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_5.8_1_south">
+      <pose>5.8 5.335 3.8 0 0 0</pose>
+      <collision name="f1_room_5.8_1_south_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_5.8_1_south_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_5.8_1_north">
+      <pose>5.8 8.165 3.8 0 0 0</pose>
+      <collision name="f1_room_5.8_1_north_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_5.8_1_north_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.67 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_5.8_1_lintel">
+      <pose>5.8 6.75 4.9 0 0 0</pose>
+      <collision name="f1_room_5.8_1_lintel_collision">
+        <geometry>
+          <box>
+            <size>0.18 1.16 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_5.8_1_lintel_visual">
+        <geometry>
+          <box>
+            <size>0.18 1.16 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_5.8_1_jamb_-1">
+      <pose>5.8 6.21 3.65 0 0 0</pose>
+      <collision name="f1_room_5.8_1_jamb_-1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_5.8_1_jamb_-1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_5.8_1_jamb_1">
+      <pose>5.8 7.29 3.65 0 0 0</pose>
+      <collision name="f1_room_5.8_1_jamb_1_collision">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_5.8_1_jamb_1_visual">
+        <geometry>
+          <box>
+            <size>0.24 0.08 2.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_room_5.8_1_frame_top">
+      <pose>5.8 6.75 4.75 0 0 0</pose>
+      <collision name="f1_room_5.8_1_frame_top_collision">
+        <geometry>
+          <box>
+            <size>0.24 1.16 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_room_5.8_1_frame_top_visual">
+        <geometry>
+          <box>
+            <size>0.24 1.16 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_cross_wall_2.1">
+      <pose>2.1 4.5 3.8 0 0 0</pose>
+      <collision name="f1_cross_wall_2.1_collision">
+        <geometry>
+          <box>
+            <size>4.2 0.18 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_cross_wall_2.1_visual">
+        <geometry>
+          <box>
+            <size>4.2 0.18 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_cross_wall_7.9">
+      <pose>7.9 4.5 3.8 0 0 0</pose>
+      <collision name="f1_cross_wall_7.9_collision">
+        <geometry>
+          <box>
+            <size>4.2 0.18 2.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_cross_wall_7.9_visual">
+        <geometry>
+          <box>
+            <size>4.2 0.18 2.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.86 0.88 0.85 1</ambient>
+          <diffuse>0.86 0.88 0.85 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="f1_hall_console">
+      <pose>5 8.65 3.05 0 0 0</pose>
+      <collision name="f1_hall_console_collision">
+        <geometry>
+          <box>
+            <size>1 0.45 0.9</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="f1_hall_console_visual">
+        <geometry>
+          <box>
+            <size>1 0.45 0.9</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="living_sofa_base">
+      <pose>0.8 2.1 0.24 0 0 0</pose>
+      <collision name="living_sofa_base_collision">
+        <geometry>
+          <box>
+            <size>0.95 2.5 0.48</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="living_sofa_base_visual">
+        <geometry>
+          <box>
+            <size>0.95 2.5 0.48</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="living_sofa_back">
+      <pose>0.4 2.1 0.64 0 0 0</pose>
+      <collision name="living_sofa_back_collision">
+        <geometry>
+          <box>
+            <size>0.18 2.5 0.8</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="living_sofa_back_visual">
+        <geometry>
+          <box>
+            <size>0.18 2.5 0.8</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="living_sofa_arm_-1.15">
+      <pose>0.8 0.95 0.48 0 0 0</pose>
+      <collision name="living_sofa_arm_-1.15_collision">
+        <geometry>
+          <box>
+            <size>0.95 0.2 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="living_sofa_arm_-1.15_visual">
+        <geometry>
+          <box>
+            <size>0.95 0.2 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="living_sofa_arm_1.15">
+      <pose>0.8 3.25 0.48 0 0 0</pose>
+      <collision name="living_sofa_arm_1.15_collision">
+        <geometry>
+          <box>
+            <size>0.95 0.2 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="living_sofa_arm_1.15_visual">
+        <geometry>
+          <box>
+            <size>0.95 0.2 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="coffee_top">
+      <pose>2.35 2.15 0.38 0 0 0</pose>
+      <collision name="coffee_top_collision">
+        <geometry>
+          <box>
+            <size>0.65 1.1 0.08</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="coffee_top_visual">
+        <geometry>
+          <box>
+            <size>0.65 1.1 0.08</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="coffee_leg_-1_-1">
+      <pose>2.115 1.69 0.17 0 0 0</pose>
+      <collision name="coffee_leg_-1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="coffee_leg_-1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="coffee_leg_-1_1">
+      <pose>2.115 2.61 0.17 0 0 0</pose>
+      <collision name="coffee_leg_-1_1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="coffee_leg_-1_1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="coffee_leg_1_-1">
+      <pose>2.585 1.69 0.17 0 0 0</pose>
+      <collision name="coffee_leg_1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="coffee_leg_1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="coffee_leg_1_1">
+      <pose>2.585 2.61 0.17 0 0 0</pose>
+      <collision name="coffee_leg_1_1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="coffee_leg_1_1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="tv_stand">
+      <pose>2.1 4.1 0.3 0 0 0</pose>
+      <collision name="tv_stand_collision">
+        <geometry>
+          <box>
+            <size>1.8 0.5 0.6</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="tv_stand_visual">
+        <geometry>
+          <box>
+            <size>1.8 0.5 0.6</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="television">
+      <pose>2.1 4.12 1.1 0 0 0</pose>
+      <collision name="television_collision">
+        <geometry>
+          <box>
+            <size>1.4 0.12 0.8</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="television_visual">
+        <geometry>
+          <box>
+            <size>1.4 0.12 0.8</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="guest_bed_base">
+      <pose>1.3 6.8 0.22 0 0 0</pose>
+      <collision name="guest_bed_base_collision">
+        <geometry>
+          <box>
+            <size>1.8 2.2 0.44</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="guest_bed_base_visual">
+        <geometry>
+          <box>
+            <size>1.8 2.2 0.44</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="guest_bed_mattress">
+      <pose>1.3 6.8 0.51 0 0 0</pose>
+      <collision name="guest_bed_mattress_collision">
+        <geometry>
+          <box>
+            <size>1.76 2.16 0.18</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="guest_bed_mattress_visual">
+        <geometry>
+          <box>
+            <size>1.76 2.16 0.18</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.40 0.55 0.72 1</ambient>
+          <diffuse>0.40 0.55 0.72 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="guest_bed_head">
+      <pose>1.3 7.87 0.6 0 0 0</pose>
+      <collision name="guest_bed_head_collision">
+        <geometry>
+          <box>
+            <size>1.9 0.12 1.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="guest_bed_head_visual">
+        <geometry>
+          <box>
+            <size>1.9 0.12 1.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="guest_bed_pillow_-0.45">
+      <pose>0.85 7.55 0.65 0 0 0</pose>
+      <collision name="guest_bed_pillow_-0.45_collision">
+        <geometry>
+          <box>
+            <size>0.65 0.4 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="guest_bed_pillow_-0.45_visual">
+        <geometry>
+          <box>
+            <size>0.65 0.4 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.93 0.92 0.86 1</ambient>
+          <diffuse>0.93 0.92 0.86 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="guest_bed_pillow_0.45">
+      <pose>1.75 7.55 0.65 0 0 0</pose>
+      <collision name="guest_bed_pillow_0.45_collision">
+        <geometry>
+          <box>
+            <size>0.65 0.4 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="guest_bed_pillow_0.45_visual">
+        <geometry>
+          <box>
+            <size>0.65 0.4 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.93 0.92 0.86 1</ambient>
+          <diffuse>0.93 0.92 0.86 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="guest_wardrobe">
+      <pose>3.3 8.45 1 0 0 0</pose>
+      <collision name="guest_wardrobe_collision">
+        <geometry>
+          <box>
+            <size>1.2 0.7 2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="guest_wardrobe_visual">
+        <geometry>
+          <box>
+            <size>1.2 0.7 2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_top">
+      <pose>7.65 2.75 0.72 0 0 0</pose>
+      <collision name="dining_top_collision">
+        <geometry>
+          <box>
+            <size>1.3 0.8 0.08</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_top_visual">
+        <geometry>
+          <box>
+            <size>1.3 0.8 0.08</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_leg_-1_-1">
+      <pose>7.09 2.44 0.34 0 0 0</pose>
+      <collision name="dining_leg_-1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_leg_-1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_leg_-1_1">
+      <pose>7.09 3.06 0.34 0 0 0</pose>
+      <collision name="dining_leg_-1_1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_leg_-1_1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_leg_1_-1">
+      <pose>8.21 2.44 0.34 0 0 0</pose>
+      <collision name="dining_leg_1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_leg_1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_leg_1_1">
+      <pose>8.21 3.06 0.34 0 0 0</pose>
+      <collision name="dining_leg_1_1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_leg_1_1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_0_seat">
+      <pose>6.65 2.75 0.44 0 0 0</pose>
+      <collision name="dining_chair_0_seat_collision">
+        <geometry>
+          <box>
+            <size>0.46 0.46 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_0_seat_visual">
+        <geometry>
+          <box>
+            <size>0.46 0.46 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_0_back">
+      <pose>6.65 2.95 0.7 0 0 0</pose>
+      <collision name="dining_chair_0_back_collision">
+        <geometry>
+          <box>
+            <size>0.46 0.08 0.5</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_0_back_visual">
+        <geometry>
+          <box>
+            <size>0.46 0.08 0.5</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_0_leg_-1_-1">
+      <pose>6.48 2.58 0.2 0 0 0</pose>
+      <collision name="dining_chair_0_leg_-1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_0_leg_-1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_0_leg_-1_1">
+      <pose>6.48 2.92 0.2 0 0 0</pose>
+      <collision name="dining_chair_0_leg_-1_1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_0_leg_-1_1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_0_leg_1_-1">
+      <pose>6.82 2.58 0.2 0 0 0</pose>
+      <collision name="dining_chair_0_leg_1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_0_leg_1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_0_leg_1_1">
+      <pose>6.82 2.92 0.2 0 0 0</pose>
+      <collision name="dining_chair_0_leg_1_1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_0_leg_1_1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_1_seat">
+      <pose>8.65 2.75 0.44 0 0 0</pose>
+      <collision name="dining_chair_1_seat_collision">
+        <geometry>
+          <box>
+            <size>0.46 0.46 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_1_seat_visual">
+        <geometry>
+          <box>
+            <size>0.46 0.46 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_1_back">
+      <pose>8.65 2.95 0.7 0 0 0</pose>
+      <collision name="dining_chair_1_back_collision">
+        <geometry>
+          <box>
+            <size>0.46 0.08 0.5</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_1_back_visual">
+        <geometry>
+          <box>
+            <size>0.46 0.08 0.5</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_1_leg_-1_-1">
+      <pose>8.48 2.58 0.2 0 0 0</pose>
+      <collision name="dining_chair_1_leg_-1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_1_leg_-1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_1_leg_-1_1">
+      <pose>8.48 2.92 0.2 0 0 0</pose>
+      <collision name="dining_chair_1_leg_-1_1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_1_leg_-1_1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_1_leg_1_-1">
+      <pose>8.82 2.58 0.2 0 0 0</pose>
+      <collision name="dining_chair_1_leg_1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_1_leg_1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_1_leg_1_1">
+      <pose>8.82 2.92 0.2 0 0 0</pose>
+      <collision name="dining_chair_1_leg_1_1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_1_leg_1_1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_2_seat">
+      <pose>7.65 1.85 0.44 0 0 0</pose>
+      <collision name="dining_chair_2_seat_collision">
+        <geometry>
+          <box>
+            <size>0.46 0.46 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_2_seat_visual">
+        <geometry>
+          <box>
+            <size>0.46 0.46 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_2_back">
+      <pose>7.65 2.05 0.7 0 0 0</pose>
+      <collision name="dining_chair_2_back_collision">
+        <geometry>
+          <box>
+            <size>0.46 0.08 0.5</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_2_back_visual">
+        <geometry>
+          <box>
+            <size>0.46 0.08 0.5</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_2_leg_-1_-1">
+      <pose>7.48 1.68 0.2 0 0 0</pose>
+      <collision name="dining_chair_2_leg_-1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_2_leg_-1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_2_leg_-1_1">
+      <pose>7.48 2.02 0.2 0 0 0</pose>
+      <collision name="dining_chair_2_leg_-1_1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_2_leg_-1_1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_2_leg_1_-1">
+      <pose>7.82 1.68 0.2 0 0 0</pose>
+      <collision name="dining_chair_2_leg_1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_2_leg_1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_2_leg_1_1">
+      <pose>7.82 2.02 0.2 0 0 0</pose>
+      <collision name="dining_chair_2_leg_1_1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_2_leg_1_1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_3_seat">
+      <pose>7.65 3.65 0.44 0 0 0</pose>
+      <collision name="dining_chair_3_seat_collision">
+        <geometry>
+          <box>
+            <size>0.46 0.46 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_3_seat_visual">
+        <geometry>
+          <box>
+            <size>0.46 0.46 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_3_back">
+      <pose>7.65 3.85 0.7 0 0 0</pose>
+      <collision name="dining_chair_3_back_collision">
+        <geometry>
+          <box>
+            <size>0.46 0.08 0.5</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_3_back_visual">
+        <geometry>
+          <box>
+            <size>0.46 0.08 0.5</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_3_leg_-1_-1">
+      <pose>7.48 3.48 0.2 0 0 0</pose>
+      <collision name="dining_chair_3_leg_-1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_3_leg_-1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_3_leg_-1_1">
+      <pose>7.48 3.82 0.2 0 0 0</pose>
+      <collision name="dining_chair_3_leg_-1_1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_3_leg_-1_1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_3_leg_1_-1">
+      <pose>7.82 3.48 0.2 0 0 0</pose>
+      <collision name="dining_chair_3_leg_1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_3_leg_1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="dining_chair_3_leg_1_1">
+      <pose>7.82 3.82 0.2 0 0 0</pose>
+      <collision name="dining_chair_3_leg_1_1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="dining_chair_3_leg_1_1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="kitchen_counter_north">
+      <pose>7.6 8.45 0.46 0 0 0</pose>
+      <collision name="kitchen_counter_north_collision">
+        <geometry>
+          <box>
+            <size>2.9 0.85 0.92</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="kitchen_counter_north_visual">
+        <geometry>
+          <box>
+            <size>2.9 0.85 0.92</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.93 0.92 0.86 1</ambient>
+          <diffuse>0.93 0.92 0.86 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="kitchen_counter_east">
+      <pose>9.45 7.8 0.46 0 0 0</pose>
+      <collision name="kitchen_counter_east_collision">
+        <geometry>
+          <box>
+            <size>0.85 1.7 0.92</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="kitchen_counter_east_visual">
+        <geometry>
+          <box>
+            <size>0.85 1.7 0.92</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.93 0.92 0.86 1</ambient>
+          <diffuse>0.93 0.92 0.86 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="fridge">
+      <pose>9.4 5.35 0.95 0 0 0</pose>
+      <collision name="fridge_collision">
+        <geometry>
+          <box>
+            <size>0.9 0.85 1.9</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="fridge_visual">
+        <geometry>
+          <box>
+            <size>0.9 0.85 1.9</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.93 0.92 0.86 1</ambient>
+          <diffuse>0.93 0.92 0.86 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="sink">
+      <pose>7.5 8.45 0.93 0 0 0</pose>
+      <collision name="sink_collision">
+        <geometry>
+          <box>
+            <size>0.65 0.55 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="sink_visual">
+        <geometry>
+          <box>
+            <size>0.65 0.55 0.04</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="master_bed_base">
+      <pose>1.3 2.1 2.82 0 0 0</pose>
+      <collision name="master_bed_base_collision">
+        <geometry>
+          <box>
+            <size>1.8 2.2 0.44</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="master_bed_base_visual">
+        <geometry>
+          <box>
+            <size>1.8 2.2 0.44</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="master_bed_mattress">
+      <pose>1.3 2.1 3.11 0 0 0</pose>
+      <collision name="master_bed_mattress_collision">
+        <geometry>
+          <box>
+            <size>1.76 2.16 0.18</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="master_bed_mattress_visual">
+        <geometry>
+          <box>
+            <size>1.76 2.16 0.18</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.40 0.55 0.72 1</ambient>
+          <diffuse>0.40 0.55 0.72 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="master_bed_head">
+      <pose>1.3 3.17 3.2 0 0 0</pose>
+      <collision name="master_bed_head_collision">
+        <geometry>
+          <box>
+            <size>1.9 0.12 1.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="master_bed_head_visual">
+        <geometry>
+          <box>
+            <size>1.9 0.12 1.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="master_bed_pillow_-0.45">
+      <pose>0.85 2.85 3.25 0 0 0</pose>
+      <collision name="master_bed_pillow_-0.45_collision">
+        <geometry>
+          <box>
+            <size>0.65 0.4 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="master_bed_pillow_-0.45_visual">
+        <geometry>
+          <box>
+            <size>0.65 0.4 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.93 0.92 0.86 1</ambient>
+          <diffuse>0.93 0.92 0.86 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="master_bed_pillow_0.45">
+      <pose>1.75 2.85 3.25 0 0 0</pose>
+      <collision name="master_bed_pillow_0.45_collision">
+        <geometry>
+          <box>
+            <size>0.65 0.4 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="master_bed_pillow_0.45_visual">
+        <geometry>
+          <box>
+            <size>0.65 0.4 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.93 0.92 0.86 1</ambient>
+          <diffuse>0.93 0.92 0.86 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="master_wardrobe">
+      <pose>2.1 4.05 3.6 0 0 0</pose>
+      <collision name="master_wardrobe_collision">
+        <geometry>
+          <box>
+            <size>2.7 0.65 2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="master_wardrobe_visual">
+        <geometry>
+          <box>
+            <size>2.7 0.65 2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.93 0.92 0.86 1</ambient>
+          <diffuse>0.93 0.92 0.86 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="second_bed_base">
+      <pose>1.3 6.8 2.82 0 0 0</pose>
+      <collision name="second_bed_base_collision">
+        <geometry>
+          <box>
+            <size>1.8 2.2 0.44</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="second_bed_base_visual">
+        <geometry>
+          <box>
+            <size>1.8 2.2 0.44</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="second_bed_mattress">
+      <pose>1.3 6.8 3.11 0 0 0</pose>
+      <collision name="second_bed_mattress_collision">
+        <geometry>
+          <box>
+            <size>1.76 2.16 0.18</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="second_bed_mattress_visual">
+        <geometry>
+          <box>
+            <size>1.76 2.16 0.18</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.40 0.55 0.72 1</ambient>
+          <diffuse>0.40 0.55 0.72 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="second_bed_head">
+      <pose>1.3 7.87 3.2 0 0 0</pose>
+      <collision name="second_bed_head_collision">
+        <geometry>
+          <box>
+            <size>1.9 0.12 1.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="second_bed_head_visual">
+        <geometry>
+          <box>
+            <size>1.9 0.12 1.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="second_bed_pillow_-0.45">
+      <pose>0.85 7.55 3.25 0 0 0</pose>
+      <collision name="second_bed_pillow_-0.45_collision">
+        <geometry>
+          <box>
+            <size>0.65 0.4 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="second_bed_pillow_-0.45_visual">
+        <geometry>
+          <box>
+            <size>0.65 0.4 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.93 0.92 0.86 1</ambient>
+          <diffuse>0.93 0.92 0.86 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="second_bed_pillow_0.45">
+      <pose>1.75 7.55 3.25 0 0 0</pose>
+      <collision name="second_bed_pillow_0.45_collision">
+        <geometry>
+          <box>
+            <size>0.65 0.4 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="second_bed_pillow_0.45_visual">
+        <geometry>
+          <box>
+            <size>0.65 0.4 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.93 0.92 0.86 1</ambient>
+          <diffuse>0.93 0.92 0.86 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="second_desk_top">
+      <pose>3.2 8.35 3.32 0 0 0</pose>
+      <collision name="second_desk_top_collision">
+        <geometry>
+          <box>
+            <size>1.3 0.7 0.08</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="second_desk_top_visual">
+        <geometry>
+          <box>
+            <size>1.3 0.7 0.08</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="second_desk_leg_-1_-1">
+      <pose>2.64 8.09 2.94 0 0 0</pose>
+      <collision name="second_desk_leg_-1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="second_desk_leg_-1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="second_desk_leg_-1_1">
+      <pose>2.64 8.61 2.94 0 0 0</pose>
+      <collision name="second_desk_leg_-1_1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="second_desk_leg_-1_1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="second_desk_leg_1_-1">
+      <pose>3.76 8.09 2.94 0 0 0</pose>
+      <collision name="second_desk_leg_1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="second_desk_leg_1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="second_desk_leg_1_1">
+      <pose>3.76 8.61 2.94 0 0 0</pose>
+      <collision name="second_desk_leg_1_1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="second_desk_leg_1_1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="study_desk_top">
+      <pose>7.6 3.8 3.32 0 0 0</pose>
+      <collision name="study_desk_top_collision">
+        <geometry>
+          <box>
+            <size>1.8 0.7 0.08</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="study_desk_top_visual">
+        <geometry>
+          <box>
+            <size>1.8 0.7 0.08</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="study_desk_leg_-1_-1">
+      <pose>6.79 3.54 2.94 0 0 0</pose>
+      <collision name="study_desk_leg_-1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="study_desk_leg_-1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="study_desk_leg_-1_1">
+      <pose>6.79 4.06 2.94 0 0 0</pose>
+      <collision name="study_desk_leg_-1_1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="study_desk_leg_-1_1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="study_desk_leg_1_-1">
+      <pose>8.41 3.54 2.94 0 0 0</pose>
+      <collision name="study_desk_leg_1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="study_desk_leg_1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="study_desk_leg_1_1">
+      <pose>8.41 4.06 2.94 0 0 0</pose>
+      <collision name="study_desk_leg_1_1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="study_desk_leg_1_1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.68</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="study_chair_seat">
+      <pose>7.6 2.8 3.04 0 0 0</pose>
+      <collision name="study_chair_seat_collision">
+        <geometry>
+          <box>
+            <size>0.46 0.46 0.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="study_chair_seat_visual">
+        <geometry>
+          <box>
+            <size>0.46 0.46 0.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="study_chair_back">
+      <pose>7.6 3 3.3 0 0 0</pose>
+      <collision name="study_chair_back_collision">
+        <geometry>
+          <box>
+            <size>0.46 0.08 0.5</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="study_chair_back_visual">
+        <geometry>
+          <box>
+            <size>0.46 0.08 0.5</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="study_chair_leg_-1_-1">
+      <pose>7.43 2.63 2.8 0 0 0</pose>
+      <collision name="study_chair_leg_-1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="study_chair_leg_-1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="study_chair_leg_-1_1">
+      <pose>7.43 2.97 2.8 0 0 0</pose>
+      <collision name="study_chair_leg_-1_1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="study_chair_leg_-1_1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="study_chair_leg_1_-1">
+      <pose>7.77 2.63 2.8 0 0 0</pose>
+      <collision name="study_chair_leg_1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="study_chair_leg_1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="study_chair_leg_1_1">
+      <pose>7.77 2.97 2.8 0 0 0</pose>
+      <collision name="study_chair_leg_1_1_collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="study_chair_leg_1_1_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="bookcase">
+      <pose>9.5 2.8 3.6 0 0 0</pose>
+      <collision name="bookcase_collision">
+        <geometry>
+          <box>
+            <size>0.55 1.8 2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="bookcase_visual">
+        <geometry>
+          <box>
+            <size>0.55 1.8 2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="lounge_sofa_base">
+      <pose>8.8 6.4 2.84 0 0 0</pose>
+      <collision name="lounge_sofa_base_collision">
+        <geometry>
+          <box>
+            <size>0.95 2.5 0.48</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="lounge_sofa_base_visual">
+        <geometry>
+          <box>
+            <size>0.95 2.5 0.48</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="lounge_sofa_back">
+      <pose>8.4 6.4 3.24 0 0 0</pose>
+      <collision name="lounge_sofa_back_collision">
+        <geometry>
+          <box>
+            <size>0.18 2.5 0.8</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="lounge_sofa_back_visual">
+        <geometry>
+          <box>
+            <size>0.18 2.5 0.8</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="lounge_sofa_arm_-1.15">
+      <pose>8.8 5.25 3.08 0 0 0</pose>
+      <collision name="lounge_sofa_arm_-1.15_collision">
+        <geometry>
+          <box>
+            <size>0.95 0.2 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="lounge_sofa_arm_-1.15_visual">
+        <geometry>
+          <box>
+            <size>0.95 0.2 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="lounge_sofa_arm_1.15">
+      <pose>8.8 7.55 3.08 0 0 0</pose>
+      <collision name="lounge_sofa_arm_1.15_collision">
+        <geometry>
+          <box>
+            <size>0.95 0.2 0.4</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="lounge_sofa_arm_1.15_visual">
+        <geometry>
+          <box>
+            <size>0.95 0.2 0.4</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.22 0.46 0.50 1</ambient>
+          <diffuse>0.22 0.46 0.50 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="lounge_coffee_top">
+      <pose>7.25 6.45 2.98 0 0 0</pose>
+      <collision name="lounge_coffee_top_collision">
+        <geometry>
+          <box>
+            <size>0.65 1.1 0.08</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="lounge_coffee_top_visual">
+        <geometry>
+          <box>
+            <size>0.65 1.1 0.08</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.38 0.21 0.10 1</ambient>
+          <diffuse>0.38 0.21 0.10 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="lounge_coffee_leg_-1_-1">
+      <pose>7.015 5.99 2.77 0 0 0</pose>
+      <collision name="lounge_coffee_leg_-1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="lounge_coffee_leg_-1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="lounge_coffee_leg_-1_1">
+      <pose>7.015 6.91 2.77 0 0 0</pose>
+      <collision name="lounge_coffee_leg_-1_1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="lounge_coffee_leg_-1_1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="lounge_coffee_leg_1_-1">
+      <pose>7.485 5.99 2.77 0 0 0</pose>
+      <collision name="lounge_coffee_leg_1_-1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="lounge_coffee_leg_1_-1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="lounge_coffee_leg_1_1">
+      <pose>7.485 6.91 2.77 0 0 0</pose>
+      <collision name="lounge_coffee_leg_1_1_collision">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="lounge_coffee_leg_1_1_visual">
+        <geometry>
+          <box>
+            <size>0.08 0.08 0.34</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="lounge_cabinet">
+      <pose>8 8.55 3.05 0 0 0</pose>
+      <collision name="lounge_cabinet_collision">
+        <geometry>
+          <box>
+            <size>2.4 0.55 0.9</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="lounge_cabinet_visual">
+        <geometry>
+          <box>
+            <size>2.4 0.55 0.9</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.93 0.92 0.86 1</ambient>
+          <diffuse>0.93 0.92 0.86 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="ramp_lower">
+      <pose>0 0 0 0 0 0</pose>
+      <collision name="ramp_lower_collision">
+        <geometry>
+          <mesh>
+            <uri>model://home_indoor/meshes/ramp_lower.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="ramp_lower_visual">
+        <geometry>
+          <mesh>
+            <uri>model://home_indoor/meshes/ramp_lower.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.43 0.49 0.52 1</ambient>
+          <diffuse>0.43 0.49 0.52 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="ramp_lower_guard_0">
+      <pose>10.15 5.35 1.13 0.17162807 0 0</pose>
+      <collision name="ramp_lower_guard_0_collision">
+        <geometry>
+          <box>
+            <size>0.1 7.6118329 0.85</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="ramp_lower_guard_0_visual">
+        <geometry>
+          <box>
+            <size>0.1 7.6118329 0.85</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="ramp_lower_guard_1">
+      <pose>11.45 5.35 1.13 0.17162807 0 0</pose>
+      <collision name="ramp_lower_guard_1_collision">
+        <geometry>
+          <box>
+            <size>0.1 7.6118329 0.85</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="ramp_lower_guard_1_visual">
+        <geometry>
+          <box>
+            <size>0.1 7.6118329 0.85</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="ramp_upper">
+      <pose>0 0 0 0 0 0</pose>
+      <collision name="ramp_upper_collision">
+        <geometry>
+          <mesh>
+            <uri>model://home_indoor/meshes/ramp_upper.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="ramp_upper_visual">
+        <geometry>
+          <mesh>
+            <uri>model://home_indoor/meshes/ramp_upper.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.43 0.49 0.52 1</ambient>
+          <diffuse>0.43 0.49 0.52 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="ramp_upper_guard_0">
+      <pose>11.75 5.35 2.43 -0.17162807 0 0</pose>
+      <collision name="ramp_upper_guard_0_collision">
+        <geometry>
+          <box>
+            <size>0.1 7.6118329 0.85</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="ramp_upper_guard_0_visual">
+        <geometry>
+          <box>
+            <size>0.1 7.6118329 0.85</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="ramp_upper_guard_1">
+      <pose>13.05 5.35 2.43 -0.17162807 0 0</pose>
+      <collision name="ramp_upper_guard_1_collision">
+        <geometry>
+          <box>
+            <size>0.1 7.6118329 0.85</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="ramp_upper_guard_1_visual">
+        <geometry>
+          <box>
+            <size>0.1 7.6118329 0.85</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="landing_middle">
+      <pose>11.6 9.9 1.2 0 0 0</pose>
+      <collision name="landing_middle_collision">
+        <geometry>
+          <box>
+            <size>2.8 1.6 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="landing_middle_visual">
+        <geometry>
+          <box>
+            <size>2.8 1.6 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.43 0.49 0.52 1</ambient>
+          <diffuse>0.43 0.49 0.52 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="landing_upper">
+      <pose>11.6 0.8 2.5 0 0 0</pose>
+      <collision name="landing_upper_collision">
+        <geometry>
+          <box>
+            <size>3.2 1.6 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="landing_upper_visual">
+        <geometry>
+          <box>
+            <size>3.2 1.6 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.76 0.65 0.48 1</ambient>
+          <diffuse>0.76 0.65 0.48 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="middle_end_guard">
+      <pose>11.6 10.75 1.8 0 0 0</pose>
+      <collision name="middle_end_guard_collision">
+        <geometry>
+          <box>
+            <size>3 0.1 1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="middle_end_guard_visual">
+        <geometry>
+          <box>
+            <size>3 0.1 1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="middle_side_guard_10.15">
+      <pose>10.15 9.9 1.8 0 0 0</pose>
+      <collision name="middle_side_guard_10.15_collision">
+        <geometry>
+          <box>
+            <size>0.1 1.6 1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="middle_side_guard_10.15_visual">
+        <geometry>
+          <box>
+            <size>0.1 1.6 1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="middle_side_guard_13.05">
+      <pose>13.05 9.9 1.8 0 0 0</pose>
+      <collision name="middle_side_guard_13.05_collision">
+        <geometry>
+          <box>
+            <size>0.1 1.6 1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="middle_side_guard_13.05_visual">
+        <geometry>
+          <box>
+            <size>0.1 1.6 1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="upper_east_guard">
+      <pose>13.1 0.8 3.1 0 0 0</pose>
+      <collision name="upper_east_guard_collision">
+        <geometry>
+          <box>
+            <size>0.1 1.6 1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="upper_east_guard_visual">
+        <geometry>
+          <box>
+            <size>0.1 1.6 1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="upper_south_guard">
+      <pose>11.6 0.05 3.1 0 0 0</pose>
+      <collision name="upper_south_guard_collision">
+        <geometry>
+          <box>
+            <size>3.2 0.1 1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="upper_south_guard_visual">
+        <geometry>
+          <box>
+            <size>3.2 0.1 1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+    <link name="upper_void_guard">
+      <pose>10.85 1.55 3.1 0 0 0</pose>
+      <collision name="upper_void_guard_collision">
+        <geometry>
+          <box>
+            <size>1.7 0.1 1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="upper_void_guard_visual">
+        <geometry>
+          <box>
+            <size>1.7 0.1 1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.16 0.20 0.23 1</ambient>
+          <diffuse>0.16 0.20 0.23 1</diffuse>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

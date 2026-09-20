@@ -70,6 +70,7 @@ if(BUILD_TESTING)
   ament_add_pytest_test(simulation_ackermann_model test/test_ackermann_model.py)
   ament_add_pytest_test(simulation_imu_filter test/test_imu_filter.py)
   ament_add_pytest_test(simulation_contract test/test_simulation_contract.py)
+  ament_add_pytest_test(simulation_home_indoor test/test_home_indoor.py)
 endif()
 
 ament_package()

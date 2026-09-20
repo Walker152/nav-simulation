@@ -1,3 +1,10 @@
+home_indoor:
+  world: resource/worlds/home_indoor_world.sdf
+  # Ground-floor map only; the upper-floor map is packaged separately.
+  map: maps/home_indoor.yaml
+  spawn: {x: 5.0, y: 1.2, z: 0.02, yaw: 1.57079632679}
+  icp: {enable: false}
+
 rmuc_2024:
   world: resource/worlds/rmuc_2024_world.sdf
   map: maps/rmuc_2024.yaml
