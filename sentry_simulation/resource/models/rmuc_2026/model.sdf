@@ -7,7 +7,7 @@
       <visual name="visual">
         <geometry>
           <mesh>
-            <uri>model://rmuc_2026/meshes/rmuc_2026_visual.stl</uri>
+            <uri>model://rmuc_2026/meshes/rmuc_2026.stl</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
@@ -21,7 +21,7 @@
         <max_contacts>20</max_contacts>
         <geometry>
           <mesh>
-            <uri>model://rmuc_2026/meshes/rmuc_2026_collision.stl</uri>
+            <uri>model://rmuc_2026/meshes/rmuc_2026.stl</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>

@@ -36,9 +36,9 @@ Gazebo 左右双 MID360（每颗由前/后 180° GPU LiDAR 拼接）+ 水平 IMU
 ## 已包含的资源
 
 - RMUC / RMUL 2024、2025 以及 RMUC 2026 场地 SDF、网格与二维地图。
-- RMUC 2026 当前放置了点云重建的临时视觉/碰撞 STL。视觉模型存在较多重建坑洞，
-  仅用于资源接入和坐标检查，等待外部 CAD/网格工具生成的修复版本覆盖；不要把当前
-  RMUC 2026 网格视作已完成的坡道、碰撞和导航验收结果。
+- RMUC 2026 使用用户提供的 `RMUC2026.stl` CAD 场地，已换算为米、对齐现有地图并
+  简化为 50 万三角面；视觉和碰撞共用同一 STL。脚本和 ROS launch 默认启动此场景。
+  来源、坐标变换及复现方法见 [资产说明](sentry_simulation/resource/models/rmuc_2026/README.md)。
 - `sentry_omni`：轮心按 `0.44 m × 0.44 m` 正方形布置的四轮全向底盘，使用
   包内构建的 `MecanumDrive2`，PB2025 chassis/gimbal 网格仅作视觉模型。
 - `sentry_diff`：半径 `0.3 m` 的圆形两轮差速底盘，仅左右两轮驱动，前后球形
@@ -91,15 +91,15 @@ colcon build --symlink-install --packages-select sentry_simulation
 
 ```bash
 cd /home/alioth/nature_will
-./src/scripts/simlation.bash omni rmuc_2025 --check
+./src/scripts/simlation.bash --check
 ```
 
 脚本位置参数和选项：
 
 | 参数 | 可选值 | 默认值 | 作用 |
 |---|---|---|---|
-| 第 1 个位置参数 | `omni`、`ackermann`、`diff` | `omni` | 默认统一 YAML 的底盘选择；diff 资源保留但导航拒绝 |
-| 第 2 个位置参数 | `rmuc_2024`、`rmul_2024`、`rmuc_2025`、`rmuc_2026`、`rmul_2025` | `rmuc_2025` | 选择场地 |
+| 第 1 个位置参数 | `omni`、`ackermann`、`diff` | 统一 YAML 的 `planner.model` | 默认统一 YAML 的底盘选择；diff 资源保留但导航拒绝 |
+| 第 2 个位置参数 | `rmuc_2024`、`rmul_2024`、`rmuc_2025`、`rmuc_2026`、`rmul_2025` | `rmuc_2026` | 选择场地 |
 | `--params-file PATH` | 任意统一导航 YAML | 空 | 显式参数文件；此时第 1 个参数必须与 `planner.model` 一致 |
 | `--headless` | 开关 | 关闭 | 不启动 Gazebo GUI，只运行 server |
 | `--no-rviz` | 开关 | 关闭 | 不启动 RViz |
@@ -112,13 +112,13 @@ RViz 随 launch 直接启动，导航初始化期间也能查看地图和状态�
 常用启动方式：
 
 ```bash
-# 全向底盘 + RMUC 2025（默认）
-./src/scripts/simlation.bash omni rmuc_2025
+# 统一 YAML 选择的底盘 + RMUC 2026（默认）
+./src/scripts/simlation.bash
 
 # 阿克曼底盘 + RMUC 2024（使用统一 YAML 的运行时模型选择）
 ./src/scripts/simlation.bash ackermann rmuc_2024 --headless --no-rviz
 
-# 全向底盘 + RMUC 2026 点云重建场地
+# 显式选择全向底盘 + RMUC 2026 CAD 场地
 ./src/scripts/simlation.bash omni rmuc_2026
 
 # 差速底盘 + RMUL 2025
@@ -139,7 +139,7 @@ RMUL 2025 使用与模型 PCD 同源的 2026 RMUL PGM，并把居中的场地网
 source /opt/ros/humble/setup.bash
 source install/setup.bash
 ros2 launch sentry_simulation simulation.launch.py \
-  chassis_type:=omni world:=rmuc_2025 \
+  chassis_type:=omni world:=rmuc_2026 \
   headless:=false rviz:=true use_icp:=false log_level:=info
 ```
 
@@ -315,11 +315,10 @@ sentry_simulation/
 └── resource/worlds/<world>_world.sdf     # Gazebo world 入口
 ```
 
-替换 RMUC 2026 外部重建结果时，保持单位为米、Z-up、地图原点和 XYZ/RPY 不变，直接覆盖：
+RMUC 2026 的视觉与碰撞共用下列米制、Z-up 网格；替换前按资产说明转换原始 CAD 坐标，保持与地图对齐：
 
 ```text
-sentry_simulation/resource/models/rmuc_2026/meshes/rmuc_2026_visual.stl
-sentry_simulation/resource/models/rmuc_2026/meshes/rmuc_2026_collision.stl
+sentry_simulation/resource/models/rmuc_2026/meshes/rmuc_2026.stl
 ```
 
 视觉和碰撞 STL 必须使用完全相同的坐标系。替换后至少检查文件边界、三角面数量、孔洞/非流形面、出生点地面高度、坡道与台阶尺寸，再运行全向/差速车辆通过性验收。不要自动居中模型，也不要在 `model.sdf` 中用未知平移补偿错误坐标。
@@ -356,4 +355,4 @@ sentry_simulation/resource/models/rmuc_2026/meshes/rmuc_2026_collision.stl
 Point-LIO 记录融合 IMU 原点，比较平面真值前必须施加 map 变换和上述 0.2 m 原点修正；
 运行验收仍需分别检查静止 Z/roll/pitch 峰峰值、中央区域漂移和 ROGMap 地面残影。
 
-当前 RMUC 2026 临时网格因可见坑洞尚未通过上述运行验收。外部修复网格替换完成前，RMUC 2026 只用于检查资源加载、坐标链和转换流程，不用于评价最终坡道通过性或定位精度。
+RMUC 2026 已替换为 CAD 场地；资源加载与出生点检查不等于完整赛道验收，坡道通过性、长时定位精度和闭环导航仍需按实际任务分别验证。

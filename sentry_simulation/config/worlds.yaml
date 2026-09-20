@@ -33,7 +33,8 @@ rmuc_2026:
   world: resource/worlds/rmuc_2026_world.sdf
   map: maps/rmuc_2026.yaml
   spawn_clearance: 0.0
-  spawn: {x: 4.234, y: 7.3, z: 0.0, yaw: 0.04}
+  # Imported CAD terrain is about z=0.096 m here; keep all wheels above it.
+  spawn: {x: 4.234, y: 7.3, z: 0.11, yaw: 0.04}
   icp:
     enable: true
     target_pcd: resource/maps/pcd/rmuc_2026.pcd
