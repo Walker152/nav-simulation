@@ -909,8 +909,6 @@ class SimulationContractTest(unittest.TestCase):
             '"output_topic": "/sim/imu"',
             '"acceleration_limit": 29.43',
             '"angular_velocity_limit": 35.0',
-            '"dynamic_acceleration_limit": 4.0',
-            '"vertical_dynamic_acceleration_limit": 0.0',
         ):
             self.assertIn(token, launch_source)
         self.assertNotIn('"acceleration_max_step"', launch_source)

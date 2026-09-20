@@ -160,8 +160,6 @@ def _launch_setup(context, package_share):
             "output_topic": "/sim/imu",
             "acceleration_limit": 29.43,
             "angular_velocity_limit": 35.0,
-            "dynamic_acceleration_limit": 4.0,
-            "vertical_dynamic_acceleration_limit": 0.0,
         }],
     )
 

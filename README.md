@@ -25,7 +25,7 @@ Gazebo 左右双 MID360（每颗由前/后 180° GPU LiDAR 拼接）+ 水平 IMU
 | 全向底盘 | `sentry_omni` + Fortress `MecanumDrive` | 接收转换后的车体系速度，可测试 X/Y/yaw |
 | 差速底盘 | `sentry_diff` + Fortress `DiffDrive` | 模型保留；当前导航仅支持 omni，差速导航显式拒绝 |
 | 双 MID360 | 左右镜像雷达 + pattern adapter | 合并为 `/livox/lidar`，消息类型与真机相同 |
-| IMU | Gazebo IMU + 仿真滤波器 | 200 Hz，输出 `/sim/imu` 给 Point-LIO |
+| IMU | Gazebo IMU + 每轴量程适配 | 200 Hz，保留三轴加速度，输出 `/sim/imu` 给 Point-LIO |
 | 里程计 | Point-LIO | 导航使用 `/aft_mapped_to_init`，不是 Gazebo 真值 |
 | 重定位 | 一次性 ratio-GICP | 2025/2026 场地按 `worlds.yaml` 加载模型 PCD |
 | 导航闭环 | Nav2 + ROGMap + MINCO + MPC | RViz 下发目标后规划并驱动车辆 |
@@ -264,6 +264,8 @@ ros2 topic echo /sim/ground_truth/odom --once
 适配器的超时状态；MPC 已输出车体系速度，适配器直接转发，不依赖 odom 做第二次旋转。
 
 ## 坐标、时间与速度语义
+
+仿真 IMU 保留 Gazebo 的三轴含重力加速度（m/s²）和角速度（rad/s），仅沿传感器轴执行现有量程裁剪；不利用真值姿态扣重力，也不删除竖直动态或限制水平动态。`point_lio_sim.yaml` 的 `acc_norm=9.81`、`satu_acc=29.43` 与此单位配套，等价于实车 Livox g 单位配合 `acc_norm=1`、`satu_acc=3`。这些轴阈值属于现有仿真饱和模型及 LIO 保护配置，不代表实车硬件量程规格。消息时间戳、坐标系和诊断姿态原样保留；姿态字段不参与六轴测量处理。
 
 - 全部节点启用 `/clock` 和 `use_sim_time`。
 - `navigation/navi2_bringup/params/navigation.yaml` 的 simulation profile 由 navi2 launch 组装参数。planner 与 Point-LIO、点云适配器保持在 `livox_pointlio_container` 同一进程；容器继承同一份进程级 ROS 参数，退出时删除临时参数文件。

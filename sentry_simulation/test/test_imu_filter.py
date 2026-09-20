@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import importlib.util
-import math
+import time
 from pathlib import Path
 import unittest
 from unittest.mock import patch
@@ -29,6 +29,70 @@ class ImuFilterTest(unittest.TestCase):
         self.assertIsNotNone(
             self.module,
             f"simulation IMU filter implementation is missing: {FILTER_PATH}",
+        )
+
+    @patch.dict("os.environ", {"ROS_DOMAIN_ID": "194"})
+    def publish_sample(self, acceleration, orientation):
+        from sensor_msgs.msg import Imu
+        from rclpy.qos import qos_profile_sensor_data
+        rclpy = self.module.rclpy
+        rclpy.init(args=[])
+        filter_node = self.module.SimImuFilter()
+        observer = rclpy.create_node("imu_contract_observer")
+        received = []
+        subscription = observer.create_subscription(
+            Imu, "/sim/imu", received.append, qos_profile_sensor_data
+        )
+        try:
+            deadline = time.monotonic() + 3.0
+            while filter_node._publisher.get_subscription_count() == 0:
+                rclpy.spin_once(observer, timeout_sec=0.02)
+                self.assertLess(time.monotonic(), deadline, "publisher discovery timed out")
+            message = Imu()
+            message.header.stamp.sec = 123
+            message.header.stamp.nanosec = 456
+            message.header.frame_id = "sim_lidar"
+            (message.linear_acceleration.x, message.linear_acceleration.y,
+             message.linear_acceleration.z) = acceleration
+            (message.orientation.x, message.orientation.y,
+             message.orientation.z, message.orientation.w) = orientation
+            message.angular_velocity.x = 0.1
+            message.angular_velocity.y = -0.2
+            message.angular_velocity.z = 0.3
+            filter_node._callback(message)
+            deadline = time.monotonic() + 0.5
+            while not received and time.monotonic() < deadline:
+                rclpy.spin_once(observer, timeout_sec=0.02)
+            self.assertEqual(len(received), 1, "valid six-axis input was discarded")
+            return received[0]
+        finally:
+            observer.destroy_subscription(subscription)
+            observer.destroy_node()
+            filter_node.destroy_node()
+            rclpy.shutdown()
+
+    def test_published_slope_force_keeps_real_vertical_dynamics(self):
+        message = self.publish_sample(
+            (2.47541776, 0.0, 9.66587168),
+            (0.0, -0.085707, 0.0, 0.996320),
+        )
+        self.assertEqual(
+            (message.linear_acceleration.x, message.linear_acceleration.y,
+             message.linear_acceleration.z),
+            (2.47541776, 0.0, 9.66587168),
+        )
+        self.assertEqual((message.header.stamp.sec, message.header.stamp.nanosec), (123, 456))
+        self.assertEqual(message.header.frame_id, "sim_lidar")
+
+    def test_published_six_axis_sample_does_not_require_attitude(self):
+        message = self.publish_sample((6.0, -7.0, 12.0), (0.0, 0.0, 0.0, 0.0))
+        self.assertEqual(
+            (message.linear_acceleration.x, message.linear_acceleration.y,
+             message.linear_acceleration.z), (6.0, -7.0, 12.0),
+        )
+        self.assertEqual(
+            (message.angular_velocity.x, message.angular_velocity.y,
+             message.angular_velocity.z), (0.1, -0.2, 0.3),
         )
 
     @patch.dict('os.environ', {'ROS_DOMAIN_ID': '194'})
@@ -106,76 +170,19 @@ class ImuFilterTest(unittest.TestCase):
             self.module.filter_vector((float("nan"), 0.0, 9.81), 29.43)
         )
 
-    def test_tilted_static_gravity_is_preserved_without_delay(self):
-        self.require_module()
-        half_pitch = 0.2617993877991494
-        orientation = (
-            0.0,
-            math.sin(half_pitch),
-            0.0,
-            math.cos(half_pitch),
+    def test_published_horizontal_dynamics_are_not_norm_limited(self):
+        message = self.publish_sample((6.0, -7.0, 9.81), (0.0, 0.0, 0.0, 1.0))
+        self.assertEqual(
+            (message.linear_acceleration.x, message.linear_acceleration.y,
+             message.linear_acceleration.z), (6.0, -7.0, 9.81),
         )
-        gravity = (-4.905, 0.0, 8.495709211)
-        conditioned = self.module.condition_acceleration(
-            gravity, orientation, sensor_limit=29.43, dynamic_limit=4.0
-        )
-        for actual, expected in zip(conditioned, gravity):
-            self.assertAlmostEqual(actual, expected, places=6)
 
-    def test_normal_specific_force_is_preserved(self):
-        self.require_module()
-        sample = (2.0, -1.0, 9.81)
-        conditioned = self.module.condition_acceleration(
-            sample, (0.0, 0.0, 0.0, 1.0), sensor_limit=29.43,
-            dynamic_limit=4.0,
+    def test_published_sensor_rails_do_not_modify_other_axes(self):
+        message = self.publish_sample((40.0, -50.0, 12.0), (0.0, 0.0, 0.0, 0.0))
+        self.assertEqual(
+            (message.linear_acceleration.x, message.linear_acceleration.y,
+             message.linear_acceleration.z), (29.43, -29.43, 12.0),
         )
-        self.assertEqual(conditioned, sample)
-
-    def test_rigid_contact_specific_force_is_norm_limited(self):
-        self.require_module()
-        conditioned = self.module.condition_acceleration(
-            (20.0, -20.0, 50.0),
-            (0.0, 0.0, 0.0, 1.0),
-            sensor_limit=29.43,
-            dynamic_limit=4.0,
-        )
-        residual = (
-            conditioned[0],
-            conditioned[1],
-            conditioned[2] - 9.81,
-        )
-        residual_norm = sum(value * value for value in residual) ** 0.5
-        self.assertAlmostEqual(residual_norm, 4.0, places=6)
-
-    def test_gravity_direction_change_does_not_reuse_previous_sample(self):
-        self.require_module()
-        level = self.module.condition_acceleration(
-            (0.0, 0.0, 9.81),
-            (0.0, 0.0, 0.0, 1.0),
-            sensor_limit=29.43,
-            dynamic_limit=4.0,
-        )
-        half_pitch = 0.2617993877991494
-        tilted = self.module.condition_acceleration(
-            (-4.905, 0.0, 8.495709211),
-            (0.0, math.sin(half_pitch), 0.0, math.cos(half_pitch)),
-            sensor_limit=29.43,
-            dynamic_limit=4.0,
-        )
-        self.assertEqual(level, (0.0, 0.0, 9.81))
-        self.assertNotEqual(tilted, level)
-        self.assertAlmostEqual(tilted[0], -4.905, places=6)
-
-    def test_world_vertical_contact_acceleration_is_removed(self):
-        self.require_module()
-        conditioned = self.module.condition_acceleration(
-            (0.0, 0.0, 40.0),
-            (0.0, 0.0, 0.0, 1.0),
-            sensor_limit=29.43,
-            dynamic_limit=4.0,
-            vertical_dynamic_limit=0.0,
-        )
-        self.assertEqual(conditioned, (0.0, 0.0, 9.81))
 
 
 if __name__ == "__main__":
