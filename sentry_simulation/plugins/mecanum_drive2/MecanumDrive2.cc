@@ -43,16 +43,6 @@ const std::string kSdfElemJointNames[WHEEL_NUM] = {"front_right_joint", "front_l
 class ignition::gazebo::systems::MecanumDrive2Private
 {
 public:
-    // Indicates joint/link of which wheel
-    enum
-    {
-        FRONT_RIGHT = 0,
-        FRONT_LEFT = 1,
-        REAR_RIGHT = 2,
-        REAR_LEFT = 3
-    };
-
-public:
     void OnCmdVel(const ignition::msgs::Twist &_msg);
 
     void UpdateOdometry(const ignition::gazebo::UpdateInfo &_info, const ignition::gazebo::EntityComponentManager &_ecm);
@@ -62,22 +52,14 @@ public:
     //model
     Model model{kNullEntity};
     //chassis link
-    std::string chassisLinkName;
     Entity chassisLink{kNullEntity};
-    //wheel joint
-    std::string wheelJointNames[WHEEL_NUM];
-    Entity wheelJoints[WHEEL_NUM];
-    Entity wheelLinks[WHEEL_NUM];
     //pid
     ignition::math::PID xPid;
     ignition::math::PID yPid;
     ignition::math::PID wPid;
     //for Odometry
-    bool initFlag = false;
     std::string odomFrameId;
     std::string odomChildFrameId;
-    ignition::math::Pose3d initPose;
-    ignition::math::Pose3d lastPose;
     transport::Node::Publisher odomPub;
     //velocity cmd
     msgs::Twist targetVel;
@@ -102,21 +84,21 @@ void MecanumDrive2::Configure(const Entity &_entity,
     }
     // Get params from SDF
     // Get chassis link
-    this->dataPtr->chassisLinkName = _sdf->Get<std::string>("chassis_link");
-    this->dataPtr->chassisLink = this->dataPtr->model.LinkByName(_ecm, this->dataPtr->chassisLinkName);
+    const std::string chassisLinkName = _sdf->Get<std::string>("chassis_link");
+    this->dataPtr->chassisLink = this->dataPtr->model.LinkByName(_ecm, chassisLinkName);
     if (this->dataPtr->chassisLink == kNullEntity)
     {
-        ignerr << "chassis link with name[" << this->dataPtr->chassisLinkName << "] not found. " << std::endl;
+        ignerr << "chassis link with name[" << chassisLinkName << "] not found. " << std::endl;
         return;
     }
     //Get joints and links of wheel
     for (int i = 0; i < WHEEL_NUM; i++)
     {
-        this->dataPtr->wheelJointNames[i] = _sdf->Get<std::string>(kSdfElemJointNames[i]);
-        this->dataPtr->wheelJoints[i] = this->dataPtr->model.JointByName(_ecm, this->dataPtr->wheelJointNames[i]);
-        if (this->dataPtr->wheelJoints[i] == kNullEntity)
+        const std::string wheelJointName = _sdf->Get<std::string>(kSdfElemJointNames[i]);
+        const Entity wheelJoint = this->dataPtr->model.JointByName(_ecm, wheelJointName);
+        if (wheelJoint == kNullEntity)
         {
-            ignerr << "wheel joint with name[" << this->dataPtr->wheelJointNames[i] << "] not found. " << std::endl;
+            ignerr << "wheel joint with name[" << wheelJointName << "] not found. " << std::endl;
             return;
         }
     }
@@ -128,7 +110,7 @@ void MecanumDrive2::Configure(const Entity &_entity,
     std::string odomTopic{this->dataPtr->model.Name(_ecm) + "/odometry"};
     this->dataPtr->odomPub = this->dataPtr->node.Advertise<msgs::Odometry>(odomTopic);
     this->dataPtr->odomFrameId=this->dataPtr->model.Name(_ecm) + "/odom" ;
-    this->dataPtr->odomChildFrameId = this->dataPtr->model.Name(_ecm) + "/" + ignition::common::replaceAll(this->dataPtr->chassisLinkName, "::", "/");
+    this->dataPtr->odomChildFrameId = this->dataPtr->model.Name(_ecm) + "/" + ignition::common::replaceAll(chassisLinkName, "::", "/");
     //init PID
     this->dataPtr->xPid.Init(100, 0, 0, 0, 0, 100, -100, 0);
     this->dataPtr->yPid.Init(500, 0, 0, 0, 0, 200, -200, 0);
@@ -162,11 +144,6 @@ void MecanumDrive2::PreUpdate(const ignition::gazebo::UpdateInfo &_info,
     const auto chassisPose = _ecm.Component<components::WorldPose>(this->dataPtr->chassisLink)->Data();
     const auto linearVel = _ecm.Component<components::LinearVelocity>(this->dataPtr->chassisLink)->Data();
     const auto angularVel = _ecm.Component<components::AngularVelocity>(this->dataPtr->chassisLink)->Data();
-    if (!this->dataPtr->initFlag)
-    {
-        this->dataPtr->initPose = chassisPose;
-        this->dataPtr->initFlag = true;
-    }
     //for linear velocity control
     double xErr = linearVel.X() - targetVel.linear().x();
     double xCmd = this->dataPtr->xPid.Update(xErr, _info.dt);
@@ -212,7 +189,6 @@ void MecanumDrive2Private::UpdateOdometry(const ignition::gazebo::UpdateInfo &_i
     const auto chassisPose = _ecm.Component<components::WorldPose>(this->chassisLink)->Data();
     const auto linearVel = _ecm.Component<components::LinearVelocity>(this->chassisLink)->Data();
     const auto angularVel = _ecm.Component<components::AngularVelocity>(this->chassisLink)->Data();
-    auto diffPose = chassisPose - initPose;
     // Construct the odometry message and publish it.
     msgs::Odometry msg;
     msg.mutable_pose()->mutable_position()->set_x(chassisPose.X());
