@@ -1,5 +1,10 @@
 # Sentry simulation
 
+## 四舵轮 + 四 O1LITE 独立平台
+
+新增平台说明与启动命令见 [SWERVE_ODIN.md](sentry_simulation/SWERVE_ODIN.md)。
+四个传感器分别位于前、后、左、右边中心并朝外，底盘使用八个真实物理关节。
+
 这个模块将 Gazebo Fortress 仿真资源收敛到当前仓库，并直接接入现有导航主链路：
 
 ```text
@@ -35,6 +40,9 @@ Gazebo 左右双 MID360（每颗由前/后 180° GPU LiDAR 拼接）+ 水平 IMU
 
 ## 已包含的资源
 
+- `odin1_lite`：按 O1LITE V0.1.4 手册制作的 dToF 点云、RGB 和 IMU 近似模型。
+  独立演示：`ros2 launch sentry_simulation odin1_lite.launch.py`（先构建并 source overlay）。
+  [规格来源、仿真边界、话题与车体挂载方法](sentry_simulation/resource/models/odin1_lite/README.md)。
 - `home_indoor`：紧凑双层住宅，含房间、门框、家具及连接 2.6 m 二楼的折返缓坡。
   启动：`./src/scripts/simlation.bash omni home_indoor`。
   [场景预览、布局与分层地图说明](sentry_simulation/resource/models/home_indoor/README.md)。

@@ -1,0 +1,215 @@
+<?xml version="1.0"?>
+<sdf version="1.9">
+  <model name="odin1_lite">
+    <!-- Body/IMU origin; all poses below are in metres / radians. -->
+    <link name="odin1_lite_body">
+      <!-- Uniform-box inertia and centred COM are simulation approximations. -->
+      <inertial>
+        <mass>0.274</mass>
+        <inertia>
+          <ixx>0.000217419</ixx><iyy>0.000185520833333</iyy><izz>0.000185520833333</izz>
+        </inertia>
+      </inertial>
+      <collision name="housing_collision">
+        <geometry><box><size>0.058 0.069 0.069</size></box></geometry>
+      </collision>
+      <!-- Decorative visuals follow the manual silhouette; not calibrated CAD.
+           No extra collisions or links; sensor poses and physics are unchanged. -->
+      <visual name="housing_visual">
+        <geometry><mesh><uri>model://odin1_lite/meshes/housing.stl</uri></mesh></geometry>
+        <material><ambient>0.10 0.12 0.14 1</ambient><diffuse>0.19 0.22 0.25 1</diffuse><specular>0.35 0.38 0.42 1</specular></material>
+      </visual>
+      <visual name="cooling_ribs_visual">
+        <geometry><mesh><uri>model://odin1_lite/meshes/cooling_ribs.stl</uri></mesh></geometry>
+        <material><ambient>0.15 0.17 0.19 1</ambient><diffuse>0.27 0.30 0.33 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+      </visual>
+      <visual name="front_panel_visual">
+        <pose>0.0293 0 0 0 0 0</pose>
+        <geometry><box><size>0.001 0.057 0.057</size></box></geometry>
+        <material><ambient>0.012 0.015 0.02 1</ambient><diffuse>0.025 0.032 0.042 1</diffuse><specular>0.3 0.3 0.3 1</specular></material>
+      </visual>
+      <visual name="dtof_tx_frame_visual">
+        <pose>0.03 -0.015 0.004 0 0 0</pose>
+        <geometry><box><size>0.0012 0.026 0.027</size></box></geometry>
+        <material><ambient>0.28 0.30 0.32 1</ambient><diffuse>0.50 0.54 0.58 1</diffuse><specular>0.7 0.7 0.7 1</specular></material>
+      </visual>
+      <visual name="dtof_tx_window_visual">
+        <pose>0.0307 -0.015 0.004 0 0 0</pose>
+        <geometry><box><size>0.0005 0.024 0.025</size></box></geometry>
+        <material><ambient>0.012 0.015 0.02 1</ambient><diffuse>0.025 0.032 0.042 1</diffuse><specular>0.3 0.3 0.3 1</specular></material>
+      </visual>
+      <visual name="dtof_rx_frame_visual">
+        <pose>0.03 0.015 0.004 0 0 0</pose>
+        <geometry><box><size>0.0012 0.026 0.027</size></box></geometry>
+        <material><ambient>0.28 0.30 0.32 1</ambient><diffuse>0.50 0.54 0.58 1</diffuse><specular>0.7 0.7 0.7 1</specular></material>
+      </visual>
+      <visual name="dtof_rx_window_visual">
+        <pose>0.0307 0.015 0.004 0 0 0</pose>
+        <geometry><box><size>0.0005 0.024 0.025</size></box></geometry>
+        <material><ambient>0.012 0.015 0.02 1</ambient><diffuse>0.025 0.032 0.042 1</diffuse><specular>0.3 0.3 0.3 1</specular></material>
+      </visual>
+      <visual name="dtof_tx_bezel_visual">
+        <pose>0.0316 -0.015 0.004 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.0112</radius><length>0.0018</length></cylinder></geometry>
+        <material><ambient>0.15 0.17 0.19 1</ambient><diffuse>0.27 0.30 0.33 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+      </visual>
+      <visual name="dtof_tx_glass_visual">
+        <pose>0.0326 -0.015 0.004 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.0097</radius><length>0.0005</length></cylinder></geometry>
+        <material><ambient>0.035 0.014 0.022 1</ambient><diffuse>0.09 0.035 0.055 1</diffuse><specular>0.65 0.45 0.55 1</specular></material>
+      </visual>
+      <visual name="dtof_rx_bezel_visual">
+        <pose>0.0316 0.015 0.004 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.0086</radius><length>0.0018</length></cylinder></geometry>
+        <material><ambient>0.15 0.17 0.19 1</ambient><diffuse>0.27 0.30 0.33 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+      </visual>
+      <visual name="dtof_rx_glass_visual">
+        <pose>0.0326 0.015 0.004 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.0071</radius><length>0.0005</length></cylinder></geometry>
+        <material><ambient>0.012 0.035 0.045 1</ambient><diffuse>0.025 0.09 0.12 1</diffuse><specular>0.85 0.92 1 1</specular></material>
+      </visual>
+      <visual name="rgb_outer_ring_visual">
+        <pose>0.031 0 -0.02 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.0087</radius><length>0.002</length></cylinder></geometry>
+        <material><ambient>0.28 0.30 0.32 1</ambient><diffuse>0.50 0.54 0.58 1</diffuse><specular>0.7 0.7 0.7 1</specular></material>
+      </visual>
+      <visual name="rgb_barrel_visual">
+        <pose>0.0323 0 -0.02 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.0071</radius><length>0.002</length></cylinder></geometry>
+        <material><ambient>0.012 0.015 0.02 1</ambient><diffuse>0.025 0.032 0.042 1</diffuse><specular>0.3 0.3 0.3 1</specular></material>
+      </visual>
+      <visual name="rgb_glass_visual">
+        <pose>0.0334 0 -0.02 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.0054</radius><length>0.0006</length></cylinder></geometry>
+        <material><ambient>0.012 0.035 0.045 1</ambient><diffuse>0.025 0.09 0.12 1</diffuse><specular>0.85 0.92 1 1</specular></material>
+      </visual>
+      <visual name="rgb_pupil_visual">
+        <pose>0.03375 0 -0.02 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.0026</radius><length>0.0002</length></cylinder></geometry>
+        <material><ambient>0.012 0.015 0.02 1</ambient><diffuse>0.025 0.032 0.042 1</diffuse><specular>0.3 0.3 0.3 1</specular></material>
+      </visual>
+      <visual name="right_bottom_screw_visual">
+        <pose>0.0301 -0.026 -0.026 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.0019</radius><length>0.0012</length></cylinder></geometry>
+        <material><ambient>0.28 0.30 0.32 1</ambient><diffuse>0.50 0.54 0.58 1</diffuse><specular>0.7 0.7 0.7 1</specular></material>
+      </visual>
+      <visual name="right_bottom_screw_slot_visual">
+        <pose>0.03076 -0.026 -0.026 0.785398 0 0</pose>
+        <geometry><box><size>0.0001 0.0025 0.00045</size></box></geometry>
+        <material><ambient>0.012 0.015 0.02 1</ambient><diffuse>0.025 0.032 0.042 1</diffuse><specular>0.3 0.3 0.3 1</specular></material>
+      </visual>
+      <visual name="right_top_screw_visual">
+        <pose>0.0301 -0.026 0.026 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.0019</radius><length>0.0012</length></cylinder></geometry>
+        <material><ambient>0.28 0.30 0.32 1</ambient><diffuse>0.50 0.54 0.58 1</diffuse><specular>0.7 0.7 0.7 1</specular></material>
+      </visual>
+      <visual name="right_top_screw_slot_visual">
+        <pose>0.03076 -0.026 0.026 0.785398 0 0</pose>
+        <geometry><box><size>0.0001 0.0025 0.00045</size></box></geometry>
+        <material><ambient>0.012 0.015 0.02 1</ambient><diffuse>0.025 0.032 0.042 1</diffuse><specular>0.3 0.3 0.3 1</specular></material>
+      </visual>
+      <visual name="left_bottom_screw_visual">
+        <pose>0.0301 0.026 -0.026 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.0019</radius><length>0.0012</length></cylinder></geometry>
+        <material><ambient>0.28 0.30 0.32 1</ambient><diffuse>0.50 0.54 0.58 1</diffuse><specular>0.7 0.7 0.7 1</specular></material>
+      </visual>
+      <visual name="left_bottom_screw_slot_visual">
+        <pose>0.03076 0.026 -0.026 0.785398 0 0</pose>
+        <geometry><box><size>0.0001 0.0025 0.00045</size></box></geometry>
+        <material><ambient>0.012 0.015 0.02 1</ambient><diffuse>0.025 0.032 0.042 1</diffuse><specular>0.3 0.3 0.3 1</specular></material>
+      </visual>
+      <visual name="left_top_screw_visual">
+        <pose>0.0301 0.026 0.026 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.0019</radius><length>0.0012</length></cylinder></geometry>
+        <material><ambient>0.28 0.30 0.32 1</ambient><diffuse>0.50 0.54 0.58 1</diffuse><specular>0.7 0.7 0.7 1</specular></material>
+      </visual>
+      <visual name="left_top_screw_slot_visual">
+        <pose>0.03076 0.026 0.026 0.785398 0 0</pose>
+        <geometry><box><size>0.0001 0.0025 0.00045</size></box></geometry>
+        <material><ambient>0.012 0.015 0.02 1</ambient><diffuse>0.025 0.032 0.042 1</diffuse><specular>0.3 0.3 0.3 1</specular></material>
+      </visual>
+      <visual name="status_bezel_visual">
+        <pose>0.0301 -0.015 0.023 0 0 0</pose>
+        <geometry><box><size>0.001 0.008 0.0028</size></box></geometry>
+        <material><ambient>0.15 0.17 0.19 1</ambient><diffuse>0.27 0.30 0.33 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+      </visual>
+      <visual name="status_led_visual">
+        <pose>0.0307 -0.015 0.023 0 0 0</pose>
+        <geometry><box><size>0.0003 0.005 0.0012</size></box></geometry>
+        <material><ambient>0.05 0.6 0.5 1</ambient><diffuse>0.08 0.9 0.7 1</diffuse><emissive>0.03 0.35 0.25 1</emissive></material>
+      </visual>
+      <visual name="rear_connector_base_visual">
+        <pose>-0.029 0 0.004 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.0078</radius><length>0.002</length></cylinder></geometry>
+        <material><ambient>0.15 0.17 0.19 1</ambient><diffuse>0.27 0.30 0.33 1</diffuse><specular>0.4 0.4 0.4 1</specular></material>
+      </visual>
+      <visual name="rear_connector_thread_visual">
+        <pose>-0.033 0 0.004 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.006</radius><length>0.008</length></cylinder></geometry>
+        <material><ambient>0.28 0.30 0.32 1</ambient><diffuse>0.50 0.54 0.58 1</diffuse><specular>0.7 0.7 0.7 1</specular></material>
+      </visual>
+      <visual name="rear_connector_socket_visual">
+        <pose>-0.0371 0 0.004 0 1.570796326795 0</pose>
+        <geometry><cylinder><radius>0.0046</radius><length>0.0003</length></cylinder></geometry>
+        <material><ambient>0.012 0.015 0.02 1</ambient><diffuse>0.025 0.032 0.042 1</diffuse><specular>0.3 0.3 0.3 1</specular></material>
+      </visual>
+
+      <!-- 200 Hz is a simulation choice: the manual specifies no IMU rate/noise. -->
+      <sensor name="imu" type="imu">
+        <topic>/sim/odin1_lite/imu</topic>
+        <ignition_frame_id>odin1_lite_body</ignition_frame_id>
+        <update_rate>200</update_rate><always_on>true</always_on>
+      </sensor>
+
+      <!-- Approximate dToF with angular rays, not a hardware packet emulator.
+           §12: 240x180, 120x90 degrees, 10 Hz. §5.4 raw packets instead say
+           256x192. 25 m is the selected cutoff; reflectance/light are not modelled. -->
+      <sensor name="dtof" type="gpu_lidar">
+        <pose relative_to="odin1_lite_lidar">0 0 0 0 0 0</pose>
+        <topic>/sim/odin1_lite/lidar</topic>
+        <ignition_frame_id>odin1_lite_lidar</ignition_frame_id>
+        <update_rate>10</update_rate><always_on>true</always_on><visualize>false</visualize>
+        <lidar>
+          <scan>
+            <horizontal><samples>240</samples><resolution>1</resolution><min_angle>-1.047197551197</min_angle><max_angle>1.047197551197</max_angle></horizontal>
+            <vertical><samples>180</samples><resolution>1</resolution><min_angle>-0.785398163397</min_angle><max_angle>0.785398163397</max_angle></vertical>
+          </scan>
+          <range><min>0.15</min><max>25.0</max><resolution>0.01</resolution></range>
+          <!-- Constant 3 cm noise only approximates the manual's 5 m test. -->
+          <noise><type>gaussian</type><mean>0</mean><stddev>0.03</stddev></noise>
+        </lidar>
+      </sensor>
+
+      <!-- Rectified pinhole approximation: NOT the raw FishPoly camera.
+           fx/fy derive from 121/106 degree H/V FOV; 30 Hz is a demo choice. -->
+      <sensor name="rgb" type="camera">
+        <pose relative_to="odin1_lite_camera">0 0 0 0 0 0</pose>
+        <topic>/sim/odin1_lite/rgb/image</topic>
+        <ignition_frame_id>odin1_lite_camera_optical</ignition_frame_id>
+        <update_rate>30</update_rate><always_on>true</always_on>
+        <camera>
+          <horizontal_fov>2.111848394914</horizontal_fov>
+          <image><width>1280</width><height>1088</height><format>R8G8B8</format></image>
+          <clip><near>0.10</near><far>50</far></clip>
+          <lens>
+            <intrinsics><fx>362.094578040</fx><fy>409.933403256</fy><cx>640</cx><cy>544</cy><s>0</s></intrinsics>
+          </lens>
+          <optical_frame_id>odin1_lite_camera_optical</optical_frame_id>
+          <camera_info_topic>/sim/odin1_lite/rgb/camera_info</camera_info_topic>
+        </camera>
+      </sensor>
+    </link>
+
+    <!-- Manual §5.2 body_T_lidar, with printed rotation orthonormalized. -->
+    <frame name="odin1_lite_lidar" attached_to="odin1_lite_body">
+      <pose>-0.030539872100 0.023467905200 0.033316228700 0.015869833614 0.003989832106 0.008680240493</pose>
+    </frame>
+    <!-- Manual's example camera calibration, NOT this user's per-device calibration. -->
+    <frame name="odin1_lite_camera" attached_to="odin1_lite_body">
+      <pose>-0.014563270976 0.030435708067 0.002305355772 0.024070514843 0.004267395538 0.026835666645</pose>
+    </frame>
+    <frame name="odin1_lite_camera_optical" attached_to="odin1_lite_camera">
+      <pose>0 0 0 -1.570796326795 0 -1.570796326795</pose>
+    </frame>
+  </model>
+</sdf>
