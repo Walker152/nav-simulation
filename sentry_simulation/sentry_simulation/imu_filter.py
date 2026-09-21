@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Apply MID360-like per-axis measurement saturation to Gazebo's IMU."""
+"""Preserve Gazebo six-axis IMU measurements with per-axis sensor saturation."""
 
 import math
 
 import rclpy
-from rclpy._rclpy_pybind11 import RCLError
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
@@ -22,70 +21,6 @@ def filter_vector(sample, limit):
     return tuple(max(-limit, min(limit, value)) for value in values)
 
 
-def condition_acceleration(
-    sample, orientation, sensor_limit, dynamic_limit,
-    vertical_dynamic_limit=0.0, gravity=9.81
-):
-    """Keep planar specific force and reject Gazebo's vertical contact impulses."""
-    values = tuple(float(value) for value in sample)
-    quaternion = tuple(float(value) for value in orientation)
-    if any(not math.isfinite(value) for value in values + quaternion):
-        return None
-    dynamic_limit = float(dynamic_limit)
-    vertical_dynamic_limit = float(vertical_dynamic_limit)
-    if dynamic_limit <= 0.0 or vertical_dynamic_limit < 0.0:
-        raise ValueError("dynamic acceleration limits are invalid")
-
-    qx, qy, qz, qw = quaternion
-    quaternion_norm = math.sqrt(qx * qx + qy * qy + qz * qz + qw * qw)
-    if quaternion_norm <= 1.0e-9:
-        return None
-    qx /= quaternion_norm
-    qy /= quaternion_norm
-    qz /= quaternion_norm
-    qw /= quaternion_norm
-
-    gravity_body = (
-        2.0 * (qx * qz - qw * qy) * gravity,
-        2.0 * (qy * qz + qw * qx) * gravity,
-        (1.0 - 2.0 * (qx * qx + qy * qy)) * gravity,
-    )
-    specific_force = tuple(
-        value - gravity_axis
-        for value, gravity_axis in zip(values, gravity_body)
-    )
-    rotation = (
-        (1.0 - 2.0 * (qy * qy + qz * qz), 2.0 * (qx * qy - qz * qw),
-         2.0 * (qx * qz + qy * qw)),
-        (2.0 * (qx * qy + qz * qw), 1.0 - 2.0 * (qx * qx + qz * qz),
-         2.0 * (qy * qz - qx * qw)),
-        (2.0 * (qx * qz - qy * qw), 2.0 * (qy * qz + qx * qw),
-         1.0 - 2.0 * (qx * qx + qy * qy)),
-    )
-    world_specific = [
-        sum(rotation[row][column] * specific_force[column] for column in range(3))
-        for row in range(3)
-    ]
-    planar_norm = math.hypot(world_specific[0], world_specific[1])
-    if planar_norm > dynamic_limit:
-        planar_scale = dynamic_limit / planar_norm
-        world_specific[0] *= planar_scale
-        world_specific[1] *= planar_scale
-    world_specific[2] = max(
-        -vertical_dynamic_limit,
-        min(vertical_dynamic_limit, world_specific[2]),
-    )
-    specific_force = tuple(
-        sum(rotation[row][column] * world_specific[row] for row in range(3))
-        for column in range(3)
-    )
-    conditioned = tuple(
-        gravity_axis + force_axis
-        for gravity_axis, force_axis in zip(gravity_body, specific_force)
-    )
-    return filter_vector(conditioned, sensor_limit)
-
-
 class SimImuFilter(Node):
     def __init__(self):
         super().__init__("sentry_sim_imu_filter")
@@ -93,17 +28,9 @@ class SimImuFilter(Node):
         self.declare_parameter("output_topic", "/sim/imu")
         self.declare_parameter("acceleration_limit", 29.43)
         self.declare_parameter("angular_velocity_limit", 35.0)
-        self.declare_parameter("dynamic_acceleration_limit", 4.0)
-        self.declare_parameter("vertical_dynamic_acceleration_limit", 0.0)
         self._acceleration_limit = self.get_parameter("acceleration_limit").value
         self._angular_velocity_limit = self.get_parameter(
             "angular_velocity_limit"
-        ).value
-        self._dynamic_acceleration_limit = self.get_parameter(
-            "dynamic_acceleration_limit"
-        ).value
-        self._vertical_dynamic_acceleration_limit = self.get_parameter(
-            "vertical_dynamic_acceleration_limit"
         ).value
 
         self._publisher = self.create_publisher(
@@ -117,21 +44,13 @@ class SimImuFilter(Node):
         )
 
     def _callback(self, message):
-        filtered_acceleration = condition_acceleration(
+        filtered_acceleration = filter_vector(
             (
                 message.linear_acceleration.x,
                 message.linear_acceleration.y,
                 message.linear_acceleration.z,
             ),
-            (
-                message.orientation.x,
-                message.orientation.y,
-                message.orientation.z,
-                message.orientation.w,
-            ),
-            sensor_limit=self._acceleration_limit,
-            dynamic_limit=self._dynamic_acceleration_limit,
-            vertical_dynamic_limit=self._vertical_dynamic_acceleration_limit,
+            self._acceleration_limit,
         )
         filtered_angular_velocity = filter_vector(
             (
@@ -168,8 +87,12 @@ def main(args=None):
     node = SimImuFilter()
     try:
         rclpy.spin(node)
-    except (KeyboardInterrupt, ExternalShutdownException, RCLError):
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
+    except RuntimeError:
+        # A signal can invalidate the context between executor readiness and take.
+        if node.context.ok():
+            raise
     finally:
         node.destroy_node()
         if rclpy.ok():

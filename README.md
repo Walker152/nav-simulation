@@ -25,7 +25,7 @@ Gazebo 左右双 MID360（每颗由前/后 180° GPU LiDAR 拼接）+ 水平 IMU
 | 全向底盘 | `sentry_omni` + Fortress `MecanumDrive` | 接收转换后的车体系速度，可测试 X/Y/yaw |
 | 差速底盘 | `sentry_diff` + Fortress `DiffDrive` | 模型保留；当前导航仅支持 omni，差速导航显式拒绝 |
 | 双 MID360 | 左右镜像雷达 + pattern adapter | 合并为 `/livox/lidar`，消息类型与真机相同 |
-| IMU | Gazebo IMU + 仿真滤波器 | 200 Hz，输出 `/sim/imu` 给 Point-LIO |
+| IMU | Gazebo IMU + 每轴量程适配 | 200 Hz，保留三轴加速度，输出 `/sim/imu` 给 Point-LIO |
 | 里程计 | Point-LIO | 导航使用 `/aft_mapped_to_init`，不是 Gazebo 真值 |
 | 重定位 | 一次性 ratio-GICP | 2025/2026 场地按 `worlds.yaml` 加载模型 PCD |
 | 导航闭环 | Nav2 + ROGMap + MINCO + MPC | RViz 下发目标后规划并驱动车辆 |
@@ -35,10 +35,13 @@ Gazebo 左右双 MID360（每颗由前/后 180° GPU LiDAR 拼接）+ 水平 IMU
 
 ## 已包含的资源
 
+- `home_indoor`：紧凑双层住宅，含房间、门框、家具及连接 2.6 m 二楼的折返缓坡。
+  启动：`./src/scripts/simlation.bash omni home_indoor`。
+  [场景预览、布局与分层地图说明](sentry_simulation/resource/models/home_indoor/README.md)。
 - RMUC / RMUL 2024、2025 以及 RMUC 2026 场地 SDF、网格与二维地图。
-- RMUC 2026 当前放置了点云重建的临时视觉/碰撞 STL。视觉模型存在较多重建坑洞，
-  仅用于资源接入和坐标检查，等待外部 CAD/网格工具生成的修复版本覆盖；不要把当前
-  RMUC 2026 网格视作已完成的坡道、碰撞和导航验收结果。
+- RMUC 2026 使用用户提供的 `RMUC2026.stl` CAD 场地，已换算为米、对齐现有地图并
+  简化为 50 万三角面；视觉和碰撞共用同一 STL。脚本和 ROS launch 默认启动此场景。
+  来源、坐标变换及复现方法见 [资产说明](sentry_simulation/resource/models/rmuc_2026/README.md)。
 - `sentry_omni`：轮心按 `0.44 m × 0.44 m` 正方形布置的四轮全向底盘，使用
   包内构建的 `MecanumDrive2`，PB2025 chassis/gimbal 网格仅作视觉模型。
 - `sentry_diff`：半径 `0.3 m` 的圆形两轮差速底盘，仅左右两轮驱动，前后球形
@@ -91,15 +94,16 @@ colcon build --symlink-install --packages-select sentry_simulation
 
 ```bash
 cd /home/alioth/nature_will
-./src/scripts/simlation.bash omni rmuc_2025 --check
+./src/scripts/simlation.bash --check
 ```
 
 脚本位置参数和选项：
 
 | 参数 | 可选值 | 默认值 | 作用 |
 |---|---|---|---|
-| 第 1 个位置参数 | `omni`、`diff` | `omni` | 当前导航选择 omni；diff 资源保留但导航拒绝 |
-| 第 2 个位置参数 | `rmuc_2024`、`rmul_2024`、`rmuc_2025`、`rmuc_2026`、`rmul_2025` | `rmuc_2025` | 选择场地 |
+| 第 1 个位置参数 | `omni`、`ackermann`、`diff` | 统一 YAML 的 `planner.model` | 默认统一 YAML 的底盘选择；diff 资源保留但导航拒绝 |
+| 第 2 个位置参数 | `rmuc_2024`、`rmul_2024`、`rmuc_2025`、`rmuc_2026`、`rmul_2025`、`home_indoor` | `rmuc_2026` | 选择场地 |
+| `--params-file PATH` | 任意统一导航 YAML | 空 | 显式参数文件；此时第 1 个参数必须与 `planner.model` 一致 |
 | `--headless` | 开关 | 关闭 | 不启动 Gazebo GUI，只运行 server |
 | `--no-rviz` | 开关 | 关闭 | 不启动 RViz |
 | `--check` | 开关 | 关闭 | 只检查 ROS overlay 和依赖包 |
@@ -108,13 +112,20 @@ RViz 随 launch 直接启动，导航初始化期间也能查看地图和状态�
 `Managed nodes are active` 后再下发导航目标；窗口出现不代表导航已经就绪。
 `--no-rviz` 继续用于完全关闭 RViz。
 
+车辆生成后会先等待 1 秒**仿真时间**再启动 Point-LIO 容器，让轮地接触稳定后再估计初始重力。
+暂停仿真时这段等待也会暂停；启动期间保持车辆静止，等导航节点 active 后再下发目标。
+这避免出生落地冲击污染 IMU 初始化而引起静止米级漂移。
+
 常用启动方式：
 
 ```bash
-# 全向底盘 + RMUC 2025（默认）
-./src/scripts/simlation.bash omni rmuc_2025
+# 统一 YAML 选择的底盘 + RMUC 2026（默认）
+./src/scripts/simlation.bash
 
-# 全向底盘 + RMUC 2026 点云重建场地
+# 阿克曼底盘 + RMUC 2024（使用统一 YAML 的运行时模型选择）
+./src/scripts/simlation.bash ackermann rmuc_2024 --headless --no-rviz
+
+# 显式选择全向底盘 + RMUC 2026 CAD 场地
 ./src/scripts/simlation.bash omni rmuc_2026
 
 # 差速底盘 + RMUL 2025
@@ -124,7 +135,8 @@ RViz 随 launch 直接启动，导航初始化期间也能查看地图和状态�
 ./src/scripts/simlation.bash omni rmuc_2024 --headless --no-rviz
 ```
 
-可选 world：`rmuc_2024`、`rmul_2024`、`rmuc_2025`、`rmuc_2026`、`rmul_2025`。
+可选 world：`rmuc_2024`、`rmul_2024`、`rmuc_2025`、`rmuc_2026`、`rmul_2025`、`home_indoor`。
+`home_indoor` 使用一楼二维图并关闭 ICP，二楼地图单独随包提供；不自动切层规划。
 2025 与 RMUC 2026 场地默认启用模型 PCD GICP；2024 场地因现有 PCD 与旧场地几何不一致，保持
 实车初值静态定位，不执行可能误收敛的 ICP。所有随包 PGM YAML 原点均为 `[0, 0, 0]`。
 RMUL 2025 使用与模型 PCD 同源的 2026 RMUL PGM，并把居中的场地网格平移到零原点地图。
@@ -135,7 +147,7 @@ RMUL 2025 使用与模型 PCD 同源的 2026 RMUL PGM，并把居中的场地网
 source /opt/ros/humble/setup.bash
 source install/setup.bash
 ros2 launch sentry_simulation simulation.launch.py \
-  chassis_type:=omni world:=rmuc_2025 \
+  chassis_type:=omni world:=rmuc_2026 \
   headless:=false rviz:=true use_icp:=false log_level:=info
 ```
 
@@ -143,8 +155,28 @@ ros2 launch sentry_simulation simulation.launch.py \
 
 ### 导航参数与对照验证
 
-默认读取 [config/nav2_sim.yaml](sentry_simulation/config/nav2_sim.yaml)，按
-`frames / odometry / vehicle / planner / controller` 分组；Nav2 宿主和
+Ackermann 仿真使用 `AckermannBicycle` 单一底盘命令插件：同一曲率同时设置左右前轮角和后轮差速，
+`steering_limit=0.4` 表示自行车中心转角。前轮转向位置直接重置并保持，滚动关节保持自由；这有意
+取消旧内置插件约 1 秒的转向伺服，不用于模拟实车有限转向响应。车身惯性、轮胎接触、碰撞、传感器
+及原 groundtruth/关节反馈仍由 Gazebo 物理系统产生；插件不强制车身位姿，也不自行发布 odom/TF。
+零速纯 yaw 请求停车回正，非有限输入也停车回正。原命令 adapter 继续负责超时停车。
+
+修改插件后先构建并 source 对应 install，使 Gazebo 能找到插件；可独立运行真实物理回归：
+
+```bash
+python3 src/simulation/sentry_simulation/test/ackermann_physics_regression.py --output /tmp/ack_physics_check
+```
+
+回归自建唯一 IGN 分区和无传感器空地 world，保留原模型全部物理实体，结束只清理自身进程；
+输出真实轮角、后轮速度、groundtruth CSV 和断言摘要。`--smoke` 仅检查直行通信。
+`--nonfinite` 单独从运动状态测试 NaN/Inf 输入停车，只用于新插件，不对旧插件执行。
+测试检查转向和实际车身响应，轮角到位并不单独证明导航闭环成功。
+正倒车之间先停车稳定；直接从 +0.6 跳到 −0.6 m/s 且同时回正的极端输入曾产生约 200 ms
+接触瞬态，未通过 150 ms 车身门。该限制保留，测试没有通过强制车身状态或放宽响应门消除它。
+
+默认读取 `navi2/params/navigation.yaml`，按
+`frames / odometry / planner / controller / omni / ackermann` 分组；脚本的
+`omni` 或 `ackermann` 参数选择对应模型，Nav2 宿主和
 `use_sim_time=true` 由 launch 统一装配。保留 20 Hz 控制、0.05 s MPC 步长、
 Q/R、车辆能力、ROG 更新周期和 footprint。共享测量原点为
 `sensor_in_base.xyz: [0, -0.2, 0]`，匹配 Point-LIO 当前平面导航 base。
@@ -233,25 +265,30 @@ ros2 topic echo /sim/ground_truth/odom --once
 
 ## 坐标、时间与速度语义
 
+仿真 IMU 保留 Gazebo 的三轴含重力加速度（m/s²）和角速度（rad/s），仅沿传感器轴执行现有量程裁剪；不利用真值姿态扣重力，也不删除竖直动态或限制水平动态。`point_lio_sim.yaml` 的 `acc_norm=9.81`、`satu_acc=29.43` 与此单位配套，等价于实车 Livox g 单位配合 `acc_norm=1`、`satu_acc=3`。这些轴阈值属于现有仿真饱和模型及 LIO 保护配置，不代表实车硬件量程规格。消息时间戳、坐标系和诊断姿态原样保留；姿态字段不参与六轴测量处理。
+
 - 全部节点启用 `/clock` 和 `use_sim_time`。
-- `config/nav2_sim.yaml` 使用与实车相同的机器人配置分组，由 navi2 launch 合并宿主参数。planner 与 Point-LIO、点云适配器保持在 `livox_pointlio_container` 同一进程。启动容器前将机器人配置与 `nav2_host.yaml` 合成为进程级 ROS 参数，使 planner 内部创建的 global costmap 也能继承完整配置；退出时删除本次临时参数文件。
+- `navigation/navi2_bringup/params/navigation.yaml` 的 simulation profile 由 navi2 launch 组装参数。planner 与 Point-LIO、点云适配器保持在 `livox_pointlio_container` 同一进程；容器继承同一份进程级 ROS 参数，退出时删除临时参数文件。
 - 融合 LiDAR/IMU link 在模型中的位姿为 `(0,-0.2,0.3,0,0,0)`，
   物理 base_link 位于 `(0,0,0.2,0,0,0)`。适配器将左右测量点转换到该 IMU 公共帧，
   不会把里程计原点移到车体中心。
+- omni 与 Ackermann 的模型 XY 原点都是机械车体中心；Ackermann 后轴为 `x=-0.22 m`、前轴为 `x=+0.22 m`，轴距保持 `0.44 m`。车壳、惯性原点和碰撞盒居中，左右 MID360 保持与 omni 相同的安装坐标。仿真 profile 的 `centre_offset=0.22` 表示后轴到中心的距离；其他 profile 的值不用于该 SDF。
 - 2025/2026 场地通过 `map -> pcd_map -> camera_init` 接入一次性 GICP；超时会回退到同一
   实车初始位姿。2024 场地直接发布 `map -> camera_init`。两种路径的定位原点 Z 都为零。
 - planner/controller 共用 `[0,-0.2,0]` 平面外参，位置及旋转引起的杆臂速度一起修正。
   Z 为零是沿用 Point-LIO 导航 base 与 body 等高的约定；与 Gazebo 物理 link 的三维外参不同。
-- Nav2 使用同时包络全向轮和差速轮的凸多边形 footprint；MINCO 优化安全距离为
-  `0.45 m`，避免原先 `0.20/0.25 m` 低估车体后卡场地边角。
+- Nav2 footprint 与分层碰撞安装位置相对车体中心；Ackermann 的矩形尺寸、安全距离和二维 guide 半径分别由导航配置控制，不改变后轴运动学参考点。
 - Point-LIO 发布 `camera_init -> body` 和 `camera_init -> base_link`；Odometry 为
   `camera_init / body`。当前 base TF 仅保留 yaw，三维坡面 TF 的统一不在这次参数修正范围。
-- MPC 在 odom 求解，`/cmd_vel_mpc` 为车体系速度；适配器直接转发。
-- 当前只允许 omni 导航；差速模型保留为仿真资源，需规划与控制成对实现后再接入。
+- MPC 对外位姿、参考轨迹和预测均为中心；Ackermann 内部自行车模型仍在后轴求解。中心车体系 `/cmd_vel_mpc` 为 `(v, 0.22*w, w)`，其中 `v` 是后轴有符号纵向速度。适配器直接转发，理想 Ackermann actuator 只用 `linear.x` 和 `angular.z`；`linear.y` 是旋转产生的中心速度，不是独立侧移命令。
+- `/sim/ground_truth/odom` 发布模型原点的中心 XY 位姿和中心车体系速度，转弯时 `vy≈0.22*w`。Z 仍为模型原点，与物理 base_link、Point-LIO 导航 base 的高度约定不同。
+- 导航支持 omni 与 Ackermann；差速模型保留为非导航仿真资源。
 - MPC 命令超过 0.25 s 未刷新时，适配节点会向 Gazebo 发送一次零速度，避免底盘保持旧指令。
 - `/livox/lidar` 与真机相同使用 `livox_ros_driver2/msg/CustomMsg`：`offset_time`
   单位为纳秒，`line` 为 0～3，`tag` 为 `0x10`，所以 Point-LIO 配置为
   `lidar_type: 1`、`scan_line: 4`、`timestamp_unit: 3`。
+
+独立物理回归 `sentry_simulation/test/ackermann_physics_regression.py` 在 headless 平面世界中读取真实轮状态与 groundtruth；从 SDF 后轮位置确定中心到后轴距离，保留中心真值 CSV，再转换回后轴检查无侧滑与圆弧误差，同时核对中心侧向速度和圆弧。显式运行主套件与 `--nonfinite` 组，不会随普通 pytest 启动 Gazebo。
 
 ## STEP / CAD 资源是否需要
 
@@ -288,11 +325,10 @@ sentry_simulation/
 └── resource/worlds/<world>_world.sdf     # Gazebo world 入口
 ```
 
-替换 RMUC 2026 外部重建结果时，保持单位为米、Z-up、地图原点和 XYZ/RPY 不变，直接覆盖：
+RMUC 2026 的视觉与碰撞共用下列米制、Z-up 网格；替换前按资产说明转换原始 CAD 坐标，保持与地图对齐：
 
 ```text
-sentry_simulation/resource/models/rmuc_2026/meshes/rmuc_2026_visual.stl
-sentry_simulation/resource/models/rmuc_2026/meshes/rmuc_2026_collision.stl
+sentry_simulation/resource/models/rmuc_2026/meshes/rmuc_2026.stl
 ```
 
 视觉和碰撞 STL 必须使用完全相同的坐标系。替换后至少检查文件边界、三角面数量、孔洞/非流形面、出生点地面高度、坡道与台阶尺寸，再运行全向/差速车辆通过性验收。不要自动居中模型，也不要在 `model.sdf` 中用未知平移补偿错误坐标。
@@ -329,4 +365,4 @@ sentry_simulation/resource/models/rmuc_2026/meshes/rmuc_2026_collision.stl
 Point-LIO 记录融合 IMU 原点，比较平面真值前必须施加 map 变换和上述 0.2 m 原点修正；
 运行验收仍需分别检查静止 Z/roll/pitch 峰峰值、中央区域漂移和 ROGMap 地面残影。
 
-当前 RMUC 2026 临时网格因可见坑洞尚未通过上述运行验收。外部修复网格替换完成前，RMUC 2026 只用于检查资源加载、坐标链和转换流程，不用于评价最终坡道通过性或定位精度。
+RMUC 2026 已替换为 CAD 场地；资源加载与出生点检查不等于完整赛道验收，坡道通过性、长时定位精度和闭环导航仍需按实际任务分别验证。

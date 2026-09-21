@@ -17,6 +17,11 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
+add_executable(simulation_container src/simulation_container.cpp)
+target_compile_features(simulation_container PRIVATE cxx_std_17)
+ament_target_dependencies(simulation_container rclcpp rclcpp_components)
+install(TARGETS simulation_container DESTINATION lib/${PROJECT_NAME})
+
 add_library(pointcloud_adapter_component SHARED src/pointcloud_adapter.cpp)
 target_compile_features(pointcloud_adapter_component PUBLIC cxx_std_17)
 target_include_directories(pointcloud_adapter_component PUBLIC
@@ -36,6 +41,11 @@ target_include_directories(MecanumDrive2 PRIVATE plugins/mecanum_drive2)
 target_link_libraries(MecanumDrive2
   ignition-gazebo6::ignition-gazebo6)
 
+add_library(AckermannBicycle SHARED
+  plugins/ackermann_bicycle/AckermannBicycle.cc)
+target_compile_features(AckermannBicycle PUBLIC cxx_std_17)
+target_link_libraries(AckermannBicycle ignition-gazebo6::ignition-gazebo6)
+
 ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS sentry_simulation/cmd_vel_adapter.py
   DESTINATION lib/${PROJECT_NAME}
@@ -48,7 +58,7 @@ install(TARGETS pointcloud_adapter_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
-install(TARGETS MecanumDrive2 LIBRARY DESTINATION plugins)
+install(TARGETS MecanumDrive2 AckermannBicycle LIBRARY DESTINATION plugins)
 install(DIRECTORY behavior_tree config launch maps resource
   DESTINATION share/${PROJECT_NAME})
 install(FILES ../README.md ../THIRD_PARTY_NOTICES.md
@@ -62,8 +72,12 @@ ament_export_dependencies(livox_ros_driver2 pcl_conversions rclcpp rclcpp_compon
 if(BUILD_TESTING)
   find_package(ament_cmake_pytest REQUIRED)
   ament_add_pytest_test(simulation_kinematics test/test_kinematics.py)
+  ament_add_pytest_test(simulation_ackermann_model test/test_ackermann_model.py)
   ament_add_pytest_test(simulation_imu_filter test/test_imu_filter.py)
   ament_add_pytest_test(simulation_contract test/test_simulation_contract.py)
+  ament_add_pytest_test(simulation_home_indoor test/test_home_indoor.py)
+  ament_add_pytest_test(simulation_shutdown test/test_shutdown_contract.py TIMEOUT 45)
+  ament_add_pytest_test(simulation_container_shutdown test/test_container_shutdown.py)
 endif()
 
 ament_package()

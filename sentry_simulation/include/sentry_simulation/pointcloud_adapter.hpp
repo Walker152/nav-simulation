@@ -62,7 +62,6 @@ private:
   int pattern_points_per_frame_;
   double vertical_min_rad_;
   double vertical_max_rad_;
-  double scan_period_;
   std::int64_t sync_tolerance_ns_;
   std::string output_frame_id_;
   SensorTransform left_transform_;

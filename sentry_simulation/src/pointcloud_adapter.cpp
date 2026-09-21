@@ -86,7 +86,7 @@ PointCloudAdapter::PointCloudAdapter(const rclcpp::NodeOptions & options)
   pattern_points_per_frame_ = declare_parameter<int>("pattern_points_per_frame", 20000);
   vertical_min_rad_ = declare_parameter<double>("vertical_min_deg", -7.3) * kDegreesToRadians;
   vertical_max_rad_ = declare_parameter<double>("vertical_max_deg", 52.3) * kDegreesToRadians;
-  scan_period_ = declare_parameter<double>("scan_period", 0.1);
+  const double scan_period = declare_parameter<double>("scan_period", 0.1);
   const double sync_tolerance_ms = declare_parameter<double>("sync_tolerance_ms", 5.0);
   sync_tolerance_ns_ = static_cast<std::int64_t>(std::llround(sync_tolerance_ms * 1.0e6));
   left_transform_ = make_sensor_transform(declare_parameter<std::vector<double>>(
@@ -94,7 +94,7 @@ PointCloudAdapter::PointCloudAdapter(const rclcpp::NodeOptions & options)
   right_transform_ = make_sensor_transform(declare_parameter<std::vector<double>>(
     "right_sensor_pose", {-0.0496, 0.047469081313, 0.0, 0.5835987756, 0.0, 0.0}));
 
-  if (pattern_points_per_frame_ <= 0 || scan_period_ <= 0.0 || sync_tolerance_ns_ < 0 ||
+  if (pattern_points_per_frame_ <= 0 || scan_period <= 0.0 || sync_tolerance_ns_ < 0 ||
       vertical_max_rad_ <= vertical_min_rad_ || output_frame_id_.empty()) {
     throw std::invalid_argument("invalid MID360 scan pattern parameters");
   }

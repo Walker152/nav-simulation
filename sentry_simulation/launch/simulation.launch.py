@@ -10,6 +10,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
+    EmitEvent,
     GroupAction,
     IncludeLaunchDescription,
     OpaqueFunction,
@@ -17,15 +18,25 @@ from launch.actions import (
     SetEnvironmentVariable,
 )
 from launch.conditions import IfCondition
-from launch.event_handlers import OnShutdown
+from launch.event_handlers import OnProcessExit, OnShutdown
+from launch.events import Shutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.logging import get_logger
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import ComposableNodeContainer, Node
+from launch_ros.actions import ComposableNodeContainer, Node, RosTimer, SetUseSimTime
 from launch_ros.descriptions import ComposableNode
 
 
 def _as_bool(value: str) -> bool:
     return value.strip().lower() in ("1", "true", "yes", "on")
+
+
+def _shutdown_on_container_exit(event, context):
+    if context.is_shutdown:
+        return []
+    reason = f"Simulation container exited unexpectedly (code {event.returncode})"
+    get_logger("sentry_simulation").error(reason)
+    return [EmitEvent(event=Shutdown(reason=reason))]
 
 
 def _launch_setup(context, package_share):
@@ -46,11 +57,11 @@ def _launch_setup(context, package_share):
     headless = _as_bool(LaunchConfiguration("headless").perform(context))
     use_icp = _as_bool(LaunchConfiguration("use_icp").perform(context))
 
-    if chassis_type not in ("omni", "diff"):
-        raise RuntimeError("chassis_type must be 'omni' or 'diff'")
-    if chassis_type != "omni":
+    if chassis_type not in ("", "omni", "ackermann", "diff"):
+        raise RuntimeError("chassis_type must be empty, 'omni', or 'ackermann'")
+    if chassis_type == "diff":
         raise RuntimeError(
-            "navigation currently supports only the omni vehicle model; "
+            "navigation currently supports only omni and ackermann vehicle models; "
             "the differential simulator model remains available for non-navigation tests"
         )
 
@@ -66,9 +77,6 @@ def _launch_setup(context, package_share):
     spawn = world_config["spawn"]
     world_path = os.path.join(package_share, world_config["world"])
     map_path = os.path.join(package_share, world_config["map"])
-    model_path = os.path.join(
-        package_share, "resource", "models", f"sentry_{chassis_type}", "model.sdf"
-    )
     bridge_path = os.path.join(package_share, "config", "ros_gz_bridge.yaml")
     point_lio_path = os.path.join(package_share, "config", "point_lio_sim.yaml")
     gicp_path = os.path.join(package_share, "config", "gicp_sim.yaml")
@@ -81,15 +89,27 @@ def _launch_setup(context, package_share):
         "mid360-real-centr.csv",
     )
     nav2_params_path = LaunchConfiguration("params_file").perform(context)
-    nav2_host_params = os.path.join(
-        get_package_share_directory("navi2"), "params", "nav2_host.yaml"
-    )
+    using_default_params = not nav2_params_path
+    if not nav2_params_path:
+        nav2_params_path = os.path.join(
+            get_package_share_directory("navi2"), "params", "navigation.yaml")
     assembler_path = Path(get_package_share_directory("navi2")) / "launch" / "navigation_parameters.py"
     spec = importlib.util.spec_from_file_location("navigation_parameters", assembler_path)
     assembler = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(assembler)
-    process_params_file = assembler.write_navigation_parameters(
-        assembler.load_navigation_parameters(nav2_params_path, nav2_host_params, use_sim_time=True))
+    resolved_params = assembler.load_navigation_parameters(
+        nav2_params_path, profile="simulation", use_sim_time=True,
+        model=chassis_type if using_default_params and chassis_type else None)
+    # planner.model owns an explicit params file; chassis_type selects the
+    # model only for the repository's default unified simulation config.
+    vehicle_model = resolved_params["planner_server"]["ros__parameters"][
+        "MincoPlanner"]["minco"]["vehicle"]["model"]
+    if chassis_type and not using_default_params and chassis_type != vehicle_model:
+        raise RuntimeError(
+            f"chassis_type '{chassis_type}' does not match planner.model '{vehicle_model}'")
+    model_path = os.path.join(
+        package_share, "resource", "models", f"sentry_{vehicle_model}", "model.sdf")
+    process_params_file = assembler.write_navigation_parameters(resolved_params)
     cleanup_params = RegisterEventHandler(OnShutdown(on_shutdown=[OpaqueFunction(
         function=lambda context: Path(process_params_file).unlink(missing_ok=True))]))
 
@@ -140,16 +160,14 @@ def _launch_setup(context, package_share):
             "output_topic": "/sim/imu",
             "acceleration_limit": 29.43,
             "angular_velocity_limit": 35.0,
-            "dynamic_acceleration_limit": 4.0,
-            "vertical_dynamic_acceleration_limit": 0.0,
         }],
     )
 
     point_lio_container = ComposableNodeContainer(
         name="livox_pointlio_container",
         namespace="",
-        package="rclcpp_components",
-        executable="component_container_mt",
+        package="sentry_simulation",
+        executable="simulation_container",
         output="screen",
         # Nested global_costmap reads process arguments, not PlannerServer's
         # component-only overrides. Load the same robot contract before startup.
@@ -189,16 +207,29 @@ def _launch_setup(context, package_share):
         ],
     )
 
+    # Point-LIO assumes a stationary IMU during gravity initialization. Start
+    # after the spawned chassis has settled, measured in simulation time.
+    start_localization = RegisterEventHandler(OnProcessExit(
+        target_action=spawn_robot,
+        on_exit=[RosTimer(period=1.0, actions=[GroupAction(
+            # The outer group's environment has been restored by this event.
+            actions=[*transport_actions, point_lio_container], scoped=True,
+        )])],
+    ))
+
     navigation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory("navi2"), "launch", "navigation_launch.py"
             )
         ),
+        # The outer simulation launch owns the static map server below.
+        # Keep the nested navigation launch focused on planner/controller nodes.
         launch_arguments={
             "use_sim_time": "true",
             "params_file": nav2_params_path,
-            "host_params_file": nav2_host_params,
+            "profile": "simulation",
+            "model": vehicle_model,
             "autostart": "true",
             "use_composition": "False",
             "planner_container_name": "livox_pointlio_container",
@@ -289,11 +320,16 @@ def _launch_setup(context, package_share):
     return [
         cleanup_params,
         *transport_actions,
+        SetUseSimTime(True),
+        RegisterEventHandler(OnProcessExit(
+            target_action=point_lio_container,
+            on_exit=_shutdown_on_container_exit,
+        )),
+        start_localization,
         gazebo,
         spawn_robot,
         bridge,
         imu_filter,
-        point_lio_container,
         *localization_actions,
         Node(
             package="nav2_map_server",
@@ -319,7 +355,7 @@ def _launch_setup(context, package_share):
             executable="sentry_sim_cmd_adapter",
             name="sentry_sim_cmd_adapter",
             output="screen",
-            parameters=[{"use_sim_time": True, "chassis_type": chassis_type}],
+            parameters=[{"use_sim_time": True, "chassis_type": vehicle_model}],
         ),
         rviz,
     ]
@@ -336,19 +372,20 @@ def generate_launch_description():
         )
     return LaunchDescription([
         DeclareLaunchArgument(
-            "world", default_value="rmuc_2025",
-            description="rmuc_2024, rmul_2024, rmuc_2025, rmuc_2026, or rmul_2025",
+            "world", default_value="rmuc_2026",
+            description="rmuc_2024, rmul_2024, rmuc_2025, rmuc_2026, rmul_2025, or home_indoor",
         ),
         DeclareLaunchArgument(
-            "chassis_type", default_value="omni", description="omni or diff"
+            "chassis_type", default_value="",
+            description="omni/ackermann selector for the default config; explicit params must match"
         ),
         DeclareLaunchArgument("headless", default_value="false"),
         DeclareLaunchArgument("rviz", default_value="true"),
         DeclareLaunchArgument("use_icp", default_value="true"),
         DeclareLaunchArgument("log_level", default_value="info"),
         DeclareLaunchArgument(
-            "params_file", default_value=os.path.join(package_share, "config", "nav2_sim.yaml"),
-            description="Robot navigation profile; navi2 merges host parameters automatically",
+            "params_file", default_value="",
+            description="Unified navigation YAML; empty uses navi2/params/navigation.yaml",
         ),
         GroupAction(
             actions=[OpaqueFunction(function=_launch_setup, args=[package_share])],
