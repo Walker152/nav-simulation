@@ -1,0 +1,29 @@
+- ros_topic_name: /clock
+  gz_topic_name: /clock
+  ros_type_name: rosgraph_msgs/msg/Clock
+  gz_type_name: ignition.msgs.Clock
+  direction: GZ_TO_ROS
+
+- ros_topic_name: /sim/odin1_lite/points
+  gz_topic_name: /sim/odin1_lite/lidar/points
+  ros_type_name: sensor_msgs/msg/PointCloud2
+  gz_type_name: ignition.msgs.PointCloudPacked
+  direction: GZ_TO_ROS
+
+- ros_topic_name: /sim/odin1_lite/imu
+  gz_topic_name: /sim/odin1_lite/imu
+  ros_type_name: sensor_msgs/msg/Imu
+  gz_type_name: ignition.msgs.IMU
+  direction: GZ_TO_ROS
+
+- ros_topic_name: /sim/odin1_lite/rgb/image
+  gz_topic_name: /sim/odin1_lite/rgb/image
+  ros_type_name: sensor_msgs/msg/Image
+  gz_type_name: ignition.msgs.Image
+  direction: GZ_TO_ROS
+
+- ros_topic_name: /sim/odin1_lite/rgb/camera_info
+  gz_topic_name: /sim/odin1_lite/rgb/camera_info
+  ros_type_name: sensor_msgs/msg/CameraInfo
+  gz_type_name: ignition.msgs.CameraInfo
+  direction: GZ_TO_ROS
