@@ -1,5 +1,10 @@
 # Sentry simulation
 
+## 四舵轮 + 四 O1LITE 独立平台
+
+新增平台说明与启动命令见 [SWERVE_ODIN.md](sentry_simulation/SWERVE_ODIN.md)。
+四个传感器分别位于前、后、左、右边中心并朝外，底盘使用八个真实物理关节。
+
 这个模块将 Gazebo Fortress 仿真资源收敛到当前仓库，并直接接入现有导航主链路：
 
 ```text

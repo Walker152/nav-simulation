@@ -46,6 +46,18 @@ add_library(AckermannBicycle SHARED
 target_compile_features(AckermannBicycle PUBLIC cxx_std_17)
 target_link_libraries(AckermannBicycle ignition-gazebo6::ignition-gazebo6)
 
+# Vendored pure kinematics is linked privately into the sole swerve actuator.
+set(SWERVE_CORE_DIR plugins/swerve_drive/kinco_swerve_core)
+set(SWERVE_CORE_SOURCES
+  ${SWERVE_CORE_DIR}/src/module_command_optimizer.cpp
+  ${SWERVE_CORE_DIR}/src/swerve_kinematics.cpp)
+add_library(SwerveDrive SHARED plugins/swerve_drive/SwerveDrive.cpp ${SWERVE_CORE_SOURCES})
+target_compile_features(SwerveDrive PRIVATE cxx_std_17)
+target_include_directories(SwerveDrive PRIVATE plugins/swerve_drive ${SWERVE_CORE_DIR}/include)
+target_link_libraries(SwerveDrive ignition-gazebo6::ignition-gazebo6)
+install(DIRECTORY ${SWERVE_CORE_DIR}/ DESTINATION share/${PROJECT_NAME}/third_party/kinco_swerve_core
+  FILES_MATCHING PATTERN "LICENSE" PATTERN "PROVENANCE.md")
+
 ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS sentry_simulation/cmd_vel_adapter.py
   DESTINATION lib/${PROJECT_NAME}
@@ -53,15 +65,17 @@ install(PROGRAMS sentry_simulation/cmd_vel_adapter.py
 install(PROGRAMS sentry_simulation/imu_filter.py
   DESTINATION lib/${PROJECT_NAME}
   RENAME sentry_sim_imu_filter)
+install(PROGRAMS scripts/validate_swerve.py DESTINATION lib/${PROJECT_NAME}
+  RENAME validate_swerve)
 install(DIRECTORY include/ DESTINATION include)
 install(TARGETS pointcloud_adapter_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
-install(TARGETS MecanumDrive2 AckermannBicycle LIBRARY DESTINATION plugins)
+install(TARGETS MecanumDrive2 AckermannBicycle SwerveDrive LIBRARY DESTINATION plugins)
 install(DIRECTORY behavior_tree config launch maps resource
   DESTINATION share/${PROJECT_NAME})
-install(FILES ../README.md ../THIRD_PARTY_NOTICES.md
+install(FILES SWERVE_ODIN.md ../README.md ../THIRD_PARTY_NOTICES.md
   DESTINATION share/${PROJECT_NAME})
 
 ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/gazebo.dsv.in")
@@ -71,6 +85,11 @@ ament_export_dependencies(livox_ros_driver2 pcl_conversions rclcpp rclcpp_compon
 
 if(BUILD_TESTING)
   find_package(ament_cmake_pytest REQUIRED)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(test_swerve_control test/test_swerve_control.cpp ${SWERVE_CORE_SOURCES})
+  target_compile_features(test_swerve_control PRIVATE cxx_std_17)
+  target_include_directories(test_swerve_control PRIVATE plugins/swerve_drive ${SWERVE_CORE_DIR}/include)
+  ament_add_pytest_test(simulation_swerve_platform test/test_swerve_platform.py)
   ament_add_pytest_test(simulation_kinematics test/test_kinematics.py)
   ament_add_pytest_test(simulation_ackermann_model test/test_ackermann_model.py)
   ament_add_pytest_test(simulation_imu_filter test/test_imu_filter.py)

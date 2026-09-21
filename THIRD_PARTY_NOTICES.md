@@ -46,3 +46,9 @@ The following files were migrated without changing their upstream license:
 
 The adapters, launch files, simplified sentry models, and configuration added
 in this module are part of this repository and use Apache-2.0.
+
+- `sentry_simulation/plugins/swerve_drive/kinco_swerve_core`: five unchanged pure
+  C++ kinematics/optimizer source files from `Nature-Will/robot-platform`, revision
+  `ca4350a4332f996b5dcc0a9dd0e2240be6ae4fff`. The source package declares
+  Apache-2.0; the vendored directory retains the license and per-file SHA-256
+  provenance. It has no runtime dependency on that workspace.

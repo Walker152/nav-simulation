@@ -1,0 +1,45 @@
+# Simulation research envelope, not hardware qualification.
+geometry:
+  length: 0.804
+  width: 0.604
+  body_height: 0.110          # Placeholder whole housing, NOT the 30 mm plate.
+  body_center_z: -0.040
+  wheelbase: 0.680
+  track: 0.480
+  wheel_center_z: -0.120
+  wheel_radius: 0.065
+  wheel_contact_width: 0.024 # Vendor total wheel width is 0.030 m.
+  steering_limit: 2.7052603406       # Normal targets: +/-155 degrees.
+  steering_hard_limit: 2.9321531434  # Assumed physical endpoints: +/-168 degrees.
+  spindle_length: 0.055      # Unmeasured steering carrier box.
+  spindle_width: 0.055
+  spindle_height: 0.070
+  spindle_center_z: 0.055    # COM/collision center above wheel/steering origin.
+  sensor_height: 0.060       # Body/IMU origin above base_link, mounting assumption.
+dynamics:
+  total_mass: 100.0          # Includes four 0.274 kg canonical O1LITE models.
+  steer_mass: 3.2            # Each 4.7 kg module split into 3.2 + 1.5 kg.
+  wheel_mass: 1.5
+  friction: 1.0             # Uncalibrated polyurethane/ground assumption.
+  contact_stiffness: 1000000.0
+  contact_damping: 100.0
+  steering_damping: 0.05
+  wheel_damping: 0.01
+control:
+  max_linear_speed: 2.0
+  max_yaw_speed: 2.0
+  max_wheel_speed: 3.0
+  linear_acceleration: 1.0
+  yaw_acceleration: 2.0
+  max_steering_velocity: 6.28318530718
+  max_steering_acceleration: 12.5663706144
+  command_timeout: 0.25
+  publish_rate: 100.0
+  steering_kp: 80.0
+  steering_kd: 4.0
+  steering_torque: 13.5
+  wheel_kp: 1.0
+  wheel_torque: 22.0
+physics:
+  step: 0.002                # 500 Hz controller runs once per physics step.
+  real_time_factor: 1.0
