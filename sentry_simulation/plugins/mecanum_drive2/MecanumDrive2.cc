@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cmath>
 #include <mutex>
 #include <ignition/common/Util.hh>
-#include <ignition/common/Profiler.hh>
 #include <ignition/plugin/Register.hh>
 #include <ignition/transport/Node.hh>
 
@@ -32,6 +32,7 @@
 #include <ignition/math/PID.hh>
 
 #include "MecanumDrive2.hh"
+#include "VelocityServo.hh"
 
 #define WHEEL_NUM 4
 using namespace ignition;
@@ -111,15 +112,23 @@ void MecanumDrive2::Configure(const Entity &_entity,
     this->dataPtr->odomPub = this->dataPtr->node.Advertise<msgs::Odometry>(odomTopic);
     this->dataPtr->odomFrameId=this->dataPtr->model.Name(_ecm) + "/odom" ;
     this->dataPtr->odomChildFrameId = this->dataPtr->model.Name(_ecm) + "/" + ignition::common::replaceAll(chassisLinkName, "::", "/");
-    //init PID
-    this->dataPtr->xPid.Init(100, 0, 0, 0, 0, 100, -100, 0);
-    this->dataPtr->yPid.Init(500, 0, 0, 0, 0, 200, -200, 0);
-    this->dataPtr->wPid.Init(200, 0, 0, 0, 0, 100, -100, 0);
+    // Calibrated finite-effort velocity servos. Integral effort compensates the
+    // retained wheel damping/contact losses; mass and contact physics stay active.
+    this->dataPtr->xPid.Init(500, 1000, 0, 150, -150, 250, -250, 0);
+    this->dataPtr->yPid.Init(500, 1000, 0, 150, -150, 250, -250, 0);
+    this->dataPtr->wPid.Init(200, 400, 0, 30, -30, 100, -100, 0);
 }
 
 void MecanumDrive2::PreUpdate(const ignition::gazebo::UpdateInfo &_info,
                              ignition::gazebo::EntityComponentManager &_ecm)
 {
+    if (_info.dt < std::chrono::steady_clock::duration::zero()) {
+        this->dataPtr->xPid.Reset();
+        this->dataPtr->yPid.Reset();
+        this->dataPtr->wPid.Reset();
+        std::lock_guard<std::mutex> lock(this->dataPtr->targetVelMutex);
+        this->dataPtr->targetVel = msgs::Twist{};
+    }
     //control for chassis
     Link chassisLink(this->dataPtr->chassisLink);
     if (!_ecm.Component<components::WorldPose>(this->dataPtr->chassisLink))
@@ -134,6 +143,10 @@ void MecanumDrive2::PreUpdate(const ignition::gazebo::UpdateInfo &_info,
     {
         _ecm.CreateComponent(this->dataPtr->chassisLink, components::AngularVelocity());
     }
+    // PostUpdate also reads these components, including on the first paused tick.
+    if (_info.paused || _info.dt <= std::chrono::steady_clock::duration::zero()) {
+        return;
+    }
     //mutex for targetVel
     msgs::Twist targetVel;
     {
@@ -144,14 +157,20 @@ void MecanumDrive2::PreUpdate(const ignition::gazebo::UpdateInfo &_info,
     const auto chassisPose = _ecm.Component<components::WorldPose>(this->dataPtr->chassisLink)->Data();
     const auto linearVel = _ecm.Component<components::LinearVelocity>(this->dataPtr->chassisLink)->Data();
     const auto angularVel = _ecm.Component<components::AngularVelocity>(this->dataPtr->chassisLink)->Data();
+    if (!chassisPose.IsFinite() || !linearVel.IsFinite() || !angularVel.IsFinite()) {
+        this->dataPtr->xPid.Reset();
+        this->dataPtr->yPid.Reset();
+        this->dataPtr->wPid.Reset();
+        return;
+    }
     //for linear velocity control
-    double xErr = linearVel.X() - targetVel.linear().x();
-    double xCmd = this->dataPtr->xPid.Update(xErr, _info.dt);
-    double yErr = linearVel.Y() - targetVel.linear().y();
-    double yCmd = this->dataPtr->yPid.Update(yErr, _info.dt);
+    double xCmd = sentry_simulation::updateVelocityServo(
+        this->dataPtr->xPid, targetVel.linear().x(), linearVel.X(), _info.dt);
+    double yCmd = sentry_simulation::updateVelocityServo(
+        this->dataPtr->yPid, targetVel.linear().y(), linearVel.Y(), _info.dt);
     //for angular velocity control
-    double wErr = angularVel.Z() - targetVel.angular().z();
-    double wCmd = this->dataPtr->wPid.Update(wErr, _info.dt);
+    double wCmd = sentry_simulation::updateVelocityServo(
+        this->dataPtr->wPid, targetVel.angular().z(), angularVel.Z(), _info.dt);
     //force and torque on chassis link frame
     math::Vector3d tmpForce(xCmd, yCmd, 0);
     math::Vector3d tmpTorque(0, 0, wCmd);
@@ -177,7 +196,9 @@ void MecanumDrive2::PostUpdate(const ignition::gazebo::UpdateInfo &_info,
 void MecanumDrive2Private::OnCmdVel(const ignition::msgs::Twist &_msg)
 {
     std::lock_guard<std::mutex> lock(this->targetVelMutex);
-    this->targetVel = _msg;
+    this->targetVel = std::isfinite(_msg.linear().x()) &&
+        std::isfinite(_msg.linear().y()) && std::isfinite(_msg.angular().z()) ?
+        _msg : msgs::Twist{};
     //ignmsg << "MecanumDrive2 msg x: [" << _msg.linear().x() << "]" << std::endl;
 }
 
@@ -185,7 +206,6 @@ void MecanumDrive2Private::UpdateOdometry(const ignition::gazebo::UpdateInfo &_i
                                          const ignition::gazebo::EntityComponentManager &_ecm)
 {
     //get pose and velocity of chassis
-    Link chassisLink(this->chassisLink);
     const auto chassisPose = _ecm.Component<components::WorldPose>(this->chassisLink)->Data();
     const auto linearVel = _ecm.Component<components::LinearVelocity>(this->chassisLink)->Data();
     const auto angularVel = _ecm.Component<components::AngularVelocity>(this->chassisLink)->Data();
