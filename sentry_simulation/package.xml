@@ -2,16 +2,16 @@
 <package format="3">
   <name>sentry_simulation</name>
   <version>0.1.0</version>
-  <description>Gazebo Fortress simulation resources and adapters for the sentry navigation stack.</description>
+  <description>Gazebo Harmonic simulation resources and adapters for the sentry navigation stack.</description>
   <maintainer email="maintainer@example.com">sentry navigation maintainers</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
 
-  <build_depend>ignition-gazebo6</build_depend>
-  <build_depend>ignition-msgs8</build_depend>
-  <build_depend>ignition-transport11</build_depend>
+  <depend>gz_sim_vendor</depend>
+  <depend>gz_msgs_vendor</depend>
+  <depend>gz_transport_vendor</depend>
 
   <depend>geometry_msgs</depend>
   <depend>livox_ros_driver2</depend>
@@ -36,7 +36,6 @@
   <exec_depend>tf2_ros</exec_depend>
   <exec_depend>tf2_msgs</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
-  <exec_depend>ignition-gazebo6</exec_depend>
   <exec_depend>ament_index_python</exec_depend>
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>

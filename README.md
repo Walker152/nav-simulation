@@ -5,7 +5,7 @@
 新增平台说明与启动命令见 [SWERVE_ODIN.md](sentry_simulation/SWERVE_ODIN.md)。
 四个传感器分别位于前、后、左、右边中心并朝外，底盘使用八个真实物理关节。
 
-这个模块将 Gazebo Fortress 仿真资源收敛到当前仓库，并直接接入现有导航主链路：
+这个模块将 Gazebo Harmonic 仿真资源收敛到当前仓库，并直接接入现有导航主链路：
 
 ```text
 Gazebo 左右双 MID360（每颗由前/后 180° GPU LiDAR 拼接）+ 水平 IMU
@@ -17,7 +17,7 @@ Gazebo 左右双 MID360（每颗由前/后 180° GPU LiDAR 拼接）+ 水平 IMU
   -> ROGMap + MINCO planner
   -> Minco MPC controller (/cmd_vel_mpc, base 坐标系)
   -> sentry_sim_cmd_adapter
-  -> Gazebo omni/diff chassis
+  -> Gazebo omni/ackermann chassis
 ```
 
 仿真不会启动 `communication`，也不会使用真车裁判系统或下位机链路。Gazebo 的
@@ -27,8 +27,9 @@ Gazebo 左右双 MID360（每颗由前/后 180° GPU LiDAR 拼接）+ 水平 IMU
 
 | 功能 | 实现 | 说明 |
 |---|---|---|
-| 全向底盘 | `sentry_omni` + Fortress `MecanumDrive` | 接收转换后的车体系速度，可测试 X/Y/yaw |
-| 差速底盘 | `sentry_diff` + Fortress `DiffDrive` | 模型保留；当前导航仅支持 omni，差速导航显式拒绝 |
+| 全向底盘 | `sentry_omni` + 包内 `MecanumDrive2` | 接收车体系速度，可测试 X/Y/yaw |
+| Ackermann 底盘 | `sentry_ackermann` + 包内 `AckermannBicycle` | 理想转向执行器，保留轮接触与车体动力学 |
+| 差速底盘 | `sentry_diff` + Harmonic `DiffDrive` | 模型保留；差速导航显式拒绝 |
 | 双 MID360 | 左右镜像雷达 + pattern adapter | 合并为 `/livox/lidar`，消息类型与真机相同 |
 | IMU | Gazebo IMU + 每轴量程适配 | 200 Hz，保留三轴加速度，输出 `/sim/imu` 给 Point-LIO |
 | 里程计 | Point-LIO | 导航使用 `/aft_mapped_to_init`，不是 Gazebo 真值 |
@@ -53,7 +54,7 @@ Gazebo 左右双 MID360（每颗由前/后 180° GPU LiDAR 拼接）+ 水平 IMU
 - `sentry_omni`：轮心按 `0.44 m × 0.44 m` 正方形布置的四轮全向底盘，使用
   包内构建的 `MecanumDrive2`，PB2025 chassis/gimbal 网格仅作视觉模型。
 - `sentry_diff`：半径 `0.3 m` 的圆形两轮差速底盘，仅左右两轮驱动，前后球形
-  万向支承，使用 Fortress 原生 `DiffDrive`。
+  万向支承，使用 Harmonic 内建 `DiffDrive`。
 - 双 MID360：左右镜像安装，位姿以模型 SDF 和 launch 的测量帧转换为准；每颗水平 360°、垂直
   -7.3°～52.3°、0.1～40 m、10 Hz；按 80 万条真实非重复扫描模式轮转采样。
   每颗每帧最多 20,000 个 `CustomPoint`，融合后目标点率 400,000 points/s。
@@ -66,29 +67,32 @@ Gazebo 左右双 MID360（每颗由前/后 180° GPU LiDAR 拼接）+ 水平 IMU
 
 ## 环境与构建
 
-目标环境是 Ubuntu 22.04、ROS 2 Humble、Gazebo Fortress（Ignition Gazebo 6）。需要
-`ros_gz_sim`、`ros_gz_bridge`、Ignition Gazebo 6 开发包，以及本仓库现有依赖。
+目标环境是 Ubuntu 24.04、ROS 2 Jazzy、Gazebo Harmonic（Gazebo Sim 8）。需要
+`ros_gz_sim`、`ros_gz_bridge`、Jazzy 的 Gazebo vendor 开发包，以及本仓库现有依赖。
+2026-09-28 已在 Gazebo Sim 8.15.0 / Jazzy 完成全15包编译、omni导航、O1LITE、swerve与六场景服务器验证。Ackermann实际运动/停车成功，但原真值到点0.3m门槛未过（复测0.356m）；未改算法或阈值。旧simulation_contract保留12项基线失败。
 
 依赖安装示例（请先按本机软件源核对包名）：
 
 ```bash
-sudo apt install ros-humble-ros-gz ignition-fortress libignition-gazebo6-dev
+sudo apt install ros-jazzy-ros-gz ros-jazzy-gz-sim-vendor \
+  ros-jazzy-gz-msgs-vendor ros-jazzy-gz-transport-vendor
 ```
 
 首次使用先检查 ROS 和 Gazebo：
 
 ```bash
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 ros2 pkg prefix ros_gz_sim
 ros2 pkg prefix ros_gz_bridge
-ign gazebo --versions
+gz sim --version
 ```
 
-在仓库根目录构建示例：
+工作区其他依赖已构建后，在仓库根目录构建仿真包：
 
 ```bash
-source /opt/ros/humble/setup.bash
-colcon build --symlink-install --packages-select sentry_simulation
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+colcon build --base-paths src --symlink-install --packages-select sentry_simulation
 ```
 
 启动脚本会检查 `sentry_simulation`、ROS–Gazebo bridge、`point_lio`、
@@ -351,7 +355,7 @@ sentry_simulation/resource/models/rmuc_2026/meshes/rmuc_2026.stl
 
 ### Gazebo 找不到 `model://...`
 
-优先使用`src/scripts/simlation.bash`，它会设置 `IGN_GAZEBO_RESOURCE_PATH`、`GZ_SIM_RESOURCE_PATH`、`SDF_PATH` 和 `IGN_FILE_PATH`。直接 launch 时需要重新构建并 source 最新 install tree。
+优先使用`src/scripts/simlation.bash`，它会设置 `GZ_SIM_RESOURCE_PATH`、`SDF_PATH` 和 `GZ_FILE_PATH`。直接 launch 时需要重新构建并 source 最新 install tree；安装后的 env hook 同时设置 `GZ_SIM_SYSTEM_PLUGIN_PATH`。
 
 ### 有导航目标，但小车不动
 

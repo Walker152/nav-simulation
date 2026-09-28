@@ -1,17 +1,18 @@
 # 四舵轮、四 O1LITE 独立仿真
 
-用于当前 Naturewill 的 ROS 2 Humble / Gazebo Fortress 6（本机 6.18.0），
+用于当前 Naturewill 的 Ubuntu 24.04 / ROS 2 Jazzy / Gazebo Harmonic 8，
 依据工作空间 `gazebo-model-handoff.md` 建模。独立运行，不启动导航、Point-LIO、
 仲裁器或任何 EtherCAT/实机节点。Jazzy 工程的纯 `kinco_swerve_core` 已带来源复制；
-执行器使用本包 `SwerveDrive` Fortress 物理插件，并非原 Jazzy ros2_control 控制器。
+执行器使用本包 `SwerveDrive` Harmonic 物理插件，并非原 Jazzy ros2_control 控制器。
+2026-09-28 在 Gazebo Sim 8.15.0 / Jazzy 原样运行 motion 与 sensors 验证均 PASS；reset观察到时间回退/位置复位，pause仅确认服务ack。以下标为Fortress的历史测量仍保留原版本边界。
 
 ## 构建、启动
 
 ```bash
 cd /home/alioth/nature_will
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 source install/setup.bash
-colcon build --symlink-install --packages-select sentry_simulation
+colcon build --base-paths src --symlink-install --packages-select sentry_simulation
 source install/setup.bash
 ros2 launch sentry_simulation swerve_odin.launch.py rviz:=true
 ```
@@ -19,7 +20,7 @@ ros2 launch sentry_simulation swerve_odin.launch.py rviz:=true
 无头：`headless:=true`；底盘单独检查：再加 `sensors:=false`（外壳和质量仍保留）。
 Gazebo 的 RGB/dToF 仍需要可用的图形渲染环境；`headless` 只关闭 GUI。
 退出用 Ctrl+C，launch 同时停止 Gazebo、桥接和 TF 节点并清理临时生成资源。
-与其他仿真同时运行时，使用独立 `ROS_DOMAIN_ID` 和 `IGN_PARTITION`。
+与其他仿真同时运行时，使用独立 `ROS_DOMAIN_ID` 和 `GZ_PARTITION`。
 
 配置由 `config/swerve_odin.yaml` 唯一生成 SDF、URDF 和桥接表。自定义完整 YAML：
 `config:=/absolute/path/to/swerve.yaml`；不隐式叠加另一工作空间参数。
@@ -61,8 +62,8 @@ ODE 接触参数能否参与求解取决于 Gazebo 物理后端，不视为经�
 所有分量有限；正且非未来的时间戳，有效期默认0.25 s。正常新鲜零命令平滑停车；
 零时间戳、过期、未来、非法数据立即撤销轮速目标，锁存当时实测舵角并清参考状态。
 有限力矩制动仍需物理时间。暂停和世界 reset 丢弃缓存，恢复必须收到新命令。
-Fortress reset 后轮式积分从零开始，但物理轮速可能保留并经历制动；
-本次reset后0.3s轮式积分新增约0.038m，不把reset当成瞬时物理停车。
+历史 Fortress 6.18.0 实测：reset 后轮式积分从零开始，但物理轮速可能保留并经历制动；
+该次reset后0.3s轮式积分新增约0.038m，不把reset当成瞬时物理停车。
 
 示例前进0.3 m/s，Ctrl+C后超时停车：
 
@@ -105,9 +106,12 @@ ros2 run sentry_simulation validate_swerve --mode motion --output /tmp/swerve-mo
 运动脚本按默认YAML的验收数值检查；修改限值后需相应调整测试目标。
 脚本订阅实际数据检查四路传感器/TF或前后、左右、斜移、旋转、组合、普通与失效停车，
 输出 JSON 证据；动力学尚未标定，这些结果仅用于该仿真模型。
-本次实测结果、截图及已知边界见工作空间 `src/docs/ai_refactor_records/20260921_swerve_odin_platform.md`。
+历史实测结果、截图及已知边界见工作空间 `src/docs/ai_refactor_records/20260921_swerve_odin_platform.md`。
 
-本次默认配置的实际验证：26个新增单元/模型检查通过；实际前后、横移、斜移、
+## 历史验证（ROS 2 Humble / Fortress 6.18.0）
+
+以下为旧环境的验证事实，不代表本次 Jazzy / Harmonic 迁移已经通过。
+该次默认配置的实际验证：26个新增单元/模型检查通过；实际前后、横移、斜移、
 旋转、组合及失效停车通过。直线2m/s参考实测约1.98m/s，yaw2rad/s参考
 稳态约1.9rad/s。普通参考加速度实测1m/s²、2rad/s²，舵向参考加速度12.5664rad/s²；
 整个测试含失效制动的实际加速度峰值约4.84m/s²、8.26rad/s²。

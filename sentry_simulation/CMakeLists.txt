@@ -7,9 +7,12 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
-find_package(ignition-gazebo6 REQUIRED)
-find_package(ignition-msgs8 REQUIRED)
-find_package(ignition-transport11 REQUIRED)
+find_package(gz_sim_vendor REQUIRED)
+find_package(gz-sim8 REQUIRED)
+find_package(gz_msgs_vendor REQUIRED)
+find_package(gz-msgs10 REQUIRED)
+find_package(gz_transport_vendor REQUIRED)
+find_package(gz-transport13 REQUIRED)
 find_package(livox_ros_driver2 REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(PCL REQUIRED COMPONENTS common)
@@ -39,12 +42,12 @@ add_library(MecanumDrive2 SHARED
 target_compile_features(MecanumDrive2 PUBLIC cxx_std_17)
 target_include_directories(MecanumDrive2 PRIVATE plugins/mecanum_drive2)
 target_link_libraries(MecanumDrive2
-  ignition-gazebo6::ignition-gazebo6)
+  gz-sim8::gz-sim8)
 
 add_library(AckermannBicycle SHARED
   plugins/ackermann_bicycle/AckermannBicycle.cc)
 target_compile_features(AckermannBicycle PUBLIC cxx_std_17)
-target_link_libraries(AckermannBicycle ignition-gazebo6::ignition-gazebo6)
+target_link_libraries(AckermannBicycle gz-sim8::gz-sim8)
 
 # Vendored pure kinematics is linked privately into the sole swerve actuator.
 set(SWERVE_CORE_DIR plugins/swerve_drive/kinco_swerve_core)
@@ -54,7 +57,7 @@ set(SWERVE_CORE_SOURCES
 add_library(SwerveDrive SHARED plugins/swerve_drive/SwerveDrive.cpp ${SWERVE_CORE_SOURCES})
 target_compile_features(SwerveDrive PRIVATE cxx_std_17)
 target_include_directories(SwerveDrive PRIVATE plugins/swerve_drive ${SWERVE_CORE_DIR}/include)
-target_link_libraries(SwerveDrive ignition-gazebo6::ignition-gazebo6)
+target_link_libraries(SwerveDrive gz-sim8::gz-sim8)
 install(DIRECTORY ${SWERVE_CORE_DIR}/ DESTINATION share/${PROJECT_NAME}/third_party/kinco_swerve_core
   FILES_MATCHING PATTERN "LICENSE" PATTERN "PROVENANCE.md")
 

@@ -1,4 +1,4 @@
-"""Independent four-swerve / four O1LITE Gazebo Fortress platform."""
+"""Independent four-swerve / four O1LITE Gazebo Harmonic platform."""
 from pathlib import Path
 import tempfile
 import yaml
@@ -32,7 +32,7 @@ def _launch(context):
             OpaqueFunction(function=lambda _: directory.cleanup() or [])])),
         IncludeLaunchDescription(PythonLaunchDescriptionSource(str(
             Path(get_package_share_directory('ros_gz_sim')) / 'launch/gz_sim.launch.py')),
-            launch_arguments={'gz_version': '6', 'on_exit_shutdown': 'true',
+            launch_arguments={'gz_version': '8', 'on_exit_shutdown': 'true',
                               'gz_args': '-r ' + ('-s ' if headless else '') + str(paths['world'])}.items()),
         Node(package='ros_gz_bridge', executable='parameter_bridge', name='swerve_odin_bridge',
              parameters=[{'config_file': str(paths['bridge']), 'use_sim_time': True}], output='screen'),

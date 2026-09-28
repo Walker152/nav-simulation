@@ -6,30 +6,30 @@
 #include <mutex>
 #include <string>
 
-#include <ignition/common/Console.hh>
-#include <ignition/gazebo/Joint.hh>
-#include <ignition/gazebo/Model.hh>
-#include <ignition/gazebo/System.hh>
-#include <ignition/msgs/twist.pb.h>
-#include <ignition/plugin/Register.hh>
-#include <ignition/transport/Node.hh>
+#include <gz/common/Console.hh>
+#include <gz/sim/Joint.hh>
+#include <gz/sim/Model.hh>
+#include <gz/sim/System.hh>
+#include <gz/msgs/twist.pb.h>
+#include <gz/plugin/Register.hh>
+#include <gz/transport/Node.hh>
 #include <sdf/Element.hh>
 
 namespace sentry_simulation
 {
 // Ideal steering actuator with physical wheel contact and body dynamics.
 // This owns only commands; existing publishers own groundtruth and joints.
-class AckermannBicycle final : public ignition::gazebo::System,
-  public ignition::gazebo::ISystemConfigure,
-  public ignition::gazebo::ISystemPreUpdate
+class AckermannBicycle final : public gz::sim::System,
+  public gz::sim::ISystemConfigure,
+  public gz::sim::ISystemPreUpdate
 {
 public:
-  void Configure(const ignition::gazebo::Entity & entity,
+  void Configure(const gz::sim::Entity & entity,
     const std::shared_ptr<const sdf::Element> & sdf,
-    ignition::gazebo::EntityComponentManager & ecm,
-    ignition::gazebo::EventManager &) override
+    gz::sim::EntityComponentManager & ecm,
+    gz::sim::EventManager &) override
   {
-    ignition::gazebo::Model model(entity);
+    gz::sim::Model model(entity);
     const std::array<std::string, 4> joint_keys{
       "left_steering_joint", "right_steering_joint", "left_joint", "right_joint"};
     for (const auto & key : {"wheel_base", "wheel_separation", "kingpin_width",
@@ -37,27 +37,27 @@ public:
     {
       if (!sdf->HasElement(key))
       {
-        ignerr << "AckermannBicycle requires " << key << std::endl;
+        gzerr << "AckermannBicycle requires " << key << std::endl;
         return;
       }
     }
     if (!model.Valid(ecm))
     {
-      ignerr << "AckermannBicycle requires a model entity" << std::endl;
+      gzerr << "AckermannBicycle requires a model entity" << std::endl;
       return;
     }
     for (std::size_t i = 0; i < joints.size(); ++i)
     {
       if (!sdf->HasElement(joint_keys[i]))
       {
-        ignerr << "AckermannBicycle requires " << joint_keys[i] << std::endl;
+        gzerr << "AckermannBicycle requires " << joint_keys[i] << std::endl;
         return;
       }
       joints[i] = model.JointByName(ecm, sdf->Get<std::string>(joint_keys[i]));
-      if (joints[i] == ignition::gazebo::kNullEntity ||
+      if (joints[i] == gz::sim::kNullEntity ||
         std::find(joints.begin(), joints.begin() + i, joints[i]) != joints.begin() + i)
       {
-        ignerr << "AckermannBicycle requires four distinct existing joints" << std::endl;
+        gzerr << "AckermannBicycle requires four distinct existing joints" << std::endl;
         return;
       }
     }
@@ -70,29 +70,29 @@ public:
     {
       if (!std::isfinite(value) || value <= 0)
       {
-        ignerr << "AckermannBicycle geometry must be finite and positive" << std::endl;
+        gzerr << "AckermannBicycle geometry must be finite and positive" << std::endl;
         return;
       }
     }
     if (limit >= std::atan2(wheelbase, kingpin / 2))
     {
-      ignerr << "AckermannBicycle steering limit crosses the inner kingpin" << std::endl;
+      gzerr << "AckermannBicycle steering limit crosses the inner kingpin" << std::endl;
       return;
     }
     max_curvature = std::tan(limit) / wheelbase;
     if (!std::isfinite(max_curvature) || !std::isfinite(track * max_curvature))
     {
-      ignerr << "AckermannBicycle geometry overflows" << std::endl;
+      gzerr << "AckermannBicycle geometry overflows" << std::endl;
       return;
     }
     configured = node.Subscribe(sdf->Get<std::string>("topic"),
       &AckermannBicycle::OnCommand, this);
     if (!configured)
-      ignerr << "AckermannBicycle could not subscribe to its command topic" << std::endl;
+      gzerr << "AckermannBicycle could not subscribe to its command topic" << std::endl;
   }
 
-  void PreUpdate(const ignition::gazebo::UpdateInfo & info,
-    ignition::gazebo::EntityComponentManager & ecm) override
+  void PreUpdate(const gz::sim::UpdateInfo & info,
+    gz::sim::EntityComponentManager & ecm) override
   {
     if (!configured)
       return;
@@ -117,18 +117,18 @@ public:
       std::atan(wheelbase * curvature / (1 + kingpin * curvature / 2))};
     for (std::size_t i = 0; i < angles.size(); ++i)
     {
-      ignition::gazebo::Joint steering(joints[i]);
+      gz::sim::Joint steering(joints[i]);
       // Reset intentionally bypasses steering slew/effort. Zero velocity holds
       // the new configuration during physics; front rolling joints stay free.
       steering.ResetPosition(ecm, {angles[i]});
       steering.SetVelocity(ecm, {0});
     }
-    ignition::gazebo::Joint(joints[2]).SetVelocity(ecm, {left_rate});
-    ignition::gazebo::Joint(joints[3]).SetVelocity(ecm, {right_rate});
+    gz::sim::Joint(joints[2]).SetVelocity(ecm, {left_rate});
+    gz::sim::Joint(joints[3]).SetVelocity(ecm, {right_rate});
   }
 
 private:
-  void OnCommand(const ignition::msgs::Twist & message)
+  void OnCommand(const gz::msgs::Twist & message)
   {
     std::lock_guard<std::mutex> lock(command_mutex);
     // At the center, body vx equals rear-axle speed. Center vy=d*w is a
@@ -140,18 +140,18 @@ private:
     command_w = valid ? w : 0;
   }
 
-  std::array<ignition::gazebo::Entity, 4> joints{};
+  std::array<gz::sim::Entity, 4> joints{};
   double wheelbase{0}, track{0}, kingpin{0}, radius{0}, max_curvature{0};
   bool configured{false};
   std::mutex command_mutex;
   double command_v{0}, command_w{0};
   // Destroy transport before the callback's mutex and command state.
-  ignition::transport::Node node;
+  gz::transport::Node node;
 };
 }  // namespace sentry_simulation
 
-IGNITION_ADD_PLUGIN(sentry_simulation::AckermannBicycle,
-  ignition::gazebo::System, ignition::gazebo::ISystemConfigure,
-  ignition::gazebo::ISystemPreUpdate)
-IGNITION_ADD_PLUGIN_ALIAS(sentry_simulation::AckermannBicycle,
+GZ_ADD_PLUGIN(sentry_simulation::AckermannBicycle,
+  gz::sim::System, gz::sim::ISystemConfigure,
+  gz::sim::ISystemPreUpdate)
+GZ_ADD_PLUGIN_ALIAS(sentry_simulation::AckermannBicycle,
   "sentry_simulation::AckermannBicycle")

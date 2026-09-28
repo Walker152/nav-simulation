@@ -2,13 +2,13 @@
 
 #include <algorithm>
 #include <chrono>
-#include <ignition/math/PID.hh>
+#include <gz/math/PID.hh>
 
 namespace sentry_simulation
 {
 // PI only (D=0). PID stores the integral contribution in force or torque units.
 inline double updateVelocityServo(
-    ignition::math::PID &pid, double target, double actual,
+    gz::math::PID &pid, double target, double actual,
     const std::chrono::duration<double> &dt)
 {
     const double error = actual - target;
