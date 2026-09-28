@@ -194,6 +194,8 @@ def _launch_setup(context, package_share):
                     "vertical_min_deg": -7.3,
                     "vertical_max_deg": 52.3,
                     "scan_period": 0.1,
+                    "ground_truth_topic": "/sim/ground_truth/odom",
+                    "lidar_pose_in_model": [0.0, -0.2, 0.3, 0.0, 0.0, 0.0],
                 }],
                 extra_arguments=[{"use_intra_process_comms": True}],
             ),
