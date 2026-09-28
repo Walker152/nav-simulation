@@ -1,5 +1,6 @@
 """Independent four-swerve / four O1LITE Gazebo Harmonic platform."""
 from pathlib import Path
+from sentry_simulation.gazebo_compat import gazebo_arguments, prepare_share, resource_paths
 import tempfile
 import yaml
 
@@ -15,12 +16,13 @@ from sentry_simulation.swerve_platform import build_assets
 
 
 def _launch(context):
-    share = Path(get_package_share_directory('sentry_simulation'))
+    share = prepare_share(get_package_share_directory('sentry_simulation'))
+    resource_key, resource_value = resource_paths(share)
     config = yaml.safe_load(Path(LaunchConfiguration('config').perform(context)).read_text())
     sensors = LaunchConfiguration('sensors').perform(context).lower() == 'true'
     directory = tempfile.TemporaryDirectory(prefix='swerve_odin_')
     paths = build_assets(config, share, directory.name, sensors=sensors)
-    actions = []
+    actions = [SetEnvironmentVariable(resource_key, resource_value)]
     if (not context.environment.get('FASTRTPS_DEFAULT_PROFILES_FILE')
             and context.environment.get('ROS_LOCALHOST_ONLY') != '1'):
         actions.append(SetEnvironmentVariable('FASTRTPS_DEFAULT_PROFILES_FILE',
@@ -32,8 +34,8 @@ def _launch(context):
             OpaqueFunction(function=lambda _: directory.cleanup() or [])])),
         IncludeLaunchDescription(PythonLaunchDescriptionSource(str(
             Path(get_package_share_directory('ros_gz_sim')) / 'launch/gz_sim.launch.py')),
-            launch_arguments={'gz_version': '8', 'on_exit_shutdown': 'true',
-                              'gz_args': '-r ' + ('-s ' if headless else '') + str(paths['world'])}.items()),
+            launch_arguments={'on_exit_shutdown': 'true',
+                              **gazebo_arguments('-r ' + ('-s ' if headless else '') + str(paths['world']))}.items()),
         Node(package='ros_gz_bridge', executable='parameter_bridge', name='swerve_odin_bridge',
              parameters=[{'config_file': str(paths['bridge']), 'use_sim_time': True}], output='screen'),
         Node(package='robot_state_publisher', executable='robot_state_publisher', name='swerve_state_publisher',

@@ -16,18 +16,18 @@
 #ifndef GZ_SIM_SYSTEMS_MECANUM_DRIVE_HH
 #define GZ_SIM_SYSTEMS_MECANUM_DRIVE_HH
 
+#include "../gazebo_compat.hh"
 #include <memory>
-#include <gz/sim/System.hh>
 
-namespace gz
+namespace SENTRY_GZ
 {
-    namespace sim
+    namespace SENTRY_SIM
     {
         namespace systems
         {
             class MecanumDrive2Private;
             class GZ_SIM_VISIBLE MecanumDrive2
-                : public gz::sim::System,
+                : public SENTRY_GZ::SENTRY_SIM::System,
                   public ISystemConfigure,
                   public ISystemPreUpdate,
                   public ISystemPostUpdate
@@ -41,16 +41,16 @@ namespace gz
                                const std::shared_ptr<const sdf::Element> &_sdf,
                                EntityComponentManager &_ecm,
                                EventManager &_eventMgr) override;
-                void PreUpdate(const gz::sim::UpdateInfo &_info,
-                               gz::sim::EntityComponentManager &_ecm) override;
-                void PostUpdate(const gz::sim::UpdateInfo &_info,
-                                const gz::sim::EntityComponentManager &_ecm) override;
+                void PreUpdate(const SENTRY_GZ::SENTRY_SIM::UpdateInfo &_info,
+                               SENTRY_GZ::SENTRY_SIM::EntityComponentManager &_ecm) override;
+                void PostUpdate(const SENTRY_GZ::SENTRY_SIM::UpdateInfo &_info,
+                                const SENTRY_GZ::SENTRY_SIM::EntityComponentManager &_ecm) override;
 
             private:
                 std::unique_ptr<MecanumDrive2Private> dataPtr;
             };
         } // namespace systems
-    }     // namespace sim
-} // namespace gz
+    }     // namespace SENTRY_SIM
+} // namespace SENTRY_GZ
 
 #endif //GZ_SIM_SYSTEMS_MECANUM_DRIVE_HH

@@ -3,6 +3,7 @@
 The canonical O1LITE asset remains the source for optics, extrinsics and mass.
 Only instance names, topics and mounting poses change here.
 """
+from sentry_simulation.gazebo_compat import gazebo_text
 from copy import deepcopy
 import math
 from pathlib import Path
@@ -271,4 +272,6 @@ def build_assets(config, share, output, sensors=True):
         ET.indent(root)
         ET.ElementTree(root).write(paths[key], encoding='utf-8', xml_declaration=True)
     paths['bridge'].write_text(yaml.safe_dump(bridge_config(sensors), sort_keys=False))
+    for key in ('model', 'world', 'bridge'):
+        paths[key].write_text(gazebo_text(paths[key].read_text()))
     return paths

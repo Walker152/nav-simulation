@@ -1,14 +1,14 @@
 #pragma once
 
+#include "../gazebo_compat.hh"
 #include <algorithm>
 #include <chrono>
-#include <gz/math/PID.hh>
 
 namespace sentry_simulation
 {
 // PI only (D=0). PID stores the integral contribution in force or torque units.
 inline double updateVelocityServo(
-    gz::math::PID &pid, double target, double actual,
+    SENTRY_GZ::math::PID &pid, double target, double actual,
     const std::chrono::duration<double> &dt)
 {
     const double error = actual - target;

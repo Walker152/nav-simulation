@@ -1,3 +1,4 @@
+#include "../gazebo_compat.hh"
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -6,30 +7,23 @@
 #include <mutex>
 #include <string>
 
-#include <gz/common/Console.hh>
-#include <gz/sim/Joint.hh>
-#include <gz/sim/Model.hh>
-#include <gz/sim/System.hh>
-#include <gz/msgs/twist.pb.h>
-#include <gz/plugin/Register.hh>
-#include <gz/transport/Node.hh>
 #include <sdf/Element.hh>
 
 namespace sentry_simulation
 {
 // Ideal steering actuator with physical wheel contact and body dynamics.
 // This owns only commands; existing publishers own groundtruth and joints.
-class AckermannBicycle final : public gz::sim::System,
-  public gz::sim::ISystemConfigure,
-  public gz::sim::ISystemPreUpdate
+class AckermannBicycle final : public SENTRY_GZ::SENTRY_SIM::System,
+  public SENTRY_GZ::SENTRY_SIM::ISystemConfigure,
+  public SENTRY_GZ::SENTRY_SIM::ISystemPreUpdate
 {
 public:
-  void Configure(const gz::sim::Entity & entity,
+  void Configure(const SENTRY_GZ::SENTRY_SIM::Entity & entity,
     const std::shared_ptr<const sdf::Element> & sdf,
-    gz::sim::EntityComponentManager & ecm,
-    gz::sim::EventManager &) override
+    SENTRY_GZ::SENTRY_SIM::EntityComponentManager & ecm,
+    SENTRY_GZ::SENTRY_SIM::EventManager &) override
   {
-    gz::sim::Model model(entity);
+    SENTRY_GZ::SENTRY_SIM::Model model(entity);
     const std::array<std::string, 4> joint_keys{
       "left_steering_joint", "right_steering_joint", "left_joint", "right_joint"};
     for (const auto & key : {"wheel_base", "wheel_separation", "kingpin_width",
@@ -54,7 +48,7 @@ public:
         return;
       }
       joints[i] = model.JointByName(ecm, sdf->Get<std::string>(joint_keys[i]));
-      if (joints[i] == gz::sim::kNullEntity ||
+      if (joints[i] == SENTRY_GZ::SENTRY_SIM::kNullEntity ||
         std::find(joints.begin(), joints.begin() + i, joints[i]) != joints.begin() + i)
       {
         gzerr << "AckermannBicycle requires four distinct existing joints" << std::endl;
@@ -91,8 +85,8 @@ public:
       gzerr << "AckermannBicycle could not subscribe to its command topic" << std::endl;
   }
 
-  void PreUpdate(const gz::sim::UpdateInfo & info,
-    gz::sim::EntityComponentManager & ecm) override
+  void PreUpdate(const SENTRY_GZ::SENTRY_SIM::UpdateInfo & info,
+    SENTRY_GZ::SENTRY_SIM::EntityComponentManager & ecm) override
   {
     if (!configured)
       return;
@@ -117,18 +111,18 @@ public:
       std::atan(wheelbase * curvature / (1 + kingpin * curvature / 2))};
     for (std::size_t i = 0; i < angles.size(); ++i)
     {
-      gz::sim::Joint steering(joints[i]);
+      SENTRY_GZ::SENTRY_SIM::Joint steering(joints[i]);
       // Reset intentionally bypasses steering slew/effort. Zero velocity holds
       // the new configuration during physics; front rolling joints stay free.
       steering.ResetPosition(ecm, {angles[i]});
       steering.SetVelocity(ecm, {0});
     }
-    gz::sim::Joint(joints[2]).SetVelocity(ecm, {left_rate});
-    gz::sim::Joint(joints[3]).SetVelocity(ecm, {right_rate});
+    SENTRY_GZ::SENTRY_SIM::Joint(joints[2]).SetVelocity(ecm, {left_rate});
+    SENTRY_GZ::SENTRY_SIM::Joint(joints[3]).SetVelocity(ecm, {right_rate});
   }
 
 private:
-  void OnCommand(const gz::msgs::Twist & message)
+  void OnCommand(const SENTRY_GZ::msgs::Twist & message)
   {
     std::lock_guard<std::mutex> lock(command_mutex);
     // At the center, body vx equals rear-axle speed. Center vy=d*w is a
@@ -140,18 +134,18 @@ private:
     command_w = valid ? w : 0;
   }
 
-  std::array<gz::sim::Entity, 4> joints{};
+  std::array<SENTRY_GZ::SENTRY_SIM::Entity, 4> joints{};
   double wheelbase{0}, track{0}, kingpin{0}, radius{0}, max_curvature{0};
   bool configured{false};
   std::mutex command_mutex;
   double command_v{0}, command_w{0};
   // Destroy transport before the callback's mutex and command state.
-  gz::transport::Node node;
+  SENTRY_GZ::transport::Node node;
 };
 }  // namespace sentry_simulation
 
 GZ_ADD_PLUGIN(sentry_simulation::AckermannBicycle,
-  gz::sim::System, gz::sim::ISystemConfigure,
-  gz::sim::ISystemPreUpdate)
+  SENTRY_GZ::SENTRY_SIM::System, SENTRY_GZ::SENTRY_SIM::ISystemConfigure,
+  SENTRY_GZ::SENTRY_SIM::ISystemPreUpdate)
 GZ_ADD_PLUGIN_ALIAS(sentry_simulation::AckermannBicycle,
   "sentry_simulation::AckermannBicycle")
