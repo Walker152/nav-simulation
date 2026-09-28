@@ -300,9 +300,7 @@ void PointCloudAdapter::publish_synchronized_clouds()
 
   auto output = std::make_unique<livox_ros_driver2::msg::CustomMsg>();
   output->header = left_front_cloud_->header;
-  output->header.stamp = rclcpp::Time(scan_start, RCL_ROS_TIME);
   output->header.frame_id = output_frame_id_;
-  output->timebase = static_cast<std::uint64_t>(scan_start);
   output->lidar_id = 0;
   output->points.reserve(static_cast<std::size_t>(pattern_points_per_frame_) * 2);
   const double vertical_span = vertical_max_rad_ - vertical_min_rad_;
@@ -347,7 +345,13 @@ void PointCloudAdapter::publish_synchronized_clouds()
       converted.reflectivity = 0;
       converted.tag = 0x10;
       converted.line = static_cast<std::uint8_t>(ray_index % 4);
-      converted.offset_time = offset_time;
+      const auto point_stamp = static_cast<std::uint64_t>(scan_start + offset_time);
+      if (output->points.empty()) {
+        // Filtering may remove the first scan slots. Rebase metadata, not acquisition time.
+        output->timebase = point_stamp;
+        output->header.stamp = rclcpp::Time(static_cast<std::int64_t>(point_stamp), RCL_ROS_TIME);
+      }
+      converted.offset_time = static_cast<std::uint32_t>(point_stamp - output->timebase);
       output->points.push_back(converted);
     };
     append_sensor_point(left_front_input, left_rear_input, left_transform_, 0);
@@ -355,8 +359,10 @@ void PointCloudAdapter::publish_synchronized_clouds()
   }
   pattern_index_ = (pattern_index_ + static_cast<std::size_t>(pattern_points_per_frame_)) % pattern_.size();
 
-  output->point_num = static_cast<std::uint32_t>(output->points.size());
-  publisher_->publish(std::move(output));
+  if (!output->points.empty()) {
+    output->point_num = static_cast<std::uint32_t>(output->points.size());
+    publisher_->publish(std::move(output));
+  }
   last_scan_end_ = scan_end;
   reset_clouds();
 }
