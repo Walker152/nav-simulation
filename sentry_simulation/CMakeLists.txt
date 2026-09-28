@@ -7,13 +7,26 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
-find_package(gz_sim_vendor REQUIRED)
-find_package(gz-sim8 REQUIRED)
-find_package(gz_msgs_vendor REQUIRED)
-find_package(gz-msgs10 REQUIRED)
-find_package(gz_transport_vendor REQUIRED)
-find_package(gz-transport13 REQUIRED)
+if("$ENV{ROS_DISTRO}" STREQUAL "humble")
+  find_package(ignition-gazebo6 REQUIRED)
+  find_package(ignition-msgs8 REQUIRED)
+  find_package(ignition-transport11 REQUIRED)
+  set(SENTRY_GAZEBO_TARGET ignition-gazebo6::ignition-gazebo6)
+  add_compile_definitions(SENTRY_GAZEBO_FORTRESS)
+elseif("$ENV{ROS_DISTRO}" STREQUAL "jazzy")
+  find_package(gz_sim_vendor REQUIRED)
+  find_package(gz-sim8 REQUIRED)
+  find_package(gz_msgs_vendor REQUIRED)
+  find_package(gz-msgs10 REQUIRED)
+  find_package(gz_transport_vendor REQUIRED)
+  find_package(gz-transport13 REQUIRED)
+  set(SENTRY_GAZEBO_TARGET gz-sim8::gz-sim8)
+else()
+  message(FATAL_ERROR "Source ROS Humble (Fortress) or Jazzy (Harmonic) before building")
+endif()
 find_package(livox_ros_driver2 REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(PCL REQUIRED COMPONENTS common)
 find_package(rclcpp REQUIRED)
@@ -32,8 +45,8 @@ target_include_directories(pointcloud_adapter_component PUBLIC
   $<INSTALL_INTERFACE:include>
   ${PCL_INCLUDE_DIRS})
 ament_target_dependencies(pointcloud_adapter_component
-  livox_ros_driver2 pcl_conversions rclcpp rclcpp_components sensor_msgs)
-target_link_libraries(pointcloud_adapter_component ${PCL_LIBRARIES})
+  livox_ros_driver2 nav_msgs pcl_conversions rclcpp rclcpp_components sensor_msgs)
+target_link_libraries(pointcloud_adapter_component ${PCL_LIBRARIES} Eigen3::Eigen)
 rclcpp_components_register_nodes(
   pointcloud_adapter_component "sentry_simulation::PointCloudAdapter")
 
@@ -42,12 +55,12 @@ add_library(MecanumDrive2 SHARED
 target_compile_features(MecanumDrive2 PUBLIC cxx_std_17)
 target_include_directories(MecanumDrive2 PRIVATE plugins/mecanum_drive2)
 target_link_libraries(MecanumDrive2
-  gz-sim8::gz-sim8)
+  ${SENTRY_GAZEBO_TARGET})
 
 add_library(AckermannBicycle SHARED
   plugins/ackermann_bicycle/AckermannBicycle.cc)
 target_compile_features(AckermannBicycle PUBLIC cxx_std_17)
-target_link_libraries(AckermannBicycle gz-sim8::gz-sim8)
+target_link_libraries(AckermannBicycle ${SENTRY_GAZEBO_TARGET})
 
 # Vendored pure kinematics is linked privately into the sole swerve actuator.
 set(SWERVE_CORE_DIR plugins/swerve_drive/kinco_swerve_core)
@@ -57,7 +70,7 @@ set(SWERVE_CORE_SOURCES
 add_library(SwerveDrive SHARED plugins/swerve_drive/SwerveDrive.cpp ${SWERVE_CORE_SOURCES})
 target_compile_features(SwerveDrive PRIVATE cxx_std_17)
 target_include_directories(SwerveDrive PRIVATE plugins/swerve_drive ${SWERVE_CORE_DIR}/include)
-target_link_libraries(SwerveDrive gz-sim8::gz-sim8)
+target_link_libraries(SwerveDrive ${SENTRY_GAZEBO_TARGET})
 install(DIRECTORY ${SWERVE_CORE_DIR}/ DESTINATION share/${PROJECT_NAME}/third_party/kinco_swerve_core
   FILES_MATCHING PATTERN "LICENSE" PATTERN "PROVENANCE.md")
 
@@ -84,7 +97,7 @@ install(FILES SWERVE_ODIN.md ../README.md ../THIRD_PARTY_NOTICES.md
 ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/gazebo.dsv.in")
 
 ament_export_include_directories(include)
-ament_export_dependencies(livox_ros_driver2 pcl_conversions rclcpp rclcpp_components sensor_msgs)
+ament_export_dependencies(livox_ros_driver2 nav_msgs Eigen3 pcl_conversions rclcpp rclcpp_components sensor_msgs)
 
 if(BUILD_TESTING)
   include("${CMAKE_CURRENT_SOURCE_DIR}/test/CMakeLists.txt" OPTIONAL)

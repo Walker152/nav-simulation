@@ -1,21 +1,13 @@
+#include "../gazebo_compat.hh"
 #include "SwerveControl.hpp"
 #include <chrono>
 #include <memory>
 #include <mutex>
-#include <gz/common/Console.hh>
-#include <gz/sim/Joint.hh>
-#include <gz/sim/Model.hh>
-#include <gz/sim/System.hh>
-#include <gz/msgs/model.pb.h>
-#include <gz/msgs/odometry.pb.h>
-#include <gz/msgs/twist.pb.h>
-#include <gz/plugin/Register.hh>
-#include <gz/transport/Node.hh>
 
 namespace sentry_simulation {
 namespace {
 const std::array<std::string,4> prefixes{"front_left","front_right","rear_left","rear_right"};
-void header(gz::msgs::Header * h, double now, const std::string & frame) {
+void header(SENTRY_GZ::msgs::Header * h, double now, const std::string & frame) {
   const auto ns=static_cast<int64_t>(std::llround(now*1e9));
   h->mutable_stamp()->set_sec(ns/1000000000);
   h->mutable_stamp()->set_nsec(ns%1000000000);
@@ -24,15 +16,15 @@ void header(gz::msgs::Header * h, double now, const std::string & frame) {
 }
 // Sole owner of actuator commands. Joint forces feed Gazebo physics; measured
 // positions/velocities feed the servo, published states, and wheel odometry.
-class SwerveDrive final : public gz::sim::System,
-  public gz::sim::ISystemConfigure,
-  public gz::sim::ISystemPreUpdate,
-  public gz::sim::ISystemPostUpdate {
+class SwerveDrive final : public SENTRY_GZ::SENTRY_SIM::System,
+  public SENTRY_GZ::SENTRY_SIM::ISystemConfigure,
+  public SENTRY_GZ::SENTRY_SIM::ISystemPreUpdate,
+  public SENTRY_GZ::SENTRY_SIM::ISystemPostUpdate {
 public:
-  void Configure(const gz::sim::Entity & entity,
+  void Configure(const SENTRY_GZ::SENTRY_SIM::Entity & entity,
     const std::shared_ptr<const sdf::Element> & sdf,
-    gz::sim::EntityComponentManager & ecm,
-    gz::sim::EventManager &) override {
+    SENTRY_GZ::SENTRY_SIM::EntityComponentManager & ecm,
+    SENTRY_GZ::SENTRY_SIM::EventManager &) override {
     try {
       // All fields are explicit in generated SDF; no unread YAML-only limits.
       const std::pair<const char *,double *> fields[]{
@@ -50,22 +42,22 @@ public:
         *field.second=sdf->Get<double>(field.first);
       }
       control=std::make_unique<swerve::Control>(p);
-      gz::sim::Model model(entity);
+      SENTRY_GZ::SENTRY_SIM::Model model(entity);
       if (!model.Valid(ecm)) throw std::invalid_argument("requires a model entity");
       for (std::size_t i=0;i<4;++i) {
         steering[i]=model.JointByName(ecm,prefixes[i]+"_steer_joint");
         wheels[i]=model.JointByName(ecm,prefixes[i]+"_wheel_joint");
         for (auto joint:{steering[i],wheels[i]}) {
-          if (joint==gz::sim::kNullEntity) throw std::invalid_argument("missing swerve joint");
-          gz::sim::Joint(joint).EnablePositionCheck(ecm);
-          gz::sim::Joint(joint).EnableVelocityCheck(ecm);
+          if (joint==SENTRY_GZ::SENTRY_SIM::kNullEntity) throw std::invalid_argument("missing swerve joint");
+          SENTRY_GZ::SENTRY_SIM::Joint(joint).EnablePositionCheck(ecm);
+          SENTRY_GZ::SENTRY_SIM::Joint(joint).EnableVelocityCheck(ecm);
         }
       }
       kinematics=std::make_unique<swerve::core::SwerveKinematics>(p.geometry());
-      states_pub=node.Advertise<gz::msgs::Model>("/swerve/joint_states");
-      targets_pub=node.Advertise<gz::msgs::Model>("/swerve/joint_targets");
-      reference_pub=node.Advertise<gz::msgs::Twist>("/swerve/reference_twist");
-      odom_pub=node.Advertise<gz::msgs::Odometry>("/swerve/wheel_odometry");
+      states_pub=node.Advertise<SENTRY_GZ::msgs::Model>("/swerve/joint_states");
+      targets_pub=node.Advertise<SENTRY_GZ::msgs::Model>("/swerve/joint_targets");
+      reference_pub=node.Advertise<SENTRY_GZ::msgs::Twist>("/swerve/reference_twist");
+      odom_pub=node.Advertise<SENTRY_GZ::msgs::Odometry>("/swerve/wheel_odometry");
       configured=node.Subscribe("/kinco_swerve/cmd_vel/selected",&SwerveDrive::OnCommand,this);
       if (!configured) throw std::runtime_error("command subscription failed");
     } catch (const std::exception & e) {
@@ -73,8 +65,8 @@ public:
       configured=false;
     }
   }
-  void PreUpdate(const gz::sim::UpdateInfo & info,
-    gz::sim::EntityComponentManager & ecm) override {
+  void PreUpdate(const SENTRY_GZ::SENTRY_SIM::UpdateInfo & info,
+    SENTRY_GZ::SENTRY_SIM::EntityComponentManager & ecm) override {
     if (!configured) return;
     const double now=std::chrono::duration<double>(info.simTime).count();
     const double dt=std::chrono::duration<double>(info.dt).count();
@@ -100,8 +92,8 @@ public:
     if (!ReadFeedback(ecm,feedback)) {
       Invalidate();
       for (std::size_t i=0;i<4;++i) {
-        gz::sim::Joint(steering[i]).SetForce(ecm,{0});
-        gz::sim::Joint(wheels[i]).SetForce(ecm,{0});
+        SENTRY_GZ::SENTRY_SIM::Joint(steering[i]).SetForce(ecm,{0});
+        SENTRY_GZ::SENTRY_SIM::Joint(wheels[i]).SetForce(ecm,{0});
       }
       return;
     }
@@ -115,12 +107,12 @@ public:
       // actively braked with the same bounded physical motor torque.
       const double wheel_force=std::isfinite(feedback.wheel_velocity[i]) ?
         p.wheel_kp*(targets.wheel_velocity[i]-feedback.wheel_velocity[i]) : 0;
-      gz::sim::Joint(steering[i]).SetForce(ecm,{std::clamp(steering_force,-p.steering_torque,p.steering_torque)});
-      gz::sim::Joint(wheels[i]).SetForce(ecm,{std::clamp(wheel_force,-p.wheel_torque,p.wheel_torque)});
+      SENTRY_GZ::SENTRY_SIM::Joint(steering[i]).SetForce(ecm,{std::clamp(steering_force,-p.steering_torque,p.steering_torque)});
+      SENTRY_GZ::SENTRY_SIM::Joint(wheels[i]).SetForce(ecm,{std::clamp(wheel_force,-p.wheel_torque,p.wheel_torque)});
     }
   }
-  void PostUpdate(const gz::sim::UpdateInfo & info,
-    const gz::sim::EntityComponentManager & ecm) override {
+  void PostUpdate(const SENTRY_GZ::SENTRY_SIM::UpdateInfo & info,
+    const SENTRY_GZ::SENTRY_SIM::EntityComponentManager & ecm) override {
     if (!configured || info.paused) return;
     swerve::Feedback feedback;
     if (!ReadFeedback(ecm,feedback) || !feedback.valid(p.steering_hard_limit)) return;
@@ -139,7 +131,7 @@ public:
     }
     if (now+1e-9<next_publish) return;
     next_publish=now+1/p.publish_rate;
-    gz::msgs::Model states, desired;
+    SENTRY_GZ::msgs::Model states, desired;
     states.set_name("swerve"); desired.set_name("swerve_targets");
     header(states.mutable_header(),now,"base_link"); header(desired.mutable_header(),now,"base_link");
     for (std::size_t i=0;i<4;++i) {
@@ -156,13 +148,13 @@ public:
       wheel_target->mutable_axis1()->set_velocity(targets.wheel_velocity[i]);
     }
     states_pub.Publish(states); targets_pub.Publish(desired);
-    gz::msgs::Twist reference;
+    SENTRY_GZ::msgs::Twist reference;
     header(reference.mutable_header(),now,"base_link");
     reference.mutable_linear()->set_x(targets.reference.linear_x_mps);
     reference.mutable_linear()->set_y(targets.reference.linear_y_mps);
     reference.mutable_angular()->set_z(targets.reference.angular_z_radps);
     reference_pub.Publish(reference);
-    gz::msgs::Odometry odometry;
+    SENTRY_GZ::msgs::Odometry odometry;
     header(odometry.mutable_header(),now,"odom");
     auto * child=odometry.mutable_header()->add_data(); child->set_key("child_frame_id"); child->add_value("base_link");
     odometry.mutable_pose()->mutable_position()->set_x(odom_x);
@@ -175,12 +167,12 @@ public:
     odom_pub.Publish(odometry);
   }
 private:
-  bool ReadFeedback(const gz::sim::EntityComponentManager & ecm, swerve::Feedback & feedback) const {
+  bool ReadFeedback(const SENTRY_GZ::SENTRY_SIM::EntityComponentManager & ecm, swerve::Feedback & feedback) const {
     for (std::size_t i=0;i<4;++i) {
-      const auto sp=gz::sim::Joint(steering[i]).Position(ecm);
-      const auto sv=gz::sim::Joint(steering[i]).Velocity(ecm);
-      const auto wp=gz::sim::Joint(wheels[i]).Position(ecm);
-      const auto wv=gz::sim::Joint(wheels[i]).Velocity(ecm);
+      const auto sp=SENTRY_GZ::SENTRY_SIM::Joint(steering[i]).Position(ecm);
+      const auto sv=SENTRY_GZ::SENTRY_SIM::Joint(steering[i]).Velocity(ecm);
+      const auto wp=SENTRY_GZ::SENTRY_SIM::Joint(wheels[i]).Position(ecm);
+      const auto wv=SENTRY_GZ::SENTRY_SIM::Joint(wheels[i]).Velocity(ecm);
       if (!sp || sp->empty() || !sv || sv->empty() || !wp || wp->empty() || !wv || wv->empty()) return false;
       feedback.steering_position[i]=(*sp)[0]; feedback.steering_velocity[i]=(*sv)[0];
       feedback.wheel_position[i]=(*wp)[0]; feedback.wheel_velocity[i]=(*wv)[0];
@@ -191,7 +183,7 @@ private:
     std::lock_guard<std::mutex> lock(mutex);
     mailbox.clear(); control->reset(); targets={};
   }
-  void OnCommand(const gz::msgs::Twist & message) {
+  void OnCommand(const SENTRY_GZ::msgs::Twist & message) {
     swerve::Command command;
     command.stamp=swerve::stamp_seconds(message.header().stamp().sec(),message.header().stamp().nsec());
     for (const auto & data:message.header().data()) {
@@ -206,8 +198,8 @@ private:
   swerve::Parameters p;
   std::unique_ptr<swerve::Control> control;
   std::unique_ptr<swerve::core::SwerveKinematics> kinematics;
-  std::array<gz::sim::Entity,4> steering{},wheels{};
-  gz::transport::Node::Publisher states_pub,targets_pub,reference_pub,odom_pub;
+  std::array<SENTRY_GZ::SENTRY_SIM::Entity,4> steering{},wheels{};
+  SENTRY_GZ::transport::Node::Publisher states_pub,targets_pub,reference_pub,odom_pub;
   std::mutex mutex;
   swerve::Mailbox mailbox;
   swerve::Output targets;
@@ -215,10 +207,10 @@ private:
   uint64_t last_iteration{};
   bool configured{},paused{};
   // Destroy transport first, while callback mutex/mailbox/parameters still live.
-  gz::transport::Node node;
+  SENTRY_GZ::transport::Node node;
 };
 }
-GZ_ADD_PLUGIN(sentry_simulation::SwerveDrive,gz::sim::System,
+GZ_ADD_PLUGIN(sentry_simulation::SwerveDrive,SENTRY_GZ::SENTRY_SIM::System,
   sentry_simulation::SwerveDrive::ISystemConfigure,
   sentry_simulation::SwerveDrive::ISystemPreUpdate,
   sentry_simulation::SwerveDrive::ISystemPostUpdate)

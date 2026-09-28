@@ -6,6 +6,7 @@ import importlib.util
 from pathlib import Path
 
 import yaml
+from sentry_simulation.gazebo_compat import gazebo_arguments, prepare_share, resource_paths
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
@@ -127,7 +128,7 @@ def _launch_setup(context, package_share):
                 get_package_share_directory("ros_gz_sim"), "launch", "gz_sim.launch.py"
             )
         ),
-        launch_arguments={"gz_version": "8", "gz_args": gz_args}.items(),
+        launch_arguments=gazebo_arguments(gz_args).items(),
     )
 
     spawn_robot = Node(
@@ -194,6 +195,8 @@ def _launch_setup(context, package_share):
                     "vertical_min_deg": -7.3,
                     "vertical_max_deg": 52.3,
                     "scan_period": 0.1,
+                    "ground_truth_topic": "/sim/ground_truth/odom",
+                    "lidar_pose_in_model": [0.0, -0.2, 0.3, 0.0, 0.0, 0.0],
                 }],
                 extra_arguments=[{"use_intra_process_comms": True}],
             ),
@@ -370,7 +373,10 @@ def generate_launch_description():
         raise RuntimeError(
             f"sentry_simulation share directory is invalid: {package_share}"
         )
+    package_share = str(prepare_share(package_share))
+    resource_key, resource_value = resource_paths(package_share)
     return LaunchDescription([
+        SetEnvironmentVariable(resource_key, resource_value),
         DeclareLaunchArgument(
             "world", default_value="rmuc_2026",
             description="rmuc_2024, rmul_2024, rmuc_2025, rmuc_2026, rmul_2025, or home_indoor",

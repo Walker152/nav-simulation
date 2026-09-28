@@ -12,43 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "../gazebo_compat.hh"
 #include <cmath>
 #include <mutex>
-#include <gz/common/Util.hh>
-#include <gz/msgs/convert/Quaternion.hh>
-#include <gz/msgs/odometry.pb.h>
-#include <gz/msgs/twist.pb.h>
-#include <gz/plugin/Register.hh>
-#include <gz/transport/Node.hh>
 
-#include <gz/sim/components/Pose.hh>
-#include <gz/sim/components/LinearVelocity.hh>
-#include <gz/sim/components/AngularVelocity.hh>
-#include <gz/sim/Link.hh>
-#include <gz/sim/Model.hh>
-#include <gz/sim/Util.hh>
-#include <gz/sim/Conversions.hh>
 
-#include <gz/math/Vector3.hh>
-#include <gz/math/Quaternion.hh>
-#include <gz/math/PID.hh>
 
 #include "MecanumDrive2.hh"
 #include "VelocityServo.hh"
 
 #define WHEEL_NUM 4
-using namespace gz;
-using namespace sim;
+using namespace SENTRY_GZ;
+using namespace SENTRY_SIM;
 using namespace systems;
 
 const std::string kSdfElemJointNames[WHEEL_NUM] = {"front_right_joint", "front_left_joint", "rear_right_joint", "rear_left_joint"};
 
-class gz::sim::systems::MecanumDrive2Private
+class SENTRY_GZ::SENTRY_SIM::systems::MecanumDrive2Private
 {
 public:
-    void OnCmdVel(const gz::msgs::Twist &_msg);
+    void OnCmdVel(const SENTRY_GZ::msgs::Twist &_msg);
 
-    void UpdateOdometry(const gz::sim::UpdateInfo &_info, const gz::sim::EntityComponentManager &_ecm);
+    void UpdateOdometry(const SENTRY_GZ::SENTRY_SIM::UpdateInfo &_info, const SENTRY_GZ::SENTRY_SIM::EntityComponentManager &_ecm);
 
 public:
     transport::Node node;
@@ -57,9 +42,9 @@ public:
     //chassis link
     Entity chassisLink{kNullEntity};
     //pid
-    gz::math::PID xPid;
-    gz::math::PID yPid;
-    gz::math::PID wPid;
+    SENTRY_GZ::math::PID xPid;
+    SENTRY_GZ::math::PID yPid;
+    SENTRY_GZ::math::PID wPid;
     //for Odometry
     std::string odomFrameId;
     std::string odomChildFrameId;
@@ -113,7 +98,7 @@ void MecanumDrive2::Configure(const Entity &_entity,
     std::string odomTopic{this->dataPtr->model.Name(_ecm) + "/odometry"};
     this->dataPtr->odomPub = this->dataPtr->node.Advertise<msgs::Odometry>(odomTopic);
     this->dataPtr->odomFrameId=this->dataPtr->model.Name(_ecm) + "/odom" ;
-    this->dataPtr->odomChildFrameId = this->dataPtr->model.Name(_ecm) + "/" + gz::common::replaceAll(chassisLinkName, "::", "/");
+    this->dataPtr->odomChildFrameId = this->dataPtr->model.Name(_ecm) + "/" + SENTRY_GZ::common::replaceAll(chassisLinkName, "::", "/");
     // Calibrated finite-effort velocity servos. Integral effort compensates the
     // retained wheel damping/contact losses; mass and contact physics stay active.
     this->dataPtr->xPid.Init(500, 1000, 0, 150, -150, 250, -250, 0);
@@ -121,8 +106,8 @@ void MecanumDrive2::Configure(const Entity &_entity,
     this->dataPtr->wPid.Init(200, 400, 0, 30, -30, 100, -100, 0);
 }
 
-void MecanumDrive2::PreUpdate(const gz::sim::UpdateInfo &_info,
-                             gz::sim::EntityComponentManager &_ecm)
+void MecanumDrive2::PreUpdate(const SENTRY_GZ::SENTRY_SIM::UpdateInfo &_info,
+                             SENTRY_GZ::SENTRY_SIM::EntityComponentManager &_ecm)
 {
     if (_info.dt < std::chrono::steady_clock::duration::zero()) {
         this->dataPtr->xPid.Reset();
@@ -183,8 +168,8 @@ void MecanumDrive2::PreUpdate(const gz::sim::UpdateInfo &_info,
     // Apply the wrench
     chassisLink.AddWorldWrench(_ecm, force, torque);
 }
-void MecanumDrive2::PostUpdate(const gz::sim::UpdateInfo &_info,
-                              const gz::sim::EntityComponentManager &_ecm)
+void MecanumDrive2::PostUpdate(const SENTRY_GZ::SENTRY_SIM::UpdateInfo &_info,
+                              const SENTRY_GZ::SENTRY_SIM::EntityComponentManager &_ecm)
 {
 
     // 1.check collsion  of wheel's link and set the wheel's state true if the wheel contacts with ground plane, and
@@ -195,7 +180,7 @@ void MecanumDrive2::PostUpdate(const gz::sim::UpdateInfo &_info,
 
 /******************implementation for MecanumDrive2Private******************/
 
-void MecanumDrive2Private::OnCmdVel(const gz::msgs::Twist &_msg)
+void MecanumDrive2Private::OnCmdVel(const SENTRY_GZ::msgs::Twist &_msg)
 {
     std::lock_guard<std::mutex> lock(this->targetVelMutex);
     this->targetVel = std::isfinite(_msg.linear().x()) &&
@@ -204,8 +189,8 @@ void MecanumDrive2Private::OnCmdVel(const gz::msgs::Twist &_msg)
     //gzmsg << "MecanumDrive2 msg x: [" << _msg.linear().x() << "]" << std::endl;
 }
 
-void MecanumDrive2Private::UpdateOdometry(const gz::sim::UpdateInfo &_info,
-                                         const gz::sim::EntityComponentManager &_ecm)
+void MecanumDrive2Private::UpdateOdometry(const SENTRY_GZ::SENTRY_SIM::UpdateInfo &_info,
+                                         const SENTRY_GZ::SENTRY_SIM::EntityComponentManager &_ecm)
 {
     //get pose and velocity of chassis
     const auto chassisPose = _ecm.Component<components::WorldPose>(this->chassisLink)->Data();
@@ -236,9 +221,11 @@ void MecanumDrive2Private::UpdateOdometry(const gz::sim::UpdateInfo &_info,
 
 /******************register*************************************************/
 GZ_ADD_PLUGIN(MecanumDrive2,
-                    gz::sim::System,
+                    SENTRY_GZ::SENTRY_SIM::System,
                     MecanumDrive2::ISystemConfigure,
                     MecanumDrive2::ISystemPreUpdate,
                     MecanumDrive2::ISystemPostUpdate)
 
 GZ_ADD_PLUGIN_ALIAS(MecanumDrive2, "gz::sim::systems::MecanumDrive2")
+
+GZ_ADD_PLUGIN_ALIAS(MecanumDrive2, "ignition::gazebo::systems::MecanumDrive2")

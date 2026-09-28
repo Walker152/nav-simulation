@@ -1,6 +1,7 @@
 """Standalone O1LITE sensor demonstration; no localization/navigation nodes."""
 
 from pathlib import Path
+from sentry_simulation.gazebo_compat import gazebo_arguments, prepare_share, resource_paths
 import xml.etree.ElementTree as ET
 
 from ament_index_python.packages import get_package_share_directory
@@ -21,7 +22,8 @@ def _configure_transport(context, share):
 
 
 def generate_launch_description():
-    share = Path(get_package_share_directory("sentry_simulation"))
+    share = prepare_share(get_package_share_directory("sentry_simulation"))
+    resource_key, resource_value = resource_paths(share)
     world = share / "resource/worlds/odin1_lite_demo.sdf"
     model = ET.parse(share / "resource/models/odin1_lite/model.sdf").getroot().find("model")
     mounted = ET.parse(world).getroot().find("world/include")
@@ -29,17 +31,17 @@ def generate_launch_description():
     transforms.extend((frame.get("attached_to"), frame.get("name"), frame.findtext("pose"))
                       for frame in model.findall("frame"))
     actions = [
+        SetEnvironmentVariable(resource_key, resource_value),
         DeclareLaunchArgument("headless", default_value="false"),
         OpaqueFunction(function=_configure_transport, kwargs={"share": share}),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(str(
                 Path(get_package_share_directory("ros_gz_sim")) / "launch/gz_sim.launch.py")),
             launch_arguments={
-                "gz_version": "8",
                 "on_exit_shutdown": "true",
-                "gz_args": ["-r ", PythonExpression([
+                **gazebo_arguments(["-r ", PythonExpression([
                     "'-s ' if '", LaunchConfiguration("headless"), "'.lower() == 'true' else ''"
-                ]), str(world)],
+                ]), str(world)]),
             }.items(),
         ),
         Node(package="ros_gz_bridge", executable="parameter_bridge", name="odin1_lite_bridge",
