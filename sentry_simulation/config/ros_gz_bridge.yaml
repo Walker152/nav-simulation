@@ -1,54 +1,54 @@
 - ros_topic_name: /clock
   gz_topic_name: /clock
   ros_type_name: rosgraph_msgs/msg/Clock
-  gz_type_name: ignition.msgs.Clock
+  gz_type_name: gz.msgs.Clock
   direction: GZ_TO_ROS
 
 - ros_topic_name: /sim/lidar/left/front/points
   gz_topic_name: /sim/lidar/left/front/points
   ros_type_name: sensor_msgs/msg/PointCloud2
-  gz_type_name: ignition.msgs.PointCloudPacked
+  gz_type_name: gz.msgs.PointCloudPacked
   direction: GZ_TO_ROS
 
 - ros_topic_name: /sim/lidar/left/rear/points
   gz_topic_name: /sim/lidar/left/rear/points
   ros_type_name: sensor_msgs/msg/PointCloud2
-  gz_type_name: ignition.msgs.PointCloudPacked
+  gz_type_name: gz.msgs.PointCloudPacked
   direction: GZ_TO_ROS
 
 - ros_topic_name: /sim/lidar/right/front/points
   gz_topic_name: /sim/lidar/right/front/points
   ros_type_name: sensor_msgs/msg/PointCloud2
-  gz_type_name: ignition.msgs.PointCloudPacked
+  gz_type_name: gz.msgs.PointCloudPacked
   direction: GZ_TO_ROS
 
 - ros_topic_name: /sim/lidar/right/rear/points
   gz_topic_name: /sim/lidar/right/rear/points
   ros_type_name: sensor_msgs/msg/PointCloud2
-  gz_type_name: ignition.msgs.PointCloudPacked
+  gz_type_name: gz.msgs.PointCloudPacked
   direction: GZ_TO_ROS
 
 - ros_topic_name: /sim/imu_raw
   gz_topic_name: /sim/imu
   ros_type_name: sensor_msgs/msg/Imu
-  gz_type_name: ignition.msgs.IMU
+  gz_type_name: gz.msgs.IMU
   direction: GZ_TO_ROS
 
 - ros_topic_name: /sim/cmd_vel
   gz_topic_name: /sentry/cmd_vel
   ros_type_name: geometry_msgs/msg/Twist
-  gz_type_name: ignition.msgs.Twist
+  gz_type_name: gz.msgs.Twist
   direction: ROS_TO_GZ
 
 - ros_topic_name: /sim/ground_truth/odom
   gz_topic_name: /sentry/ground_truth_odometry
   ros_type_name: nav_msgs/msg/Odometry
-  gz_type_name: ignition.msgs.Odometry
+  gz_type_name: gz.msgs.Odometry
   direction: GZ_TO_ROS
 
 # Real front-wheel steering measurements; absent in the Omni model.
 - ros_topic_name: /sim/steering_joint_states
   gz_topic_name: /sentry/steering_joint_state
   ros_type_name: sensor_msgs/msg/JointState
-  gz_type_name: ignition.msgs.Model
+  gz_type_name: gz.msgs.Model
   direction: GZ_TO_ROS

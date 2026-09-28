@@ -35,7 +35,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(str(
                 Path(get_package_share_directory("ros_gz_sim")) / "launch/gz_sim.launch.py")),
             launch_arguments={
-                "gz_version": "6",
+                "gz_version": "8",
                 "on_exit_shutdown": "true",
                 "gz_args": ["-r ", PythonExpression([
                     "'-s ' if '", LaunchConfiguration("headless"), "'.lower() == 'true' else ''"

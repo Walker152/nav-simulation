@@ -127,7 +127,7 @@ def _launch_setup(context, package_share):
                 get_package_share_directory("ros_gz_sim"), "launch", "gz_sim.launch.py"
             )
         ),
-        launch_arguments={"gz_version": "6", "gz_args": gz_args}.items(),
+        launch_arguments={"gz_version": "8", "gz_args": gz_args}.items(),
     )
 
     spawn_robot = Node(

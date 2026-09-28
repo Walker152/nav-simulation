@@ -147,7 +147,7 @@ def bridge_config(sensors):
     entries = []
     def bridge(ros, gz, ros_type, gz_type, direction='GZ_TO_ROS'):
         entries.append(dict(ros_topic_name=ros, gz_topic_name=gz,
-                            ros_type_name=ros_type, gz_type_name='ignition.msgs.' + gz_type,
+                            ros_type_name=ros_type, gz_type_name='gz.msgs.' + gz_type,
                             direction=direction))
     bridge('/clock', '/clock', 'rosgraph_msgs/msg/Clock', 'Clock')
     bridge('/kinco_swerve/cmd_vel/selected', '/kinco_swerve/cmd_vel/selected',
@@ -250,8 +250,8 @@ def build_assets(config, share, output, sensors=True):
         element(drive, key, g[key])
     for key, value in c.items():
         element(drive, key, value)
-    odometry = element(model, 'plugin', filename='ignition-gazebo-odometry-publisher-system',
-                       name='ignition::gazebo::systems::OdometryPublisher')
+    odometry = element(model, 'plugin', filename='gz-sim-odometry-publisher-system',
+                       name='gz::sim::systems::OdometryPublisher')
     for key, value in dict(odom_frame='odom', robot_base_frame='base_link', dimensions=3,
                            odom_publish_frequency=c['publish_rate'],
                            odom_topic='/swerve/ground_truth/odometry', tf_topic='/swerve/ground_truth/tf').items():

@@ -74,7 +74,7 @@
     <link name="sim_lidar">
       <pose>0 -0.2 0.3 0 0 0</pose>
       <inertial><mass>0.01</mass><inertia><ixx>0.000001</ixx><iyy>0.000001</iyy><izz>0.000001</izz></inertia></inertial>
-      <sensor name="sim_imu" type="imu"><topic>/sim/imu</topic><update_rate>200</update_rate><always_on>true</always_on><ignition_frame_id>sim_lidar</ignition_frame_id></sensor>
+      <sensor name="sim_imu" type="imu"><topic>/sim/imu</topic><update_rate>200</update_rate><always_on>true</always_on><gz_frame_id>sim_lidar</gz_frame_id></sensor>
     </link>
     <joint name="sim_lidar_joint" type="fixed"><parent>base_link</parent><child>sim_lidar</child></joint>
 
@@ -86,7 +86,7 @@
       <sensor name="sim_lidar_left_front" type="gpu_lidar">
         <pose>0 0 0.03 0 0 0</pose>
         <topic>/sim/lidar/left/front</topic><update_rate>10</update_rate><always_on>true</always_on><visualize>false</visualize>
-        <ignition_frame_id>sim_lidar_left</ignition_frame_id>
+        <gz_frame_id>sim_lidar_left</gz_frame_id>
         <lidar>
           <scan><horizontal><samples>360</samples><resolution>1</resolution><min_angle>-1.57079632679</min_angle><max_angle>1.57079632679</max_angle></horizontal><vertical><samples>120</samples><resolution>1</resolution><min_angle>-0.1274090354</min_angle><max_angle>0.9128076904</max_angle></vertical></scan>
           <range><min>0.10</min><max>40.0</max><resolution>0.01</resolution></range>
@@ -96,7 +96,7 @@
       <sensor name="sim_lidar_left_rear" type="gpu_lidar">
         <pose>0 0 0.03 0 0 3.14159265359</pose>
         <topic>/sim/lidar/left/rear</topic><update_rate>10</update_rate><always_on>true</always_on><visualize>false</visualize>
-        <ignition_frame_id>sim_lidar_left</ignition_frame_id>
+        <gz_frame_id>sim_lidar_left</gz_frame_id>
         <lidar>
           <scan><horizontal><samples>360</samples><resolution>1</resolution><min_angle>-1.57079632679</min_angle><max_angle>1.57079632679</max_angle></horizontal><vertical><samples>120</samples><resolution>1</resolution><min_angle>-0.1274090354</min_angle><max_angle>0.9128076904</max_angle></vertical></scan>
           <range><min>0.10</min><max>40.0</max><resolution>0.01</resolution></range>
@@ -114,7 +114,7 @@
       <sensor name="sim_lidar_right_front" type="gpu_lidar">
         <pose>0 0 0.03 0 0 0</pose>
         <topic>/sim/lidar/right/front</topic><update_rate>10</update_rate><always_on>true</always_on><visualize>false</visualize>
-        <ignition_frame_id>sim_lidar_right</ignition_frame_id>
+        <gz_frame_id>sim_lidar_right</gz_frame_id>
         <lidar>
           <scan><horizontal><samples>360</samples><resolution>1</resolution><min_angle>-1.57079632679</min_angle><max_angle>1.57079632679</max_angle></horizontal><vertical><samples>120</samples><resolution>1</resolution><min_angle>-0.1274090354</min_angle><max_angle>0.9128076904</max_angle></vertical></scan>
           <range><min>0.10</min><max>40.0</max><resolution>0.01</resolution></range>
@@ -124,7 +124,7 @@
       <sensor name="sim_lidar_right_rear" type="gpu_lidar">
         <pose>0 0 0.03 0 0 3.14159265359</pose>
         <topic>/sim/lidar/right/rear</topic><update_rate>10</update_rate><always_on>true</always_on><visualize>false</visualize>
-        <ignition_frame_id>sim_lidar_right</ignition_frame_id>
+        <gz_frame_id>sim_lidar_right</gz_frame_id>
         <lidar>
           <scan><horizontal><samples>360</samples><resolution>1</resolution><min_angle>-1.57079632679</min_angle><max_angle>1.57079632679</max_angle></horizontal><vertical><samples>120</samples><resolution>1</resolution><min_angle>-0.1274090354</min_angle><max_angle>0.9128076904</max_angle></vertical></scan>
           <range><min>0.10</min><max>40.0</max><resolution>0.01</resolution></range>
@@ -134,7 +134,7 @@
     </link>
     <joint name="sim_lidar_right_joint" type="fixed"><parent>base_link</parent><child>sim_lidar_right</child></joint>
 
-    <plugin filename="ignition-gazebo-diff-drive-system" name="ignition::gazebo::systems::DiffDrive">
+    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
       <left_joint>left_joint</left_joint><right_joint>right_joint</right_joint>
       <wheel_separation>0.60</wheel_separation><wheel_radius>0.076</wheel_radius>
       <topic>/sentry/cmd_vel</topic><odom_topic>/sentry/wheel_odometry</odom_topic>
@@ -143,7 +143,7 @@
       <min_acceleration>-4.0</min_acceleration><max_acceleration>4.0</max_acceleration>
       <min_velocity>-3.0</min_velocity><max_velocity>3.0</max_velocity>
     </plugin>
-    <plugin filename="ignition-gazebo-odometry-publisher-system" name="ignition::gazebo::systems::OdometryPublisher">
+    <plugin filename="gz-sim-odometry-publisher-system" name="gz::sim::systems::OdometryPublisher">
       <odom_frame>sentry/odom</odom_frame><robot_base_frame>sentry/base_link</robot_base_frame>
       <dimensions>3</dimensions><odom_publish_frequency>100</odom_publish_frequency>
       <odom_topic>/sentry/ground_truth_odometry</odom_topic><tf_topic>/sentry/ground_truth_tf</tf_topic>
