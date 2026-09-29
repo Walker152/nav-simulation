@@ -144,7 +144,7 @@ def to_urdf(model):
     return robot
 
 
-def bridge_config(sensors):
+def bridge_config(sensors, publish_ground_truth_tf=True):
     entries = []
     def bridge(ros, gz, ros_type, gz_type, direction='GZ_TO_ROS'):
         entries.append(dict(ros_topic_name=ros, gz_topic_name=gz,
@@ -158,7 +158,8 @@ def bridge_config(sensors):
     bridge('/swerve/reference_twist', '/swerve/reference_twist', 'geometry_msgs/msg/TwistStamped', 'Twist')
     for name in ('wheel_odometry', 'ground_truth/odometry'):
         bridge('/swerve/' + name, '/swerve/' + name, 'nav_msgs/msg/Odometry', 'Odometry')
-    bridge('/tf', '/swerve/ground_truth/tf', 'tf2_msgs/msg/TFMessage', 'Pose_V')
+    if publish_ground_truth_tf:
+        bridge('/tf', '/swerve/ground_truth/tf', 'tf2_msgs/msg/TFMessage', 'Pose_V')
     if sensors:
         for direction in DIRECTIONS:
             prefix = '/sim/odin_' + direction
@@ -171,8 +172,13 @@ def bridge_config(sensors):
     return entries
 
 
-def build_assets(config, share, output, sensors=True):
-    """Validate parameters, generate install-independent resources and return paths."""
+def build_assets(config, share, output, sensors=True, world_path=None, spawn=None,
+                 publish_ground_truth_tf=True):
+    """Generate resources; spawn.z is ground height, before wheel clearance.
+
+    Localization may own the ROS base transform while ground-truth odometry
+    remains available for simulated device inputs and diagnostics.
+    """
     g, d, c, p = (config[k] for k in ('geometry', 'dynamics', 'control', 'physics'))
     signed = {'body_center_z', 'wheel_center_z', 'sensor_height', 'spindle_center_z'}
     for section in (g, d, c, p):
@@ -185,6 +191,12 @@ def build_assets(config, share, output, sensors=True):
         raise ValueError('steering targets must lie within physical endpoints below pi')
     if g['wheelbase'] >= g['length'] or g['track'] >= g['width']:
         raise ValueError('steering axes must be inside the chassis perimeter')
+    if spawn is None:
+        spawn = dict(x=0, y=0, z=0, yaw=0)
+    for key in ('x', 'y', 'z', 'yaw'):
+        value = spawn[key]
+        if not isinstance(value, (int, float)) or not math.isfinite(value):
+            raise ValueError(f'spawn.{key} must be finite')
     odin = ET.parse(Path(share) / 'resource/models/odin1_lite/model.sdf').getroot().find('model')
     sensor_mass = float(odin.findtext('link/inertial/mass'))
     body_mass = d['total_mass'] - 4 * (d['steer_mass'] + d['wheel_mass'] + sensor_mass)
@@ -257,12 +269,21 @@ def build_assets(config, share, output, sensors=True):
                            odom_publish_frequency=c['publish_rate'],
                            odom_topic='/swerve/ground_truth/odometry', tf_topic='/swerve/ground_truth/tf').items():
         element(odometry, key, value)
-    world = ET.parse(Path(share) / 'resource/worlds/swerve_odin.sdf').getroot()
+    if world_path is None:
+        world_path = Path(share) / 'resource/worlds/swerve_odin.sdf'
+    world = ET.parse(world_path).getroot()
     world_node = world.find('world')
-    world_node.find('physics/max_step_size').text = str(p['step'])
-    world_node.find('physics/real_time_factor').text = str(p['real_time_factor'])
+    physics = world_node.find('physics')
+    if physics is None:
+        physics = element(world_node, 'physics', name='default', type='ignored')
+    for key, value in (('max_step_size', p['step']), ('real_time_factor', p['real_time_factor'])):
+        setting = physics.find(key)
+        if setting is None:
+            setting = element(physics, key)
+        setting.text = str(value)
     placed = deepcopy(model)
-    element(placed, 'pose', numbers((0, 0, r-g['wheel_center_z']+.005, 0, 0, 0)))
+    base_z = spawn['z'] + g['wheel_radius'] - g['wheel_center_z'] + .005
+    element(placed, 'pose', numbers((spawn['x'], spawn['y'], base_z, 0, 0, spawn['yaw'])))
     world_node.append(placed)
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
@@ -271,7 +292,8 @@ def build_assets(config, share, output, sensors=True):
     for key, root in (('model', sdf), ('world', world), ('urdf', to_urdf(model))):
         ET.indent(root)
         ET.ElementTree(root).write(paths[key], encoding='utf-8', xml_declaration=True)
-    paths['bridge'].write_text(yaml.safe_dump(bridge_config(sensors), sort_keys=False))
+    paths['bridge'].write_text(yaml.safe_dump(
+        bridge_config(sensors, publish_ground_truth_tf), sort_keys=False))
     for key in ('model', 'world', 'bridge'):
         paths[key].write_text(gazebo_text(paths[key].read_text()))
     return paths

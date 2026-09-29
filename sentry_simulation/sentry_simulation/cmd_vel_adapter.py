@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Forward the controller's body-frame command to the simulator with a watchdog."""
 
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, TwistStamped
 import rclpy
 from rclpy._rclpy_pybind11 import RCLError
 from rclpy.executors import ExternalShutdownException
@@ -19,8 +19,9 @@ class SentrySimCmdAdapter(Node):
         self.declare_parameter("command_timeout", 0.25)
 
         chassis_type = str(self.get_parameter("chassis_type").value)
-        if chassis_type not in ("omni", "ackermann"):
-            raise ValueError("navigation command forwarding supports only omni and ackermann")
+        if chassis_type not in ("omni", "ackermann", "swerve"):
+            raise ValueError("navigation command forwarding supports omni, ackermann and swerve")
+        self._stamped = chassis_type == "swerve"
         self._command_timeout = float(self.get_parameter("command_timeout").value)
         if self._command_timeout <= 0.0:
             raise ValueError("command_timeout must be positive")
@@ -28,7 +29,8 @@ class SentrySimCmdAdapter(Node):
         self._sent_timeout_stop = False
 
         self._publisher = self.create_publisher(
-            Twist, str(self.get_parameter("output_topic").value), 10
+            TwistStamped if self._stamped else Twist,
+            str(self.get_parameter("output_topic").value), 10
         )
         self.create_subscription(
             Twist,
@@ -39,9 +41,19 @@ class SentrySimCmdAdapter(Node):
         self.create_timer(0.05, self._watchdog_callback)
 
     def _command_callback(self, message: Twist) -> None:
-        self._publisher.publish(message)
+        self._publish_command(message)
         self._last_command_time = self._now_seconds()
         self._sent_timeout_stop = False
+
+    def _publish_command(self, message: Twist) -> None:
+        if self._stamped:
+            stamped = TwistStamped()
+            stamped.header.stamp = self.get_clock().now().to_msg()
+            stamped.header.frame_id = "base_link"
+            stamped.twist = message
+            self._publisher.publish(stamped)
+        else:
+            self._publisher.publish(message)
 
     def _now_seconds(self) -> float:
         return self.get_clock().now().nanoseconds * 1.0e-9
@@ -51,7 +63,7 @@ class SentrySimCmdAdapter(Node):
             self._last_command_time, self._now_seconds(), self._command_timeout
         ):
             return
-        self._publisher.publish(Twist())
+        self._publish_command(Twist())
         self._sent_timeout_stop = True
         self.get_logger().warning("MPC command timed out; sent a zero chassis command")
 
