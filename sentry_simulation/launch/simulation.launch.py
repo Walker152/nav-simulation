@@ -379,7 +379,7 @@ def generate_launch_description():
         SetEnvironmentVariable(resource_key, resource_value),
         DeclareLaunchArgument(
             "world", default_value="rmuc_2026",
-            description="rmuc_2024, rmul_2024, rmuc_2025, rmuc_2026, rmul_2025, or home_indoor",
+            description="rmuc_2024, rmul_2024, rmuc_2025, rmuc_2026, rmul_2025, home_indoor, or home_large",
         ),
         DeclareLaunchArgument(
             "chassis_type", default_value="",

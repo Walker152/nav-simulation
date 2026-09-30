@@ -1,0 +1,677 @@
+{
+  "size": [
+    48,
+    32
+  ],
+  "robot_collision_width": 0.662,
+  "door_clear_width": 0.8620000000000001,
+  "spawn": [
+    4,
+    10,
+    0
+  ],
+  "rooms": [
+    {
+      "name": "foyer",
+      "label": "玄关",
+      "bounds": [
+        0,
+        0,
+        8,
+        8.5
+      ],
+      "goal": [
+        4.0,
+        7.1
+      ]
+    },
+    {
+      "name": "living",
+      "label": "客厅",
+      "bounds": [
+        8,
+        0,
+        16,
+        8.5
+      ],
+      "goal": [
+        12.0,
+        7.1
+      ]
+    },
+    {
+      "name": "dining",
+      "label": "餐厅",
+      "bounds": [
+        16,
+        0,
+        24,
+        8.5
+      ],
+      "goal": [
+        20.0,
+        7.1
+      ]
+    },
+    {
+      "name": "kitchen",
+      "label": "厨房",
+      "bounds": [
+        24,
+        0,
+        32,
+        8.5
+      ],
+      "goal": [
+        28.0,
+        7.1
+      ]
+    },
+    {
+      "name": "laundry",
+      "label": "洗衣房",
+      "bounds": [
+        32,
+        0,
+        40,
+        8.5
+      ],
+      "goal": [
+        36.0,
+        7.1
+      ]
+    },
+    {
+      "name": "service_balcony",
+      "label": "生活阳台",
+      "bounds": [
+        40,
+        0,
+        48,
+        8.5
+      ],
+      "goal": [
+        44.0,
+        7.1
+      ]
+    },
+    {
+      "name": "master",
+      "label": "主卧",
+      "bounds": [
+        0,
+        23.5,
+        8,
+        32
+      ],
+      "goal": [
+        4.0,
+        24.9
+      ]
+    },
+    {
+      "name": "wardrobe",
+      "label": "衣帽间",
+      "bounds": [
+        8,
+        23.5,
+        16,
+        32
+      ],
+      "goal": [
+        12.0,
+        24.9
+      ]
+    },
+    {
+      "name": "master_bath",
+      "label": "主卫",
+      "bounds": [
+        16,
+        23.5,
+        24,
+        32
+      ],
+      "goal": [
+        20.0,
+        24.9
+      ]
+    },
+    {
+      "name": "child_bedroom",
+      "label": "儿童卧室",
+      "bounds": [
+        24,
+        23.5,
+        32,
+        32
+      ],
+      "goal": [
+        28.0,
+        24.9
+      ]
+    },
+    {
+      "name": "second_bedroom",
+      "label": "次卧",
+      "bounds": [
+        32,
+        23.5,
+        40,
+        32
+      ],
+      "goal": [
+        36.0,
+        24.9
+      ]
+    },
+    {
+      "name": "guest",
+      "label": "客卧",
+      "bounds": [
+        40,
+        23.5,
+        48,
+        32
+      ],
+      "goal": [
+        44.0,
+        24.9
+      ]
+    },
+    {
+      "name": "study",
+      "label": "书房",
+      "bounds": [
+        3.0,
+        11.5,
+        9.5,
+        20.5
+      ],
+      "goal": [
+        6.25,
+        12.9
+      ]
+    },
+    {
+      "name": "playroom",
+      "label": "玩具房",
+      "bounds": [
+        9.5,
+        11.5,
+        16.0,
+        20.5
+      ],
+      "goal": [
+        12.75,
+        12.9
+      ]
+    },
+    {
+      "name": "gym",
+      "label": "健身房",
+      "bounds": [
+        16.0,
+        11.5,
+        22.5,
+        20.5
+      ],
+      "goal": [
+        19.25,
+        12.9
+      ]
+    },
+    {
+      "name": "storage",
+      "label": "储藏室",
+      "bounds": [
+        25.5,
+        11.5,
+        32.0,
+        20.5
+      ],
+      "goal": [
+        28.75,
+        12.9
+      ]
+    },
+    {
+      "name": "bathroom",
+      "label": "公卫",
+      "bounds": [
+        32.0,
+        11.5,
+        38.5,
+        20.5
+      ],
+      "goal": [
+        35.25,
+        12.9
+      ]
+    },
+    {
+      "name": "leisure_balcony",
+      "label": "休闲阳台",
+      "bounds": [
+        38.5,
+        11.5,
+        45.0,
+        20.5
+      ],
+      "goal": [
+        41.75,
+        12.9
+      ]
+    }
+  ],
+  "doors": [
+    {
+      "name": "foyer_door",
+      "center": [
+        4.0,
+        8.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "living_door",
+      "center": [
+        12.0,
+        8.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "dining_door",
+      "center": [
+        20.0,
+        8.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "kitchen_door",
+      "center": [
+        28.0,
+        8.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "laundry_door",
+      "center": [
+        36.0,
+        8.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "service_balcony_door",
+      "center": [
+        44.0,
+        8.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "master_door",
+      "center": [
+        4.0,
+        23.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "wardrobe_door",
+      "center": [
+        12.0,
+        23.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "master_bath_door",
+      "center": [
+        20.0,
+        23.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "child_bedroom_door",
+      "center": [
+        28.0,
+        23.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "second_bedroom_door",
+      "center": [
+        36.0,
+        23.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "guest_door",
+      "center": [
+        44.0,
+        23.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "study_south_door",
+      "center": [
+        6.25,
+        11.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "study_north_door",
+      "center": [
+        6.25,
+        20.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "playroom_south_door",
+      "center": [
+        12.75,
+        11.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "playroom_north_door",
+      "center": [
+        12.75,
+        20.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "gym_south_door",
+      "center": [
+        19.25,
+        11.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "gym_north_door",
+      "center": [
+        19.25,
+        20.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "storage_south_door",
+      "center": [
+        28.75,
+        11.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "storage_north_door",
+      "center": [
+        28.75,
+        20.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "bathroom_south_door",
+      "center": [
+        35.25,
+        11.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "bathroom_north_door",
+      "center": [
+        35.25,
+        20.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "leisure_balcony_south_door",
+      "center": [
+        41.75,
+        11.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    },
+    {
+      "name": "leisure_balcony_north_door",
+      "center": [
+        41.75,
+        20.5
+      ],
+      "clear_width": 0.8620000000000001,
+      "clear_height": 2.1
+    }
+  ],
+  "map_height_band": [
+    0.005,
+    0.4
+  ],
+  "map_excludes": "All people; they are observed by live sensors.",
+  "routes": {
+    "ring": [
+      [
+        4,
+        10
+      ],
+      [
+        46.5,
+        10
+      ],
+      [
+        46.5,
+        22
+      ],
+      [
+        1.5,
+        22
+      ],
+      [
+        1.5,
+        10
+      ],
+      [
+        4,
+        10
+      ]
+    ]
+  },
+  "people": [
+    {
+      "name": "person_adult_hall",
+      "height": 1.75,
+      "waypoints": [
+        [
+          0,
+          18,
+          10,
+          0
+        ],
+        [
+          8,
+          24,
+          10,
+          0
+        ],
+        [
+          10,
+          24,
+          10,
+          3.141592653589793
+        ],
+        [
+          18,
+          18,
+          10,
+          3.141592653589793
+        ],
+        [
+          20,
+          18,
+          10,
+          0
+        ]
+      ]
+    },
+    {
+      "name": "person_adult_north",
+      "height": 1.68,
+      "waypoints": [
+        [
+          0,
+          29,
+          21.8,
+          0
+        ],
+        [
+          7,
+          34,
+          21.8,
+          0
+        ],
+        [
+          9,
+          34,
+          21.8,
+          3.141592653589793
+        ],
+        [
+          16,
+          29,
+          21.8,
+          3.141592653589793
+        ],
+        [
+          18,
+          29,
+          21.8,
+          0
+        ]
+      ]
+    },
+    {
+      "name": "person_child",
+      "height": 1.05,
+      "waypoints": [
+        [
+          0,
+          12.75,
+          10.2,
+          1.5707963267948966
+        ],
+        [
+          9,
+          12.75,
+          14,
+          1.5707963267948966
+        ],
+        [
+          11,
+          12.75,
+          14,
+          -1.5707963267948966
+        ],
+        [
+          20,
+          12.75,
+          10.2,
+          -1.5707963267948966
+        ],
+        [
+          22,
+          12.75,
+          10.2,
+          1.5707963267948966
+        ]
+      ]
+    },
+    {
+      "name": "person_standing",
+      "height": 1.72,
+      "waypoints": [
+        [
+          0,
+          42.6,
+          17.6,
+          0
+        ]
+      ]
+    }
+  ],
+  "map_checks": [
+    {
+      "xy": [
+        2.2,
+        2
+      ],
+      "value": 0
+    },
+    {
+      "xy": [
+        20,
+        3.7
+      ],
+      "value": 254
+    },
+    {
+      "xy": [
+        18.5,
+        3.2
+      ],
+      "value": 0
+    },
+    {
+      "xy": [
+        4,
+        10
+      ],
+      "value": 254
+    },
+    {
+      "xy": [
+        -0.5,
+        -0.5
+      ],
+      "value": 205
+    }
+  ]
+}

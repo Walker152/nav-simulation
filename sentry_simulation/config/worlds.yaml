@@ -1,3 +1,10 @@
+home_large:
+  world: resource/worlds/home_large_world.sdf
+  # Static furniture at the low swerve robot's height; people use live sensing.
+  map: maps/home_large.yaml
+  spawn: {x: 4.0, y: 10.0, z: 0.0, yaw: 0.0}
+  icp: {enable: false}
+
 home_indoor:
   world: resource/worlds/home_indoor_world.sdf
   # Ground-floor map only; the upper-floor map is packaged separately.

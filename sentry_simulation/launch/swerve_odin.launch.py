@@ -1,4 +1,5 @@
 """Independent four-swerve / four O1LITE Gazebo Harmonic platform."""
+import os
 from pathlib import Path
 from sentry_simulation.gazebo_compat import gazebo_arguments, prepare_share, resource_paths
 import tempfile
@@ -15,13 +16,18 @@ from launch_ros.actions import Node
 from sentry_simulation.swerve_platform import build_assets
 
 
-def _launch(context):
-    share = prepare_share(get_package_share_directory('sentry_simulation'))
+def _launch(context, share, worlds):
     resource_key, resource_value = resource_paths(share)
     config = yaml.safe_load(Path(LaunchConfiguration('config').perform(context)).read_text())
     sensors = LaunchConfiguration('sensors').perform(context).lower() == 'true'
+    publish_ground_truth_tf = LaunchConfiguration('publish_ground_truth_tf').perform(context).lower() == 'true'
+    world_name = LaunchConfiguration('world').perform(context)
+    world = worlds[world_name] if world_name != 'swerve_odin' else None
     directory = tempfile.TemporaryDirectory(prefix='swerve_odin_')
-    paths = build_assets(config, share, directory.name, sensors=sensors)
+    paths = build_assets(config, share, directory.name, sensors=sensors,
+                         world_path=share / world['world'] if world else None,
+                         spawn=world['spawn'] if world else None,
+                         publish_ground_truth_tf=publish_ground_truth_tf)
     actions = [SetEnvironmentVariable(resource_key, resource_value)]
     if (not context.environment.get('FASTRTPS_DEFAULT_PROFILES_FILE')
             and context.environment.get('ROS_LOCALHOST_ONLY') != '1'):
@@ -51,12 +57,18 @@ def _launch(context):
 
 
 def generate_launch_description():
-    share = Path(get_package_share_directory('sentry_simulation'))
+    share = prepare_share(os.environ.get(
+        'SENTRY_SIMULATION_SHARE', get_package_share_directory('sentry_simulation')))
+    worlds = yaml.safe_load((share / 'config/worlds.yaml').read_text())
     return LaunchDescription([
         DeclareLaunchArgument('config', default_value=str(share / 'config/swerve_odin.yaml')),
+        DeclareLaunchArgument('world', default_value='swerve_odin', choices=['swerve_odin', *worlds],
+                              description='Independent platform world or a shared worlds.yaml field'),
         DeclareLaunchArgument('headless', default_value='false', choices=['true', 'false']),
         DeclareLaunchArgument('sensors', default_value='true', choices=['true', 'false'],
                               description='Disable only for isolated chassis dynamics checks'),
         DeclareLaunchArgument('rviz', default_value='false', choices=['true', 'false']),
-        OpaqueFunction(function=_launch),
+        DeclareLaunchArgument('publish_ground_truth_tf', default_value='true', choices=['true', 'false'],
+                              description='Disable when localization owns the base_link transform'),
+        OpaqueFunction(function=_launch, args=[share, worlds]),
     ])
