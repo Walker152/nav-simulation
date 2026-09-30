@@ -62,6 +62,10 @@ add_library(AckermannBicycle SHARED
 target_compile_features(AckermannBicycle PUBLIC cxx_std_17)
 target_link_libraries(AckermannBicycle ${SENTRY_GAZEBO_TARGET})
 
+add_library(ScriptedObstacle SHARED plugins/scripted_obstacle/ScriptedObstacle.cc)
+target_compile_features(ScriptedObstacle PRIVATE cxx_std_17)
+target_link_libraries(ScriptedObstacle ${SENTRY_GAZEBO_TARGET})
+
 # Vendored pure kinematics is linked privately into the sole swerve actuator.
 set(SWERVE_CORE_DIR plugins/swerve_drive/kinco_swerve_core)
 set(SWERVE_CORE_SOURCES
@@ -88,7 +92,7 @@ install(TARGETS pointcloud_adapter_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
-install(TARGETS MecanumDrive2 AckermannBicycle SwerveDrive LIBRARY DESTINATION plugins)
+install(TARGETS MecanumDrive2 AckermannBicycle SwerveDrive ScriptedObstacle LIBRARY DESTINATION plugins)
 install(DIRECTORY behavior_tree config launch maps resource
   DESTINATION share/${PROJECT_NAME})
 install(FILES SWERVE_ODIN.md ../README.md ../THIRD_PARTY_NOTICES.md
@@ -101,6 +105,16 @@ ament_export_dependencies(livox_ros_driver2 nav_msgs Eigen3 pcl_conversions rclc
 
 if(BUILD_TESTING)
   include("${CMAKE_CURRENT_SOURCE_DIR}/test/CMakeLists.txt" OPTIONAL)
+  # Local integration test is optional and currently validated on Harmonic only.
+  if("$ENV{ROS_DISTRO}" STREQUAL "jazzy" AND
+      EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/test_scripted_obstacle.cc")
+    add_executable(test_scripted_obstacle test/test_scripted_obstacle.cc)
+    target_compile_features(test_scripted_obstacle PRIVATE cxx_std_17)
+    target_link_libraries(test_scripted_obstacle ${SENTRY_GAZEBO_TARGET})
+    add_test(NAME test_scripted_obstacle COMMAND test_scripted_obstacle)
+    set_tests_properties(test_scripted_obstacle PROPERTIES TIMEOUT 30
+      ENVIRONMENT "GZ_SIM_SYSTEM_PLUGIN_PATH=$<TARGET_FILE_DIR:ScriptedObstacle>;GZ_PARTITION=home_large_scripted_obstacle_test")
+  endif()
 endif()
 
 ament_package()

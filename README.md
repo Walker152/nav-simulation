@@ -44,6 +44,9 @@ Gazebo 左右双 MID360（每颗由前/后 180° GPU LiDAR 拼接）+ 水平 IMU
 - `odin1_lite`：按 O1LITE V0.1.4 手册制作的 dToF 点云、RGB 和 IMU 近似模型。
   独立演示：`ros2 launch sentry_simulation odin1_lite.launch.py`（先构建并 source overlay）。
   [规格来源、仿真边界、话题与车体挂载方法](sentry_simulation/resource/models/odin1_lite/README.md)。
+- `home_large`：48 × 32 m 单层住宅，18 个房间、24 个 0.862 m 净宽门、114 m 环路，含低矮杂物和可暂停人物。
+  启动：`./src/scripts/simlation.bash swerve home_large`。
+  [俯视图、人物开关和目标点](sentry_simulation/resource/models/home_large/README.md)。
 - `home_indoor`：紧凑双层住宅，含房间、门框、家具及连接 2.6 m 二楼的折返缓坡。
   启动：`./src/scripts/simlation.bash omni home_indoor`。
   [场景预览、布局与分层地图说明](sentry_simulation/resource/models/home_indoor/README.md)。
@@ -114,7 +117,7 @@ cd /home/alioth/nature_will
 | 参数 | 可选值 | 默认值 | 作用 |
 |---|---|---|---|
 | 第 1 个位置参数 | `omni`、`ackermann`、`diff` | 统一 YAML 的 `planner.model` | 默认统一 YAML 的底盘选择；diff 资源保留但导航拒绝 |
-| 第 2 个位置参数 | `rmuc_2024`、`rmul_2024`、`rmuc_2025`、`rmuc_2026`、`rmul_2025`、`home_indoor` | `rmuc_2026` | 选择场地 |
+| 第 2 个位置参数 | `rmuc_2024`、`rmul_2024`、`rmuc_2025`、`rmuc_2026`、`rmul_2025`、`home_indoor`、`home_large` | `rmuc_2026` | 选择场地 |
 | `--params-file PATH` | 任意统一导航 YAML | 空 | 显式参数文件；此时第 1 个参数必须与 `planner.model` 一致 |
 | `--headless` | 开关 | 关闭 | 不启动 Gazebo GUI，只运行 server |
 | `--no-rviz` | 开关 | 关闭 | 不启动 RViz |
@@ -147,10 +150,11 @@ RViz 随 launch 直接启动，导航初始化期间也能查看地图和状态�
 ./src/scripts/simlation.bash omni rmuc_2024 --headless --no-rviz
 ```
 
-可选 world：`rmuc_2024`、`rmul_2024`、`rmuc_2025`、`rmuc_2026`、`rmul_2025`、`home_indoor`。
+可选 world：`rmuc_2024`、`rmul_2024`、`rmuc_2025`、`rmuc_2026`、`rmul_2025`、`home_indoor`、`home_large`。
 `home_indoor` 使用一楼二维图并关闭 ICP，二楼地图单独随包提供；不自动切层规划。
 2025 与 RMUC 2026 场地默认启用模型 PCD GICP；2024 场地因现有 PCD 与旧场地几何不一致，保持
-实车初值静态定位，不执行可能误收敛的 ICP。所有随包 PGM YAML 原点均为 `[0, 0, 0]`。
+实车初值静态定位，不执行可能误收敛的 ICP。比赛场地与 `home_indoor` 的 PGM YAML 原点为 `[0, 0, 0]`；
+`home_large` 为 `[-1, -1, 0]`，在房屋外保留 1 m unknown 边界。
 RMUL 2025 使用与模型 PCD 同源的 2026 RMUL PGM，并把居中的场地网格平移到零原点地图。
 
 需要临时关闭 GICP、改变日志级别或直接使用 launch 参数时，先完成构建并 source 工作空间：
