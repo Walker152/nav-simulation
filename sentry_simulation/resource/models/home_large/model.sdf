@@ -144,10 +144,10 @@
         </material>
       </visual>
       <collision name="foyer_door_wall_left">
-        <pose>1.7495 8.5 1.4 0 0 0</pose>
+        <pose>1.6495 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.299 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -160,10 +160,10 @@
         </surface>
       </collision>
       <visual name="foyer_door_wall_left_visual">
-        <pose>1.7495 8.5 1.4 0 0 0</pose>
+        <pose>1.6495 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.299 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -172,7 +172,7 @@
         </material>
       </visual>
       <collision name="foyer_door_left">
-        <pose>3.534 8.5 1.05 0 0 0</pose>
+        <pose>3.334 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -188,7 +188,7 @@
         </surface>
       </collision>
       <visual name="foyer_door_left_visual">
-        <pose>3.534 8.5 1.05 0 0 0</pose>
+        <pose>3.334 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -200,10 +200,10 @@
         </material>
       </visual>
       <collision name="foyer_door_wall_right">
-        <pose>6.2505 8.5 1.4 0 0 0</pose>
+        <pose>6.3505 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.299 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -216,10 +216,10 @@
         </surface>
       </collision>
       <visual name="foyer_door_wall_right_visual">
-        <pose>6.2505 8.5 1.4 0 0 0</pose>
+        <pose>6.3505 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.299 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -228,7 +228,7 @@
         </material>
       </visual>
       <collision name="foyer_door_right">
-        <pose>4.466 8.5 1.05 0 0 0</pose>
+        <pose>4.666 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -244,7 +244,7 @@
         </surface>
       </collision>
       <visual name="foyer_door_right_visual">
-        <pose>4.466 8.5 1.05 0 0 0</pose>
+        <pose>4.666 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -259,7 +259,7 @@
         <pose>4 8.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.402 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -275,7 +275,7 @@
         <pose>4 8.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.402 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -287,7 +287,7 @@
         <pose>4 8.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.402 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -303,7 +303,7 @@
         <pose>4 8.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.402 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -340,10 +340,10 @@
         </material>
       </visual>
       <collision name="living_door_wall_left">
-        <pose>9.7495 8.5 1.4 0 0 0</pose>
+        <pose>9.6495 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.299 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -356,10 +356,10 @@
         </surface>
       </collision>
       <visual name="living_door_wall_left_visual">
-        <pose>9.7495 8.5 1.4 0 0 0</pose>
+        <pose>9.6495 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.299 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -368,7 +368,7 @@
         </material>
       </visual>
       <collision name="living_door_left">
-        <pose>11.534 8.5 1.05 0 0 0</pose>
+        <pose>11.334 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -384,7 +384,7 @@
         </surface>
       </collision>
       <visual name="living_door_left_visual">
-        <pose>11.534 8.5 1.05 0 0 0</pose>
+        <pose>11.334 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -396,10 +396,10 @@
         </material>
       </visual>
       <collision name="living_door_wall_right">
-        <pose>14.2505 8.5 1.4 0 0 0</pose>
+        <pose>14.3505 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.299 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -412,10 +412,10 @@
         </surface>
       </collision>
       <visual name="living_door_wall_right_visual">
-        <pose>14.2505 8.5 1.4 0 0 0</pose>
+        <pose>14.3505 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.299 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -424,7 +424,7 @@
         </material>
       </visual>
       <collision name="living_door_right">
-        <pose>12.466 8.5 1.05 0 0 0</pose>
+        <pose>12.666 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -440,7 +440,7 @@
         </surface>
       </collision>
       <visual name="living_door_right_visual">
-        <pose>12.466 8.5 1.05 0 0 0</pose>
+        <pose>12.666 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -455,7 +455,7 @@
         <pose>12 8.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.402 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -471,7 +471,7 @@
         <pose>12 8.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.402 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -483,7 +483,7 @@
         <pose>12 8.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.402 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -499,7 +499,7 @@
         <pose>12 8.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.402 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -536,10 +536,10 @@
         </material>
       </visual>
       <collision name="dining_door_wall_left">
-        <pose>17.7495 8.5 1.4 0 0 0</pose>
+        <pose>17.6745 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.349 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -552,10 +552,10 @@
         </surface>
       </collision>
       <visual name="dining_door_wall_left_visual">
-        <pose>17.7495 8.5 1.4 0 0 0</pose>
+        <pose>17.6745 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.349 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -564,7 +564,7 @@
         </material>
       </visual>
       <collision name="dining_door_left">
-        <pose>19.534 8.5 1.05 0 0 0</pose>
+        <pose>19.384 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -580,7 +580,7 @@
         </surface>
       </collision>
       <visual name="dining_door_left_visual">
-        <pose>19.534 8.5 1.05 0 0 0</pose>
+        <pose>19.384 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -592,10 +592,10 @@
         </material>
       </visual>
       <collision name="dining_door_wall_right">
-        <pose>22.2505 8.5 1.4 0 0 0</pose>
+        <pose>22.3255 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.349 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -608,10 +608,10 @@
         </surface>
       </collision>
       <visual name="dining_door_wall_right_visual">
-        <pose>22.2505 8.5 1.4 0 0 0</pose>
+        <pose>22.3255 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.349 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -620,7 +620,7 @@
         </material>
       </visual>
       <collision name="dining_door_right">
-        <pose>20.466 8.5 1.05 0 0 0</pose>
+        <pose>20.616 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -636,7 +636,7 @@
         </surface>
       </collision>
       <visual name="dining_door_right_visual">
-        <pose>20.466 8.5 1.05 0 0 0</pose>
+        <pose>20.616 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -651,7 +651,7 @@
         <pose>20 8.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.302 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -667,7 +667,7 @@
         <pose>20 8.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.302 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -679,7 +679,7 @@
         <pose>20 8.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.302 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -695,7 +695,7 @@
         <pose>20 8.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.302 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -732,10 +732,10 @@
         </material>
       </visual>
       <collision name="kitchen_door_wall_left">
-        <pose>25.7495 8.5 1.4 0 0 0</pose>
+        <pose>25.6745 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.349 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -748,10 +748,10 @@
         </surface>
       </collision>
       <visual name="kitchen_door_wall_left_visual">
-        <pose>25.7495 8.5 1.4 0 0 0</pose>
+        <pose>25.6745 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.349 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -760,7 +760,7 @@
         </material>
       </visual>
       <collision name="kitchen_door_left">
-        <pose>27.534 8.5 1.05 0 0 0</pose>
+        <pose>27.384 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -776,7 +776,7 @@
         </surface>
       </collision>
       <visual name="kitchen_door_left_visual">
-        <pose>27.534 8.5 1.05 0 0 0</pose>
+        <pose>27.384 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -788,10 +788,10 @@
         </material>
       </visual>
       <collision name="kitchen_door_wall_right">
-        <pose>30.2505 8.5 1.4 0 0 0</pose>
+        <pose>30.3255 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.349 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -804,10 +804,10 @@
         </surface>
       </collision>
       <visual name="kitchen_door_wall_right_visual">
-        <pose>30.2505 8.5 1.4 0 0 0</pose>
+        <pose>30.3255 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.349 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -816,7 +816,7 @@
         </material>
       </visual>
       <collision name="kitchen_door_right">
-        <pose>28.466 8.5 1.05 0 0 0</pose>
+        <pose>28.616 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -832,7 +832,7 @@
         </surface>
       </collision>
       <visual name="kitchen_door_right_visual">
-        <pose>28.466 8.5 1.05 0 0 0</pose>
+        <pose>28.616 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -847,7 +847,7 @@
         <pose>28 8.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.302 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -863,7 +863,7 @@
         <pose>28 8.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.302 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -875,7 +875,7 @@
         <pose>28 8.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.302 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -891,7 +891,7 @@
         <pose>28 8.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.302 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -928,10 +928,10 @@
         </material>
       </visual>
       <collision name="laundry_door_wall_left">
-        <pose>33.7495 8.5 1.4 0 0 0</pose>
+        <pose>33.7245 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.449 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -944,10 +944,10 @@
         </surface>
       </collision>
       <visual name="laundry_door_wall_left_visual">
-        <pose>33.7495 8.5 1.4 0 0 0</pose>
+        <pose>33.7245 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.449 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -956,7 +956,7 @@
         </material>
       </visual>
       <collision name="laundry_door_left">
-        <pose>35.534 8.5 1.05 0 0 0</pose>
+        <pose>35.484 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -972,7 +972,7 @@
         </surface>
       </collision>
       <visual name="laundry_door_left_visual">
-        <pose>35.534 8.5 1.05 0 0 0</pose>
+        <pose>35.484 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -984,10 +984,10 @@
         </material>
       </visual>
       <collision name="laundry_door_wall_right">
-        <pose>38.2505 8.5 1.4 0 0 0</pose>
+        <pose>38.2755 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.449 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -1000,10 +1000,10 @@
         </surface>
       </collision>
       <visual name="laundry_door_wall_right_visual">
-        <pose>38.2505 8.5 1.4 0 0 0</pose>
+        <pose>38.2755 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.449 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -1012,7 +1012,7 @@
         </material>
       </visual>
       <collision name="laundry_door_right">
-        <pose>36.466 8.5 1.05 0 0 0</pose>
+        <pose>36.516 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1028,7 +1028,7 @@
         </surface>
       </collision>
       <visual name="laundry_door_right_visual">
-        <pose>36.466 8.5 1.05 0 0 0</pose>
+        <pose>36.516 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1043,7 +1043,7 @@
         <pose>36 8.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.102 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -1059,7 +1059,7 @@
         <pose>36 8.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.102 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -1071,7 +1071,7 @@
         <pose>36 8.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.102 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -1087,7 +1087,7 @@
         <pose>36 8.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.102 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -1124,10 +1124,10 @@
         </material>
       </visual>
       <collision name="service_balcony_door_wall_left">
-        <pose>41.7495 8.5 1.4 0 0 0</pose>
+        <pose>41.6995 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.399 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -1140,10 +1140,10 @@
         </surface>
       </collision>
       <visual name="service_balcony_door_wall_left_visual">
-        <pose>41.7495 8.5 1.4 0 0 0</pose>
+        <pose>41.6995 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.399 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -1152,7 +1152,7 @@
         </material>
       </visual>
       <collision name="service_balcony_door_left">
-        <pose>43.534 8.5 1.05 0 0 0</pose>
+        <pose>43.434 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1168,7 +1168,7 @@
         </surface>
       </collision>
       <visual name="service_balcony_door_left_visual">
-        <pose>43.534 8.5 1.05 0 0 0</pose>
+        <pose>43.434 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1180,10 +1180,10 @@
         </material>
       </visual>
       <collision name="service_balcony_door_wall_right">
-        <pose>46.2505 8.5 1.4 0 0 0</pose>
+        <pose>46.3005 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.399 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -1196,10 +1196,10 @@
         </surface>
       </collision>
       <visual name="service_balcony_door_wall_right_visual">
-        <pose>46.2505 8.5 1.4 0 0 0</pose>
+        <pose>46.3005 8.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.399 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -1208,7 +1208,7 @@
         </material>
       </visual>
       <collision name="service_balcony_door_right">
-        <pose>44.466 8.5 1.05 0 0 0</pose>
+        <pose>44.566 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1224,7 +1224,7 @@
         </surface>
       </collision>
       <visual name="service_balcony_door_right_visual">
-        <pose>44.466 8.5 1.05 0 0 0</pose>
+        <pose>44.566 8.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1239,7 +1239,7 @@
         <pose>44 8.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.202 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -1255,7 +1255,7 @@
         <pose>44 8.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.202 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -1267,7 +1267,7 @@
         <pose>44 8.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.202 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -1283,7 +1283,7 @@
         <pose>44 8.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.202 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -1292,10 +1292,10 @@
         </material>
       </visual>
       <collision name="master_door_wall_left">
-        <pose>1.7495 23.5 1.4 0 0 0</pose>
+        <pose>1.6495 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.299 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -1308,10 +1308,10 @@
         </surface>
       </collision>
       <visual name="master_door_wall_left_visual">
-        <pose>1.7495 23.5 1.4 0 0 0</pose>
+        <pose>1.6495 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.299 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -1320,7 +1320,7 @@
         </material>
       </visual>
       <collision name="master_door_left">
-        <pose>3.534 23.5 1.05 0 0 0</pose>
+        <pose>3.334 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1336,7 +1336,7 @@
         </surface>
       </collision>
       <visual name="master_door_left_visual">
-        <pose>3.534 23.5 1.05 0 0 0</pose>
+        <pose>3.334 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1348,10 +1348,10 @@
         </material>
       </visual>
       <collision name="master_door_wall_right">
-        <pose>6.2505 23.5 1.4 0 0 0</pose>
+        <pose>6.3505 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.299 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -1364,10 +1364,10 @@
         </surface>
       </collision>
       <visual name="master_door_wall_right_visual">
-        <pose>6.2505 23.5 1.4 0 0 0</pose>
+        <pose>6.3505 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.299 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -1376,7 +1376,7 @@
         </material>
       </visual>
       <collision name="master_door_right">
-        <pose>4.466 23.5 1.05 0 0 0</pose>
+        <pose>4.666 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1392,7 +1392,7 @@
         </surface>
       </collision>
       <visual name="master_door_right_visual">
-        <pose>4.466 23.5 1.05 0 0 0</pose>
+        <pose>4.666 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1407,7 +1407,7 @@
         <pose>4 23.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.402 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -1423,7 +1423,7 @@
         <pose>4 23.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.402 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -1435,7 +1435,7 @@
         <pose>4 23.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.402 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -1451,7 +1451,7 @@
         <pose>4 23.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.402 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -1488,10 +1488,10 @@
         </material>
       </visual>
       <collision name="wardrobe_door_wall_left">
-        <pose>9.7495 23.5 1.4 0 0 0</pose>
+        <pose>9.7245 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.449 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -1504,10 +1504,10 @@
         </surface>
       </collision>
       <visual name="wardrobe_door_wall_left_visual">
-        <pose>9.7495 23.5 1.4 0 0 0</pose>
+        <pose>9.7245 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.449 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -1516,7 +1516,7 @@
         </material>
       </visual>
       <collision name="wardrobe_door_left">
-        <pose>11.534 23.5 1.05 0 0 0</pose>
+        <pose>11.484 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1532,7 +1532,7 @@
         </surface>
       </collision>
       <visual name="wardrobe_door_left_visual">
-        <pose>11.534 23.5 1.05 0 0 0</pose>
+        <pose>11.484 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1544,10 +1544,10 @@
         </material>
       </visual>
       <collision name="wardrobe_door_wall_right">
-        <pose>14.2505 23.5 1.4 0 0 0</pose>
+        <pose>14.2755 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.449 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -1560,10 +1560,10 @@
         </surface>
       </collision>
       <visual name="wardrobe_door_wall_right_visual">
-        <pose>14.2505 23.5 1.4 0 0 0</pose>
+        <pose>14.2755 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.449 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -1572,7 +1572,7 @@
         </material>
       </visual>
       <collision name="wardrobe_door_right">
-        <pose>12.466 23.5 1.05 0 0 0</pose>
+        <pose>12.516 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1588,7 +1588,7 @@
         </surface>
       </collision>
       <visual name="wardrobe_door_right_visual">
-        <pose>12.466 23.5 1.05 0 0 0</pose>
+        <pose>12.516 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1603,7 +1603,7 @@
         <pose>12 23.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.102 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -1619,7 +1619,7 @@
         <pose>12 23.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.102 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -1631,7 +1631,7 @@
         <pose>12 23.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.102 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -1647,7 +1647,7 @@
         <pose>12 23.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.102 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -1880,10 +1880,10 @@
         </material>
       </visual>
       <collision name="child_bedroom_door_wall_left">
-        <pose>25.7495 23.5 1.4 0 0 0</pose>
+        <pose>25.6995 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.399 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -1896,10 +1896,10 @@
         </surface>
       </collision>
       <visual name="child_bedroom_door_wall_left_visual">
-        <pose>25.7495 23.5 1.4 0 0 0</pose>
+        <pose>25.6995 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.399 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -1908,7 +1908,7 @@
         </material>
       </visual>
       <collision name="child_bedroom_door_left">
-        <pose>27.534 23.5 1.05 0 0 0</pose>
+        <pose>27.434 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1924,7 +1924,7 @@
         </surface>
       </collision>
       <visual name="child_bedroom_door_left_visual">
-        <pose>27.534 23.5 1.05 0 0 0</pose>
+        <pose>27.434 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1936,10 +1936,10 @@
         </material>
       </visual>
       <collision name="child_bedroom_door_wall_right">
-        <pose>30.2505 23.5 1.4 0 0 0</pose>
+        <pose>30.3005 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.399 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -1952,10 +1952,10 @@
         </surface>
       </collision>
       <visual name="child_bedroom_door_wall_right_visual">
-        <pose>30.2505 23.5 1.4 0 0 0</pose>
+        <pose>30.3005 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.399 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -1964,7 +1964,7 @@
         </material>
       </visual>
       <collision name="child_bedroom_door_right">
-        <pose>28.466 23.5 1.05 0 0 0</pose>
+        <pose>28.566 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1980,7 +1980,7 @@
         </surface>
       </collision>
       <visual name="child_bedroom_door_right_visual">
-        <pose>28.466 23.5 1.05 0 0 0</pose>
+        <pose>28.566 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -1995,7 +1995,7 @@
         <pose>28 23.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.202 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -2011,7 +2011,7 @@
         <pose>28 23.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.202 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -2023,7 +2023,7 @@
         <pose>28 23.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.202 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -2039,7 +2039,7 @@
         <pose>28 23.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.202 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -2076,10 +2076,10 @@
         </material>
       </visual>
       <collision name="second_bedroom_door_wall_left">
-        <pose>33.7495 23.5 1.4 0 0 0</pose>
+        <pose>33.6745 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.349 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -2092,10 +2092,10 @@
         </surface>
       </collision>
       <visual name="second_bedroom_door_wall_left_visual">
-        <pose>33.7495 23.5 1.4 0 0 0</pose>
+        <pose>33.6745 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.349 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -2104,7 +2104,7 @@
         </material>
       </visual>
       <collision name="second_bedroom_door_left">
-        <pose>35.534 23.5 1.05 0 0 0</pose>
+        <pose>35.384 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2120,7 +2120,7 @@
         </surface>
       </collision>
       <visual name="second_bedroom_door_left_visual">
-        <pose>35.534 23.5 1.05 0 0 0</pose>
+        <pose>35.384 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2132,10 +2132,10 @@
         </material>
       </visual>
       <collision name="second_bedroom_door_wall_right">
-        <pose>38.2505 23.5 1.4 0 0 0</pose>
+        <pose>38.3255 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.349 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -2148,10 +2148,10 @@
         </surface>
       </collision>
       <visual name="second_bedroom_door_wall_right_visual">
-        <pose>38.2505 23.5 1.4 0 0 0</pose>
+        <pose>38.3255 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.349 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -2160,7 +2160,7 @@
         </material>
       </visual>
       <collision name="second_bedroom_door_right">
-        <pose>36.466 23.5 1.05 0 0 0</pose>
+        <pose>36.616 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2176,7 +2176,7 @@
         </surface>
       </collision>
       <visual name="second_bedroom_door_right_visual">
-        <pose>36.466 23.5 1.05 0 0 0</pose>
+        <pose>36.616 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2191,7 +2191,7 @@
         <pose>36 23.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.302 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -2207,7 +2207,7 @@
         <pose>36 23.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.302 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -2219,7 +2219,7 @@
         <pose>36 23.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.302 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -2235,7 +2235,7 @@
         <pose>36 23.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.302 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -2272,10 +2272,10 @@
         </material>
       </visual>
       <collision name="guest_door_wall_left">
-        <pose>41.7495 23.5 1.4 0 0 0</pose>
+        <pose>41.6995 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.399 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -2288,10 +2288,10 @@
         </surface>
       </collision>
       <visual name="guest_door_wall_left_visual">
-        <pose>41.7495 23.5 1.4 0 0 0</pose>
+        <pose>41.6995 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.399 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -2300,7 +2300,7 @@
         </material>
       </visual>
       <collision name="guest_door_left">
-        <pose>43.534 23.5 1.05 0 0 0</pose>
+        <pose>43.434 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2316,7 +2316,7 @@
         </surface>
       </collision>
       <visual name="guest_door_left_visual">
-        <pose>43.534 23.5 1.05 0 0 0</pose>
+        <pose>43.434 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2328,10 +2328,10 @@
         </material>
       </visual>
       <collision name="guest_door_wall_right">
-        <pose>46.2505 23.5 1.4 0 0 0</pose>
+        <pose>46.3005 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.399 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -2344,10 +2344,10 @@
         </surface>
       </collision>
       <visual name="guest_door_wall_right_visual">
-        <pose>46.2505 23.5 1.4 0 0 0</pose>
+        <pose>46.3005 23.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>3.499 0.18 2.8</size>
+            <size>3.399 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -2356,7 +2356,7 @@
         </material>
       </visual>
       <collision name="guest_door_right">
-        <pose>44.466 23.5 1.05 0 0 0</pose>
+        <pose>44.566 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2372,7 +2372,7 @@
         </surface>
       </collision>
       <visual name="guest_door_right_visual">
-        <pose>44.466 23.5 1.05 0 0 0</pose>
+        <pose>44.566 23.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2387,7 +2387,7 @@
         <pose>44 23.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.202 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -2403,7 +2403,7 @@
         <pose>44 23.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.202 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -2415,7 +2415,7 @@
         <pose>44 23.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.202 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -2431,7 +2431,7 @@
         <pose>44 23.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.202 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -2552,10 +2552,10 @@
         </material>
       </visual>
       <collision name="study_south_door_wall_left">
-        <pose>4.3745 11.5 1.4 0 0 0</pose>
+        <pose>4.3245 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.649 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -2568,10 +2568,10 @@
         </surface>
       </collision>
       <visual name="study_south_door_wall_left_visual">
-        <pose>4.3745 11.5 1.4 0 0 0</pose>
+        <pose>4.3245 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.649 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -2580,7 +2580,7 @@
         </material>
       </visual>
       <collision name="study_south_door_left">
-        <pose>5.784 11.5 1.05 0 0 0</pose>
+        <pose>5.684 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2596,7 +2596,7 @@
         </surface>
       </collision>
       <visual name="study_south_door_left_visual">
-        <pose>5.784 11.5 1.05 0 0 0</pose>
+        <pose>5.684 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2608,10 +2608,10 @@
         </material>
       </visual>
       <collision name="study_south_door_wall_right">
-        <pose>8.1255 11.5 1.4 0 0 0</pose>
+        <pose>8.1755 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.649 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -2624,10 +2624,10 @@
         </surface>
       </collision>
       <visual name="study_south_door_wall_right_visual">
-        <pose>8.1255 11.5 1.4 0 0 0</pose>
+        <pose>8.1755 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.649 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -2636,7 +2636,7 @@
         </material>
       </visual>
       <collision name="study_south_door_right">
-        <pose>6.716 11.5 1.05 0 0 0</pose>
+        <pose>6.816 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2652,7 +2652,7 @@
         </surface>
       </collision>
       <visual name="study_south_door_right_visual">
-        <pose>6.716 11.5 1.05 0 0 0</pose>
+        <pose>6.816 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2667,7 +2667,7 @@
         <pose>6.25 11.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.202 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -2683,7 +2683,7 @@
         <pose>6.25 11.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.202 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -2695,7 +2695,7 @@
         <pose>6.25 11.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.202 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -2711,7 +2711,7 @@
         <pose>6.25 11.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.202 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -2720,10 +2720,10 @@
         </material>
       </visual>
       <collision name="study_north_door_wall_left">
-        <pose>4.3745 20.5 1.4 0 0 0</pose>
+        <pose>4.3245 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.649 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -2736,10 +2736,10 @@
         </surface>
       </collision>
       <visual name="study_north_door_wall_left_visual">
-        <pose>4.3745 20.5 1.4 0 0 0</pose>
+        <pose>4.3245 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.649 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -2748,7 +2748,7 @@
         </material>
       </visual>
       <collision name="study_north_door_left">
-        <pose>5.784 20.5 1.05 0 0 0</pose>
+        <pose>5.684 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2764,7 +2764,7 @@
         </surface>
       </collision>
       <visual name="study_north_door_left_visual">
-        <pose>5.784 20.5 1.05 0 0 0</pose>
+        <pose>5.684 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2776,10 +2776,10 @@
         </material>
       </visual>
       <collision name="study_north_door_wall_right">
-        <pose>8.1255 20.5 1.4 0 0 0</pose>
+        <pose>8.1755 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.649 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -2792,10 +2792,10 @@
         </surface>
       </collision>
       <visual name="study_north_door_wall_right_visual">
-        <pose>8.1255 20.5 1.4 0 0 0</pose>
+        <pose>8.1755 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.649 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -2804,7 +2804,7 @@
         </material>
       </visual>
       <collision name="study_north_door_right">
-        <pose>6.716 20.5 1.05 0 0 0</pose>
+        <pose>6.816 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2820,7 +2820,7 @@
         </surface>
       </collision>
       <visual name="study_north_door_right_visual">
-        <pose>6.716 20.5 1.05 0 0 0</pose>
+        <pose>6.816 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2835,7 +2835,7 @@
         <pose>6.25 20.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.202 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -2851,7 +2851,7 @@
         <pose>6.25 20.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.202 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -2863,7 +2863,7 @@
         <pose>6.25 20.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.202 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -2879,7 +2879,7 @@
         <pose>6.25 20.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.202 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -2888,10 +2888,10 @@
         </material>
       </visual>
       <collision name="playroom_south_door_wall_left">
-        <pose>10.8745 11.5 1.4 0 0 0</pose>
+        <pose>10.7745 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -2904,10 +2904,10 @@
         </surface>
       </collision>
       <visual name="playroom_south_door_wall_left_visual">
-        <pose>10.8745 11.5 1.4 0 0 0</pose>
+        <pose>10.7745 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -2916,7 +2916,7 @@
         </material>
       </visual>
       <collision name="playroom_south_door_left">
-        <pose>12.284 11.5 1.05 0 0 0</pose>
+        <pose>12.084 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2932,7 +2932,7 @@
         </surface>
       </collision>
       <visual name="playroom_south_door_left_visual">
-        <pose>12.284 11.5 1.05 0 0 0</pose>
+        <pose>12.084 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2944,10 +2944,10 @@
         </material>
       </visual>
       <collision name="playroom_south_door_wall_right">
-        <pose>14.6255 11.5 1.4 0 0 0</pose>
+        <pose>14.7255 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -2960,10 +2960,10 @@
         </surface>
       </collision>
       <visual name="playroom_south_door_wall_right_visual">
-        <pose>14.6255 11.5 1.4 0 0 0</pose>
+        <pose>14.7255 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -2972,7 +2972,7 @@
         </material>
       </visual>
       <collision name="playroom_south_door_right">
-        <pose>13.216 11.5 1.05 0 0 0</pose>
+        <pose>13.416 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -2988,7 +2988,7 @@
         </surface>
       </collision>
       <visual name="playroom_south_door_right_visual">
-        <pose>13.216 11.5 1.05 0 0 0</pose>
+        <pose>13.416 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -3003,7 +3003,7 @@
         <pose>12.75 11.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.402 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -3019,7 +3019,7 @@
         <pose>12.75 11.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.402 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -3031,7 +3031,7 @@
         <pose>12.75 11.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.402 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -3047,7 +3047,7 @@
         <pose>12.75 11.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.402 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -3056,10 +3056,10 @@
         </material>
       </visual>
       <collision name="playroom_north_door_wall_left">
-        <pose>10.8745 20.5 1.4 0 0 0</pose>
+        <pose>10.7745 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -3072,10 +3072,10 @@
         </surface>
       </collision>
       <visual name="playroom_north_door_wall_left_visual">
-        <pose>10.8745 20.5 1.4 0 0 0</pose>
+        <pose>10.7745 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -3084,7 +3084,7 @@
         </material>
       </visual>
       <collision name="playroom_north_door_left">
-        <pose>12.284 20.5 1.05 0 0 0</pose>
+        <pose>12.084 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -3100,7 +3100,7 @@
         </surface>
       </collision>
       <visual name="playroom_north_door_left_visual">
-        <pose>12.284 20.5 1.05 0 0 0</pose>
+        <pose>12.084 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -3112,10 +3112,10 @@
         </material>
       </visual>
       <collision name="playroom_north_door_wall_right">
-        <pose>14.6255 20.5 1.4 0 0 0</pose>
+        <pose>14.7255 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -3128,10 +3128,10 @@
         </surface>
       </collision>
       <visual name="playroom_north_door_wall_right_visual">
-        <pose>14.6255 20.5 1.4 0 0 0</pose>
+        <pose>14.7255 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -3140,7 +3140,7 @@
         </material>
       </visual>
       <collision name="playroom_north_door_right">
-        <pose>13.216 20.5 1.05 0 0 0</pose>
+        <pose>13.416 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -3156,7 +3156,7 @@
         </surface>
       </collision>
       <visual name="playroom_north_door_right_visual">
-        <pose>13.216 20.5 1.05 0 0 0</pose>
+        <pose>13.416 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -3171,7 +3171,7 @@
         <pose>12.75 20.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.402 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -3187,7 +3187,7 @@
         <pose>12.75 20.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.402 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -3199,7 +3199,7 @@
         <pose>12.75 20.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.402 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -3215,7 +3215,7 @@
         <pose>12.75 20.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.402 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -3224,10 +3224,10 @@
         </material>
       </visual>
       <collision name="gym_south_door_wall_left">
-        <pose>17.3745 11.5 1.4 0 0 0</pose>
+        <pose>17.2995 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.599 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -3240,10 +3240,10 @@
         </surface>
       </collision>
       <visual name="gym_south_door_wall_left_visual">
-        <pose>17.3745 11.5 1.4 0 0 0</pose>
+        <pose>17.2995 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.599 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -3252,7 +3252,7 @@
         </material>
       </visual>
       <collision name="gym_south_door_left">
-        <pose>18.784 11.5 1.05 0 0 0</pose>
+        <pose>18.634 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -3268,7 +3268,7 @@
         </surface>
       </collision>
       <visual name="gym_south_door_left_visual">
-        <pose>18.784 11.5 1.05 0 0 0</pose>
+        <pose>18.634 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -3280,10 +3280,10 @@
         </material>
       </visual>
       <collision name="gym_south_door_wall_right">
-        <pose>21.1255 11.5 1.4 0 0 0</pose>
+        <pose>21.2005 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.599 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -3296,10 +3296,10 @@
         </surface>
       </collision>
       <visual name="gym_south_door_wall_right_visual">
-        <pose>21.1255 11.5 1.4 0 0 0</pose>
+        <pose>21.2005 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.599 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -3308,7 +3308,7 @@
         </material>
       </visual>
       <collision name="gym_south_door_right">
-        <pose>19.716 11.5 1.05 0 0 0</pose>
+        <pose>19.866 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -3324,7 +3324,7 @@
         </surface>
       </collision>
       <visual name="gym_south_door_right_visual">
-        <pose>19.716 11.5 1.05 0 0 0</pose>
+        <pose>19.866 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -3339,7 +3339,7 @@
         <pose>19.25 11.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.302 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -3355,7 +3355,7 @@
         <pose>19.25 11.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.302 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -3367,7 +3367,7 @@
         <pose>19.25 11.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.302 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -3383,7 +3383,7 @@
         <pose>19.25 11.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.302 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -3392,10 +3392,10 @@
         </material>
       </visual>
       <collision name="gym_north_door_wall_left">
-        <pose>17.3745 20.5 1.4 0 0 0</pose>
+        <pose>17.2995 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.599 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -3408,10 +3408,10 @@
         </surface>
       </collision>
       <visual name="gym_north_door_wall_left_visual">
-        <pose>17.3745 20.5 1.4 0 0 0</pose>
+        <pose>17.2995 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.599 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -3420,7 +3420,7 @@
         </material>
       </visual>
       <collision name="gym_north_door_left">
-        <pose>18.784 20.5 1.05 0 0 0</pose>
+        <pose>18.634 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -3436,7 +3436,7 @@
         </surface>
       </collision>
       <visual name="gym_north_door_left_visual">
-        <pose>18.784 20.5 1.05 0 0 0</pose>
+        <pose>18.634 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -3448,10 +3448,10 @@
         </material>
       </visual>
       <collision name="gym_north_door_wall_right">
-        <pose>21.1255 20.5 1.4 0 0 0</pose>
+        <pose>21.2005 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.599 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -3464,10 +3464,10 @@
         </surface>
       </collision>
       <visual name="gym_north_door_wall_right_visual">
-        <pose>21.1255 20.5 1.4 0 0 0</pose>
+        <pose>21.2005 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.599 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -3476,7 +3476,7 @@
         </material>
       </visual>
       <collision name="gym_north_door_right">
-        <pose>19.716 20.5 1.05 0 0 0</pose>
+        <pose>19.866 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -3492,7 +3492,7 @@
         </surface>
       </collision>
       <visual name="gym_north_door_right_visual">
-        <pose>19.716 20.5 1.05 0 0 0</pose>
+        <pose>19.866 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -3507,7 +3507,7 @@
         <pose>19.25 20.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.302 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -3523,7 +3523,7 @@
         <pose>19.25 20.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.302 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -3535,7 +3535,7 @@
         <pose>19.25 20.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.302 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -3551,7 +3551,7 @@
         <pose>19.25 20.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.302 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -4008,10 +4008,10 @@
         </material>
       </visual>
       <collision name="bathroom_south_door_wall_left">
-        <pose>33.3745 11.5 1.4 0 0 0</pose>
+        <pose>33.3495 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.699 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -4024,10 +4024,10 @@
         </surface>
       </collision>
       <visual name="bathroom_south_door_wall_left_visual">
-        <pose>33.3745 11.5 1.4 0 0 0</pose>
+        <pose>33.3495 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.699 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -4036,7 +4036,7 @@
         </material>
       </visual>
       <collision name="bathroom_south_door_left">
-        <pose>34.784 11.5 1.05 0 0 0</pose>
+        <pose>34.734 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4052,7 +4052,7 @@
         </surface>
       </collision>
       <visual name="bathroom_south_door_left_visual">
-        <pose>34.784 11.5 1.05 0 0 0</pose>
+        <pose>34.734 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4064,10 +4064,10 @@
         </material>
       </visual>
       <collision name="bathroom_south_door_wall_right">
-        <pose>37.1255 11.5 1.4 0 0 0</pose>
+        <pose>37.1505 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.699 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -4080,10 +4080,10 @@
         </surface>
       </collision>
       <visual name="bathroom_south_door_wall_right_visual">
-        <pose>37.1255 11.5 1.4 0 0 0</pose>
+        <pose>37.1505 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.699 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -4092,7 +4092,7 @@
         </material>
       </visual>
       <collision name="bathroom_south_door_right">
-        <pose>35.716 11.5 1.05 0 0 0</pose>
+        <pose>35.766 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4108,7 +4108,7 @@
         </surface>
       </collision>
       <visual name="bathroom_south_door_right_visual">
-        <pose>35.716 11.5 1.05 0 0 0</pose>
+        <pose>35.766 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4123,7 +4123,7 @@
         <pose>35.25 11.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.102 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -4139,7 +4139,7 @@
         <pose>35.25 11.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.102 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -4151,7 +4151,7 @@
         <pose>35.25 11.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.102 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -4167,7 +4167,7 @@
         <pose>35.25 11.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.102 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -4176,10 +4176,10 @@
         </material>
       </visual>
       <collision name="bathroom_north_door_wall_left">
-        <pose>33.3745 20.5 1.4 0 0 0</pose>
+        <pose>33.3495 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.699 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -4192,10 +4192,10 @@
         </surface>
       </collision>
       <visual name="bathroom_north_door_wall_left_visual">
-        <pose>33.3745 20.5 1.4 0 0 0</pose>
+        <pose>33.3495 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.699 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -4204,7 +4204,7 @@
         </material>
       </visual>
       <collision name="bathroom_north_door_left">
-        <pose>34.784 20.5 1.05 0 0 0</pose>
+        <pose>34.734 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4220,7 +4220,7 @@
         </surface>
       </collision>
       <visual name="bathroom_north_door_left_visual">
-        <pose>34.784 20.5 1.05 0 0 0</pose>
+        <pose>34.734 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4232,10 +4232,10 @@
         </material>
       </visual>
       <collision name="bathroom_north_door_wall_right">
-        <pose>37.1255 20.5 1.4 0 0 0</pose>
+        <pose>37.1505 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.699 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -4248,10 +4248,10 @@
         </surface>
       </collision>
       <visual name="bathroom_north_door_wall_right_visual">
-        <pose>37.1255 20.5 1.4 0 0 0</pose>
+        <pose>37.1505 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.699 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -4260,7 +4260,7 @@
         </material>
       </visual>
       <collision name="bathroom_north_door_right">
-        <pose>35.716 20.5 1.05 0 0 0</pose>
+        <pose>35.766 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4276,7 +4276,7 @@
         </surface>
       </collision>
       <visual name="bathroom_north_door_right_visual">
-        <pose>35.716 20.5 1.05 0 0 0</pose>
+        <pose>35.766 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4291,7 +4291,7 @@
         <pose>35.25 20.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.102 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -4307,7 +4307,7 @@
         <pose>35.25 20.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.102 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -4319,7 +4319,7 @@
         <pose>35.25 20.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.102 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -4335,7 +4335,7 @@
         <pose>35.25 20.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.102 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -4344,10 +4344,10 @@
         </material>
       </visual>
       <collision name="leisure_balcony_south_door_wall_left">
-        <pose>39.8745 11.5 1.4 0 0 0</pose>
+        <pose>39.7745 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -4360,10 +4360,10 @@
         </surface>
       </collision>
       <visual name="leisure_balcony_south_door_wall_left_visual">
-        <pose>39.8745 11.5 1.4 0 0 0</pose>
+        <pose>39.7745 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -4372,7 +4372,7 @@
         </material>
       </visual>
       <collision name="leisure_balcony_south_door_left">
-        <pose>41.284 11.5 1.05 0 0 0</pose>
+        <pose>41.084 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4388,7 +4388,7 @@
         </surface>
       </collision>
       <visual name="leisure_balcony_south_door_left_visual">
-        <pose>41.284 11.5 1.05 0 0 0</pose>
+        <pose>41.084 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4400,10 +4400,10 @@
         </material>
       </visual>
       <collision name="leisure_balcony_south_door_wall_right">
-        <pose>43.6255 11.5 1.4 0 0 0</pose>
+        <pose>43.7255 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -4416,10 +4416,10 @@
         </surface>
       </collision>
       <visual name="leisure_balcony_south_door_wall_right_visual">
-        <pose>43.6255 11.5 1.4 0 0 0</pose>
+        <pose>43.7255 11.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -4428,7 +4428,7 @@
         </material>
       </visual>
       <collision name="leisure_balcony_south_door_right">
-        <pose>42.216 11.5 1.05 0 0 0</pose>
+        <pose>42.416 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4444,7 +4444,7 @@
         </surface>
       </collision>
       <visual name="leisure_balcony_south_door_right_visual">
-        <pose>42.216 11.5 1.05 0 0 0</pose>
+        <pose>42.416 11.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4459,7 +4459,7 @@
         <pose>41.75 11.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.402 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -4475,7 +4475,7 @@
         <pose>41.75 11.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.402 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -4487,7 +4487,7 @@
         <pose>41.75 11.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.402 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -4503,7 +4503,7 @@
         <pose>41.75 11.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.402 0.24 0.1</size>
           </box>
         </geometry>
         <material>
@@ -4512,10 +4512,10 @@
         </material>
       </visual>
       <collision name="leisure_balcony_north_door_wall_left">
-        <pose>39.8745 20.5 1.4 0 0 0</pose>
+        <pose>39.7745 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -4528,10 +4528,10 @@
         </surface>
       </collision>
       <visual name="leisure_balcony_north_door_wall_left_visual">
-        <pose>39.8745 20.5 1.4 0 0 0</pose>
+        <pose>39.7745 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -4540,7 +4540,7 @@
         </material>
       </visual>
       <collision name="leisure_balcony_north_door_left">
-        <pose>41.284 20.5 1.05 0 0 0</pose>
+        <pose>41.084 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4556,7 +4556,7 @@
         </surface>
       </collision>
       <visual name="leisure_balcony_north_door_left_visual">
-        <pose>41.284 20.5 1.05 0 0 0</pose>
+        <pose>41.084 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4568,10 +4568,10 @@
         </material>
       </visual>
       <collision name="leisure_balcony_north_door_wall_right">
-        <pose>43.6255 20.5 1.4 0 0 0</pose>
+        <pose>43.7255 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <surface>
@@ -4584,10 +4584,10 @@
         </surface>
       </collision>
       <visual name="leisure_balcony_north_door_wall_right_visual">
-        <pose>43.6255 20.5 1.4 0 0 0</pose>
+        <pose>43.7255 20.5 1.4 0 0 0</pose>
         <geometry>
           <box>
-            <size>2.749 0.18 2.8</size>
+            <size>2.549 0.18 2.8</size>
           </box>
         </geometry>
         <material>
@@ -4596,7 +4596,7 @@
         </material>
       </visual>
       <collision name="leisure_balcony_north_door_right">
-        <pose>42.216 20.5 1.05 0 0 0</pose>
+        <pose>42.416 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4612,7 +4612,7 @@
         </surface>
       </collision>
       <visual name="leisure_balcony_north_door_right_visual">
-        <pose>42.216 20.5 1.05 0 0 0</pose>
+        <pose>42.416 20.5 1.05 0 0 0</pose>
         <geometry>
           <box>
             <size>0.07 0.24 2.1</size>
@@ -4627,7 +4627,7 @@
         <pose>41.75 20.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.402 0.18 0.6</size>
           </box>
         </geometry>
         <surface>
@@ -4643,7 +4643,7 @@
         <pose>41.75 20.5 2.5 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.18 0.6</size>
+            <size>1.402 0.18 0.6</size>
           </box>
         </geometry>
         <material>
@@ -4655,7 +4655,7 @@
         <pose>41.75 20.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.402 0.24 0.1</size>
           </box>
         </geometry>
         <surface>
@@ -4671,7 +4671,7 @@
         <pose>41.75 20.5 2.15 0 0 0</pose>
         <geometry>
           <box>
-            <size>1.002 0.24 0.1</size>
+            <size>1.402 0.24 0.1</size>
           </box>
         </geometry>
         <material>

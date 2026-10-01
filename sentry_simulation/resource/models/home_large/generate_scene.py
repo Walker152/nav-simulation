@@ -59,7 +59,6 @@ class Scene:
         odin = ET.parse(PACKAGE / 'resource/models/odin1_lite/model.sdf')
         sensor_x = float(odin.findtext('.//collision/geometry/box/size').split()[0])
         self.robot_width = config['geometry']['width'] + sensor_x
-        self.door_width = self.robot_width + .20
 
     def shape(self, name, xyz, dims, color='wood', yaw=0, kind='box', link=None, collision=True):
         target = self.link if link is None else link
@@ -99,9 +98,9 @@ class Scene:
     def wall(self, name, x, y, sx, sy):
         self.box(name, (x, y, 1.4), (sx, sy, 2.8), 'wall')
 
-    def doorway(self, name, x0, x1, y):
+    def doorway(self, name, x0, x1, y, side_clearance):
         x = (x0+x1)/2
-        width = self.door_width
+        width = self.robot_width + 2 * side_clearance
         # Door width is the distance BETWEEN the inner jamb collision faces.
         for side, a, b in (('left', x0, x-width/2-.07), ('right', x+width/2+.07, x1)):
             self.wall(name+'_wall_'+side, (a+b)/2, y, b-a, .18)
@@ -109,7 +108,8 @@ class Scene:
             self.box(name+'_'+side, (x+sign*(width/2+.035), y, 1.05), (.07, .24, 2.1), 'frame')
         self.box(name+'_lintel', (x, y, 2.5), (width+.14, .18, .6), 'wall')
         self.box(name+'_top', (x, y, 2.15), (width+.14, .24, .10), 'frame')
-        self.doors.append(dict(name=name, center=[x, y], clear_width=width, clear_height=2.1))
+        self.doors.append(dict(name=name, center=[x, y], clear_width=width,
+                               side_clearance=side_clearance, clear_height=2.1))
 
     def table(self, name, x, y, sx=2, sy=1.0, height=.78, yaw=0):
         self.box(name+'_top', (x, y, height-.035), (sx, sy, .07), 'lightwood', yaw)
@@ -168,27 +168,28 @@ def architecture(scene):
     for name, x, y, sx, sy in (('south', 24, 0, 48, .2), ('north', 24, 32, 48, .2),
                               ('west', 0, 16, .2, 32), ('east', 48, 16, .2, 32)):
         scene.wall('outer_'+name, x, y, sx, sy)
-    south = [('foyer', '玄关'), ('living', '客厅'), ('dining', '餐厅'), ('kitchen', '厨房'),
-             ('laundry', '洗衣房'), ('service_balcony', '生活阳台')]
-    north = [('master', '主卧'), ('wardrobe', '衣帽间'), ('master_bath', '主卫'),
-             ('child_bedroom', '儿童卧室'), ('second_bedroom', '次卧'), ('guest', '客卧')]
+    # Per-side clearance in metres; keep narrow challenges among wider everyday doors.
+    south = [('foyer', '玄关', .30), ('living', '客厅', .30), ('dining', '餐厅', .25),
+             ('kitchen', '厨房', .25), ('laundry', '洗衣房', .15), ('service_balcony', '生活阳台', .20)]
+    north = [('master', '主卧', .30), ('wardrobe', '衣帽间', .15), ('master_bath', '主卫', .10),
+             ('child_bedroom', '儿童卧室', .20), ('second_bedroom', '次卧', .25), ('guest', '客卧', .20)]
     rooms = []
     for row, names, y0, y1, door_y in (('s', south, 0, 8.5, 8.5), ('n', north, 23.5, 32, 23.5)):
-        for i, (key, label) in enumerate(names):
+        for i, (key, label, clearance) in enumerate(names):
             x0, x1 = i*8, (i+1)*8
             if i:
                 scene.wall(f'{row}_divide{i}', x0, (y0+y1)/2, .18, y1-y0)
-            scene.doorway(key+'_door', x0, x1, door_y)
+            scene.doorway(key+'_door', x0, x1, door_y, clearance)
             goal_y = y1-1.4 if row == 's' else y0+1.4
             rooms.append(dict(name=key, label=label, bounds=[x0,y0,x1,y1], goal=[(x0+x1)/2,goal_y]))
-    for wing, x0, names in (('w', 3, [('study','书房'), ('playroom','玩具房'), ('gym','健身房')]),
-                            ('e', 25.5, [('storage','储藏室'), ('bathroom','公卫'), ('leisure_balcony','休闲阳台')])):
+    for wing, x0, names in (('w', 3, [('study','书房',.20), ('playroom','玩具房',.30), ('gym','健身房',.25)]),
+                            ('e', 25.5, [('storage','储藏室',.10), ('bathroom','公卫',.15), ('leisure_balcony','休闲阳台',.30)])):
         for i in range(4):
             scene.wall(f'{wing}_divide{i}', x0+i*6.5, 16, .18, 9)
-        for i, (key, label) in enumerate(names):
+        for i, (key, label, clearance) in enumerate(names):
             a, b = x0+i*6.5, x0+(i+1)*6.5
-            scene.doorway(key+'_south_door', a, b, 11.5)
-            scene.doorway(key+'_north_door', a, b, 20.5)
+            scene.doorway(key+'_south_door', a, b, 11.5, clearance)
+            scene.doorway(key+'_north_door', a, b, 20.5, clearance)
             rooms.append(dict(name=key, label=label, bounds=[a,11.5,b,20.5], goal=[(a+b)/2,12.9]))
     # Visual-only floor finishes share the one physical ground plane.
     for i, room in enumerate(rooms):
@@ -398,7 +399,7 @@ def write_plan(s, data):
          '<rect width="1240" height="1010" fill="#f6f3ec"/>',
          '<g font-family="Noto Sans CJK SC, sans-serif">',
          '<text x="62" y="45" font-size="27" fill="#223d47" font-weight="bold">HOME LARGE · 单层住宅导航试验场</text>',
-         '<text x="62" y="76" font-size="15" fill="#587078">48 × 32 m / 1536 m²　｜　18 个功能房间　｜　门净宽 0.862 m　｜　环路 114 m</text>']
+         f'<text x="62" y="76" font-size="15" fill="#587078">48 × 32 m / 1536 m²　｜　18 个功能房间　｜　门净宽 {min(d["clear_width"] for d in s.doors):.3f}–{max(d["clear_width"] for d in s.doors):.3f} m　｜　环路 114 m</text>']
     svg.append(f'<rect x="{ox}" y="{oy-32*scale}" width="{48*scale}" height="{32*scale}" fill="#e8e0d0"/>')
     # Draw floors first; draw overhead furniture outlines so the open space below
     # a high table is apparent without losing the domestic floor-plan context.
@@ -430,7 +431,7 @@ def write_plan(s, data):
     px,py=p(*data['spawn'][:2])
     svg.append(f'<circle cx="{px}" cy="{py}" r="8" fill="#233e47" stroke="white" stroke-width="2"/>')
     svg += ['<text x="62" y="897" font-size="16" fill="#233e47">青色虚线：114 m 巡航环路　　珊瑚色：人物脚本路线　　小圆点：房间目标点</text>',
-            '<text x="62" y="927" font-size="14" fill="#587078">整车碰撞宽 0.662 m + 左右各 0.10 m；门净高 2.10 m，无门槛。桌面半透明表示下方存在空间。</text>',
+            f'<text x="62" y="927" font-size="14" fill="#587078">整车碰撞宽 {s.robot_width:.3f} m + 左右各 10 / 15 / 20 / 25 / 30 cm；门净高 2.10 m，无门槛。</text>',
             '<text x="62" y="953" font-size="14" fill="#587078">低矮拖鞋 / 散落积木 / 斜椅 / 高脚桌 / 晾衣架 / 儿童横穿。图示路线是测试任务，不代表导航已通过。</text>',
             '</g></svg>']
     (HERE/'floor_plan.svg').write_text('\n'.join(svg)+'\n')
@@ -446,7 +447,8 @@ def main():
     element(config,'version','1.0')
     element(config,'sdf','model.sdf',version='1.9')
     author=element(config,'author'); element(author,'name','Naturewill contributors')
-    element(config,'description','Original 48 x 32 m home, 18 rooms, primitive collision furniture, 0.862 m clear doors.')
+    widths = sorted(set(d['clear_width'] for d in scene.doors))
+    element(config,'description',f'Original 48 x 32 m home, 18 rooms, primitive collision furniture, {widths[0]:.3f}-{widths[-1]:.3f} m clear doors.')
     write_xml(config,HERE/'model.config')
     root=ET.parse(PACKAGE/'resource/worlds/home_indoor_world.sdf').getroot()
     root.set('version','1.9'); world=root.find('world')
@@ -454,7 +456,7 @@ def main():
     world.find('include/name').text='home_large'
     world.find('physics/max_step_size').text='0.002'
     world.find('physics').set('name','2ms')
-    data=dict(size=[48,32], robot_collision_width=scene.robot_width,door_clear_width=scene.door_width,
+    data=dict(size=[48,32], robot_collision_width=scene.robot_width,door_clear_widths=widths,
               spawn=[4,10,0],rooms=rooms,doors=scene.doors,
               map_height_band=[.005,.40], map_excludes='All people; they are observed by live sensors.',
               routes={'ring':[[4,10],[46.5,10],[46.5,22],[1.5,22],[1.5,10],[4,10]]},
@@ -465,7 +467,7 @@ def main():
     (HERE/'manifest.json').write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
     write_map(scene)
     write_plan(scene,data)
-    print(f'home_large: {len(scene.items)} static shapes, {len(rooms)} rooms, {len(scene.doors)} doors; clear width {scene.door_width:.3f} m')
+    print(f'home_large: {len(scene.items)} static shapes, {len(rooms)} rooms, {len(scene.doors)} doors; clear widths {widths} m')
 
 
 if __name__=='__main__':
