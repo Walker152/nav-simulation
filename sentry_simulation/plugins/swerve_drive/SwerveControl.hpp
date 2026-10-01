@@ -68,7 +68,7 @@ struct Parameters {
   double max_steering_velocity{6.28318530718}, max_steering_acceleration{12.5663706144};
   double command_timeout{.25}, publish_rate{100};
   double steering_kp{80}, steering_kd{4}, steering_torque{13.5};
-  double wheel_kp{1}, wheel_torque{22};
+  double wheel_kp{4}, wheel_torque{22};
   void validate() const {
     for (double v : {wheel_radius,wheelbase,track,steering_limit,steering_hard_limit,
       max_linear_speed,max_yaw_speed,max_wheel_speed,linear_acceleration,yaw_acceleration,

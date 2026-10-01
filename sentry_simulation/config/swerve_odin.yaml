@@ -38,7 +38,7 @@ control:
   steering_kp: 80.0
   steering_kd: 4.0
   steering_torque: 13.5
-  wheel_kp: 1.0
+  wheel_kp: 4.0              # Wheel speed servo [N m / (rad/s)]; flat-ground sim tuned.
   wheel_torque: 22.0
 physics:
   step: 0.002                # 500 Hz controller runs once per physics step.
