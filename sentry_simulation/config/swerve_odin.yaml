@@ -32,7 +32,7 @@ control:
   linear_acceleration: 1.0
   yaw_acceleration: 2.0
   max_steering_velocity: 6.28318530718
-  max_steering_acceleration: 12.5663706144
+  max_steering_acceleration: 50.2654824576 # Steering reference [rad/s^2]; flat-ground sim tuned.
   command_timeout: 0.25
   publish_rate: 100.0
   steering_kp: 80.0

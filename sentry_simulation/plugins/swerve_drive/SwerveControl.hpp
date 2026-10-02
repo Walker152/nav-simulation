@@ -65,7 +65,7 @@ struct Parameters {
   double steering_limit{2.7052603406}, steering_hard_limit{2.9321531434};
   double max_linear_speed{2}, max_yaw_speed{2}, max_wheel_speed{3};
   double linear_acceleration{1}, yaw_acceleration{2};
-  double max_steering_velocity{6.28318530718}, max_steering_acceleration{12.5663706144};
+  double max_steering_velocity{6.28318530718}, max_steering_acceleration{50.2654824576};
   double command_timeout{.25}, publish_rate{100};
   double steering_kp{80}, steering_kd{4}, steering_torque{13.5};
   double wheel_kp{4}, wheel_torque{22};
@@ -158,16 +158,16 @@ public:
       if (velocities.status!=core::SwerveStatus::kOk || commands.status!=core::SwerveStatus::kOk) {
         reset(); return out;
       }
-      // One common alignment factor preserves the relative module speeds.
-      double alignment=1;
+      // Project each wheel onto its measured rolling direction. A module taking
+      // a long turn at a steering limit must not stop the other aligned modules.
       for (std::size_t i=0;i<4;++i) {
         const auto & target=commands.setpoints[i];
         profiles[i].step(target.steering_angle_rad,dt,p.max_steering_velocity,p.max_steering_acceleration);
         const double error=std::abs(target.steering_angle_rad-feedback.steering_position[i]);
-        alignment=std::min(alignment,std::clamp((.35-error)/.25,0.0,1.0));
+        // Keep this wheel stopped through perpendicular and longer limited turns.
+        const double alignment=error<1.5707963267948966 ? std::cos(error) : 0.0;
+        out.wheel_velocity[i]=target.wheel_speed_mps/p.wheel_radius*alignment;
       }
-      for (std::size_t i=0;i<4;++i)
-        out.wheel_velocity[i]=commands.setpoints[i].wheel_speed_mps/p.wheel_radius*alignment;
     }
     out.reference=reference;
     for (std::size_t i=0;i<4;++i) {
