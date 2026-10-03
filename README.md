@@ -190,7 +190,18 @@ python3 src/simulation/sentry_simulation/test/ackermann_physics_regression.py --
 正倒车之间先停车稳定；直接从 +0.6 跳到 −0.6 m/s 且同时回正的极端输入曾产生约 200 ms
 接触瞬态，未通过 150 ms 车身门。该限制保留，测试没有通过强制车身状态或放宽响应门消除它。
 
-默认读取 `navi2/params/navigation.yaml`，按
+导航配置按车型与环境分文件，不再使用 profile：
+
+- `navigation.yaml`：同一底盘的实机全向/阿克曼配置。
+- `navigation_sim.yaml`：同一底盘的仿真全向/阿克曼配置。
+- `navigation_swerve.yaml`：舵轮实机配置。
+- `navigation_swerve_sim.yaml`：舵轮仿真配置。
+
+实机配置的几何与能力是待实机校准的起始值。仿真入口自动选择 `_sim.yaml`，
+`params_file` 可显式指定完整配置；`use_sim_time` 只选择时钟，不自动改选文件。
+全向与阿克曼继续用 `planner.model` 选择算法。
+
+常规仿真默认读取 `navi2/params/navigation_sim.yaml`，按
 `frames / odometry / planner / controller / omni / ackermann` 分组；脚本的
 `omni` 或 `ackermann` 参数选择对应模型，Nav2 宿主和
 `use_sim_time=true` 由 launch 统一装配。保留 20 Hz 控制、0.05 s MPC 步长、
@@ -284,11 +295,11 @@ ros2 topic echo /sim/ground_truth/odom --once
 仿真 IMU 保留 Gazebo 的三轴含重力加速度（m/s²）和角速度（rad/s），仅沿传感器轴执行现有量程裁剪；不利用真值姿态扣重力，也不删除竖直动态或限制水平动态。`point_lio_sim.yaml` 的 `acc_norm=9.81`、`satu_acc=29.43` 与此单位配套，等价于实车 Livox g 单位配合 `acc_norm=1`、`satu_acc=3`。这些轴阈值属于现有仿真饱和模型及 LIO 保护配置，不代表实车硬件量程规格。消息时间戳、坐标系和诊断姿态原样保留；姿态字段不参与六轴测量处理。
 
 - 全部节点启用 `/clock` 和 `use_sim_time`。
-- `navigation/navi2_bringup/params/navigation.yaml` 的 simulation profile 由 navi2 launch 组装参数。planner 与 Point-LIO、点云适配器保持在 `livox_pointlio_container` 同一进程；容器继承同一份进程级 ROS 参数，退出时删除临时参数文件。
+- `navigation/navi2_bringup/params/navigation_sim.yaml` 的完整仿真配置 由 navi2 launch 组装参数。planner 与 Point-LIO、点云适配器保持在 `livox_pointlio_container` 同一进程；容器继承同一份进程级 ROS 参数，退出时删除临时参数文件。
 - 融合 LiDAR/IMU link 在模型中的位姿为 `(0,-0.2,0.3,0,0,0)`，
   物理 base_link 位于 `(0,0,0.2,0,0,0)`。适配器将左右测量点转换到该 IMU 公共帧，
   不会把里程计原点移到车体中心。
-- omni 与 Ackermann 的模型 XY 原点都是机械车体中心；Ackermann 后轴为 `x=-0.22 m`、前轴为 `x=+0.22 m`，轴距保持 `0.44 m`。车壳、惯性原点和碰撞盒居中，左右 MID360 保持与 omni 相同的安装坐标。仿真 profile 的 `centre_offset=0.22` 表示后轴到中心的距离；其他 profile 的值不用于该 SDF。
+- omni 与 Ackermann 的模型 XY 原点都是机械车体中心；Ackermann 后轴为 `x=-0.22 m`、前轴为 `x=+0.22 m`，轴距保持 `0.44 m`。车壳、惯性原点和碰撞盒居中，左右 MID360 保持与 omni 相同的安装坐标。仿真文件中的 `centre_offset=0.22` 表示后轴到中心的距离；实机文件中的值不用于该 SDF。
 - 2025/2026 场地通过 `map -> pcd_map -> camera_init` 接入一次性 GICP；超时会回退到同一
   实车初始位姿。2024 场地直接发布 `map -> camera_init`。两种路径的定位原点 Z 都为零。
 - planner/controller 共用 `[0,-0.2,0]` 平面外参，位置及旋转引起的杆臂速度一起修正。
