@@ -93,13 +93,13 @@ def _launch_setup(context, package_share):
     using_default_params = not nav2_params_path
     if not nav2_params_path:
         nav2_params_path = os.path.join(
-            get_package_share_directory("navi2"), "params", "navigation.yaml")
+            get_package_share_directory("navi2"), "params", "navigation_sim.yaml")
     assembler_path = Path(get_package_share_directory("navi2")) / "launch" / "navigation_parameters.py"
     spec = importlib.util.spec_from_file_location("navigation_parameters", assembler_path)
     assembler = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(assembler)
     resolved_params = assembler.load_navigation_parameters(
-        nav2_params_path, profile="simulation", use_sim_time=True,
+        nav2_params_path, use_sim_time=True,
         model=chassis_type if using_default_params and chassis_type else None)
     # planner.model owns an explicit params file; chassis_type selects the
     # model only for the repository's default unified simulation config.
@@ -231,7 +231,6 @@ def _launch_setup(context, package_share):
         launch_arguments={
             "use_sim_time": "true",
             "params_file": nav2_params_path,
-            "profile": "simulation",
             "model": vehicle_model,
             "autostart": "true",
             "use_composition": "False",
@@ -391,7 +390,7 @@ def generate_launch_description():
         DeclareLaunchArgument("log_level", default_value="info"),
         DeclareLaunchArgument(
             "params_file", default_value="",
-            description="Unified navigation YAML; empty uses navi2/params/navigation.yaml",
+            description="Standalone simulation navigation YAML; empty uses navi2/params/navigation_sim.yaml",
         ),
         GroupAction(
             actions=[OpaqueFunction(function=_launch_setup, args=[package_share])],
