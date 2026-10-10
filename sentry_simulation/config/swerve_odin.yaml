@@ -1,12 +1,13 @@
-# Simulation research envelope, not hardware qualification.
+# Chassis/Odin housing geometry and chassis motion limits match navigation_odin_hardware.yaml.
+# Wheel modules, mass, contact and actuator dynamics remain simulation assumptions.
 geometry:
-  length: 0.804
-  width: 0.604
-  body_height: 0.110          # Placeholder whole housing, NOT the 30 mm plate.
-  body_center_z: -0.040
+  length: 0.730
+  width: 0.530
+  body_height: 0.300         # Measured housing ground span [0.200, 0.500] m.
+  body_center_z: -0.180      # base_link is on the Odin centre plane at 0.530 m.
   wheelbase: 0.680
   track: 0.480
-  wheel_center_z: -0.120
+  wheel_center_z: -0.465     # 0.065 m wheel radius - 0.530 m base ground clearance.
   wheel_radius: 0.065
   wheel_contact_width: 0.024 # Vendor total wheel width is 0.030 m.
   steering_limit: 2.7052603406       # Normal targets: +/-155 degrees.
@@ -15,7 +16,7 @@ geometry:
   spindle_width: 0.055
   spindle_height: 0.070
   spindle_center_z: 0.055    # COM/collision center above wheel/steering origin.
-  sensor_height: 0.060       # Body/IMU origin above base_link, mounting assumption.
+  sensor_height: 0.0         # Odin housing centres share the base_link plane.
 dynamics:
   total_mass: 100.0          # Includes four 0.274 kg canonical O1LITE models.
   steer_mass: 3.2            # Each 4.7 kg module split into 3.2 + 1.5 kg.
@@ -26,11 +27,11 @@ dynamics:
   steering_damping: 0.05
   wheel_damping: 0.01
 control:
-  max_linear_speed: 2.0
-  max_yaw_speed: 2.0
+  max_linear_speed: 0.5
+  max_yaw_speed: 1.6
   max_wheel_speed: 3.0
-  linear_acceleration: 1.0
-  yaw_acceleration: 2.0
+  linear_acceleration: 0.8
+  yaw_acceleration: 1.6
   max_steering_velocity: 6.28318530718
   max_steering_acceleration: 50.2654824576 # Steering reference [rad/s^2]; flat-ground sim tuned.
   command_timeout: 0.25

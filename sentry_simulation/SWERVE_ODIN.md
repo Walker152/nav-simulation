@@ -29,20 +29,20 @@ Gazebo 的 RGB/dToF 仍需要可用的图形渲染环境；`headless` 只关闭 
 
 ## 安装与模型约定
 
-X 前、Y 左、Z 上，`base_link` XY 为四转向轴中心。外廓 0.804 × 0.604 m；
+X 前、Y 左、Z 上，`base_link` XY 为四转向轴中心。车体箱外廓 0.730 × 0.530 m；
 四模块 FL/FR/RL/RR 中心为 (±0.340, ±0.240) m。轮半径 0.065 m，接触宽 0.024 m；
 厂家 0.030 m 是总轮宽。模型无悬挂、无转向轴/轮心偏置。
 
 | O1LITE | body/IMU 相对 base_link 的 XYZ/m | yaw/rad | ROS 话题前缀 |
 |---|---|---|---|
-| 前 | (0.402, 0, 0.060) | 0 | `/sim/odin_front` |
-| 后 | (-0.402, 0, 0.060) | π | `/sim/odin_rear` |
-| 左 | (0, 0.302, 0.060) | π/2 | `/sim/odin_left` |
-| 右 | (0, -0.302, 0.060) | -π/2 | `/sim/odin_right` |
+| 前 | (0.336, 0, 0) | 0 | `/sim/odin_front` |
+| 后 | (-0.336, 0, 0) | π | `/sim/odin_rear` |
+| 左 | (0, 0.236, 0) | π/2 | `/sim/odin_left` |
+| 右 | (0, -0.236, 0) | -π/2 | `/sim/odin_right` |
 
 四路均发布 `/points`、`/imu`、`/rgb/image`、`/rgb/camera_info`，对应 frame 为
 `odin_<方向>_lidar`、`odin_<方向>_body`、`odin_<方向>_camera_optical`。
-安装点随 YAML 长宽自动变化，Z 是可调安装假设。
+安装点随 YAML 长宽和外壳深度自动变化，外表面与底盘边齐平；Z=0 与当前 Odin 导航原点一致。
 外壳装饰、外参和传感器规格来自同一个 [O1LITE 资源](resource/models/odin1_lite/README.md)。
 240×180 / 10 Hz dToF、1280×1088 / 30 Hz RGB、200 Hz IMU；频率按仿真时间，
 四套图像/点云的 GPU 负载可能使仿真慢于实时。外参是手册示例，RGB 是针孔近似，
@@ -50,10 +50,15 @@ X 前、Y 左、Z 上，`base_link` XY 为四转向轴中心。外廓 0.804 × 0
 
 100 kg 是包含所有 link 的假设总质量：每模块 3.2 kg 转向件 + 1.5 kg 轮，
 四 Odin 各 0.274 kg，余下车体 80.104 kg。惯量由选定箱体/圆柱质量计算。
-车体箱高 0.110 m、中心 z=-0.040 m，轮心 z=-0.120 m；落地 base_link 高约0.185 m，
-箱底约0.090 m。它们是占位，未匹配实物约0.080 m离地间隙，也不等于30 mm主底板厚度。
+车体长宽 0.730×0.530 m、箱高 0.300 m、中心 z=-0.180 m，轮心 z=-0.465 m；
+落地 base_link/Odin 中心高 0.530 m，箱底/顶 0.200/0.500 m，与当前
+`navigation_odin_hardware.yaml` 一致。轮距/轴距仍沿用 0.480/0.680 m 的未实测值；
+转向件低于车体箱底，轮胎转向包络超出当前箱体 footprint，这两项未通过实体碰撞覆盖资格检查。
 摩擦、接触刚度/阻尼、关节阻尼、转向件质量与几何均未标定，见 YAML。
 ODE 接触参数能否参与求解取决于 Gazebo 物理后端，不视为经过辨识的材料参数。
+
+导航与实机共用 `navigation_odin_hardware.yaml`；仿真只在 launch 选择时钟、世界地图和
+反馈源。四机融合的仿真外参来自生成 URDF；实机保留现有独立校准外参，二者不代表完成实物校准。
 
 ## 命令、反馈与限幅
 
@@ -87,7 +92,7 @@ ros2 topic pub -r 50 /kinco_swerve/cmd_vel/selected geometry_msgs/msg/TwistStamp
 | `/swerve/ground_truth/odometry` | Gazebo物理位姿真值，odom原点与world重合 |
 | `/tf`、`/tf_static` | 真值插件唯一发布odom→base_link，RSP发布其下关节/传感器树 |
 
-平移合速度2 m/s、偏航2 rad/s、轮缘3 m/s；平移合加速度1 m/s²、角加速度2 rad/s²；
+平移合速度0.5 m/s、偏航1.6 rad/s、轮缘3 m/s；平移合加速度0.8 m/s²、角加速度1.6 rad/s²；
 舵向参考速度2π rad/s、参考加速度4π rad/s²。组合运动使用四轮共同缩放；
 舵向未对齐时共同降低轮速，防止转向过程中直接推进。实际速度、加速度受质量、
 摩擦、力矩和瞬态误差影响，应读真值输出，不能把参考限制当实测物理上界。
