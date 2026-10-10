@@ -237,8 +237,13 @@ def build_assets(config, share, output, sensors=True, world_path=None, spawn=Non
               c['max_steering_velocity'], c['steering_torque'], d['steering_damping'])
         joint(model, prefix+'_wheel_joint', steer, wheel, '0 1 0',
               velocity=c['max_wheel_speed']/r, effort=c['wheel_torque'], damping=d['wheel_damping'])
-    mounts = ((g['length']/2, 0, 0), (-g['length']/2, 0, math.pi),
-              (0, g['width']/2, math.pi/2), (0, -g['width']/2, -math.pi/2))
+    # Place the outer housing faces flush with the measured chassis perimeter.
+    # The body/IMU origin is the canonical asset's housing centre.
+    housing_depth = float(odin.findtext('link/collision/geometry/box/size').split()[0])
+    mount_x = (g['length'] - housing_depth) / 2
+    mount_y = (g['width'] - housing_depth) / 2
+    mounts = ((mount_x, 0, 0), (-mount_x, 0, math.pi),
+              (0, mount_y, math.pi/2), (0, -mount_y, -math.pi/2))
     for direction, (x, y, yaw) in zip(DIRECTIONS, mounts):
         prefix = 'odin_' + direction
         for original in odin:

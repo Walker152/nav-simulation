@@ -92,8 +92,10 @@ def _launch_setup(context, package_share):
     nav2_params_path = LaunchConfiguration("params_file").perform(context)
     using_default_params = not nav2_params_path
     if not nav2_params_path:
+        default_name = ("navigation_ackermann_sim.yaml" if chassis_type == "ackermann"
+                        else "navigation.yaml")
         nav2_params_path = os.path.join(
-            get_package_share_directory("navi2"), "params", "navigation_sim.yaml")
+            get_package_share_directory("navi2"), "params", default_name)
     assembler_path = Path(get_package_share_directory("navi2")) / "launch" / "navigation_parameters.py"
     spec = importlib.util.spec_from_file_location("navigation_parameters", assembler_path)
     assembler = importlib.util.module_from_spec(spec)
@@ -102,7 +104,7 @@ def _launch_setup(context, package_share):
         nav2_params_path, use_sim_time=True,
         model=chassis_type if using_default_params and chassis_type else None)
     # planner.model owns an explicit params file; chassis_type selects the
-    # model only for the repository's default unified simulation config.
+    # model only for the repository's selected default configuration.
     vehicle_model = resolved_params["planner_server"]["ros__parameters"][
         "MincoPlanner"]["minco"]["vehicle"]["model"]
     if chassis_type and not using_default_params and chassis_type != vehicle_model:
@@ -390,7 +392,8 @@ def generate_launch_description():
         DeclareLaunchArgument("log_level", default_value="info"),
         DeclareLaunchArgument(
             "params_file", default_value="",
-            description="Standalone simulation navigation YAML; empty uses navi2/params/navigation_sim.yaml",
+            description="Standalone navigation YAML; empty uses shared navigation.yaml for Omni, "
+                        "or navigation_ackermann_sim.yaml for Ackermann",
         ),
         GroupAction(
             actions=[OpaqueFunction(function=_launch_setup, args=[package_share])],

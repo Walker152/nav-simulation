@@ -192,20 +192,21 @@ python3 src/simulation/sentry_simulation/test/ackermann_physics_regression.py --
 
 导航配置按车型与环境分文件，不再使用 profile：
 
-- `navigation.yaml`：同一底盘的实机全向/阿克曼配置。
-- `navigation_sim.yaml`：同一底盘的仿真全向/阿克曼配置。
-- `navigation_swerve.yaml`：舵轮实机配置。
-- `navigation_swerve_sim.yaml`：舵轮仿真配置。
+- `navigation.yaml`：全向实机与仿真共用配置，同时保留实机阿克曼参数。
+- `navigation_ackermann_sim.yaml`：保留原阿克曼仿真参数，默认选择阿克曼模型。
+- `navigation_odin_hardware.yaml`：舵轮仿真与实机共用当前 Odin 配置。
 
-实机配置的几何与能力是待实机校准的起始值。仿真入口自动选择 `_sim.yaml`，
+实机配置的几何与能力是待实机校准的起始值。全向仿真入口与实机共用 `navigation.yaml`；
+阿克曼仿真使用 `navigation_ackermann_sim.yaml`，保持原仿真调参。
+舵轮入口默认与实机共用 `navigation_odin_hardware.yaml` 的几何、限速、MPC 和地图参数。
 `params_file` 可显式指定完整配置；`use_sim_time` 只选择时钟，不自动改选文件。
 全向与阿克曼继续用 `planner.model` 选择算法。
 
-常规仿真默认读取 `navi2/params/navigation_sim.yaml`，按
+常规全向仿真默认读取 `navi2/params/navigation.yaml`，按
 `frames / odometry / planner / controller / omni / ackermann` 分组；脚本的
 `omni` 或 `ackermann` 参数选择对应模型，Nav2 宿主和
-`use_sim_time=true` 由 launch 统一装配。保留 20 Hz 控制、0.05 s MPC 步长、
-Q/R、车辆能力、ROG 更新周期和 footprint。共享测量原点为
+`use_sim_time=true` 由 launch 统一装配。全向使用当前共享配置的 100 Hz 控制和实机 ROG 设置，
+阿克曼保留原 20 Hz 控制及全部仿真调参；两者保持各自 Q/R、车辆能力和 footprint。共享测量原点为
 `sensor_in_base.xyz: [0, -0.2, 0]`，匹配 Point-LIO 当前平面导航 base。
 
 复制这份 YAML 调整权重或能力后，可显式选择文件，路径含空格时使用引号：
@@ -295,7 +296,7 @@ ros2 topic echo /sim/ground_truth/odom --once
 仿真 IMU 保留 Gazebo 的三轴含重力加速度（m/s²）和角速度（rad/s），仅沿传感器轴执行现有量程裁剪；不利用真值姿态扣重力，也不删除竖直动态或限制水平动态。`point_lio_sim.yaml` 的 `acc_norm=9.81`、`satu_acc=29.43` 与此单位配套，等价于实车 Livox g 单位配合 `acc_norm=1`、`satu_acc=3`。这些轴阈值属于现有仿真饱和模型及 LIO 保护配置，不代表实车硬件量程规格。消息时间戳、坐标系和诊断姿态原样保留；姿态字段不参与六轴测量处理。
 
 - 全部节点启用 `/clock` 和 `use_sim_time`。
-- `navigation/navi2_bringup/params/navigation_sim.yaml` 的完整仿真配置 由 navi2 launch 组装参数。planner 与 Point-LIO、点云适配器保持在 `livox_pointlio_container` 同一进程；容器继承同一份进程级 ROS 参数，退出时删除临时参数文件。
+- 全向使用 `navigation.yaml`，阿克曼使用 `navigation_ackermann_sim.yaml`，完整配置由 navi2 launch 组装参数。planner 与 Point-LIO、点云适配器保持在 `livox_pointlio_container` 同一进程；容器继承同一份进程级 ROS 参数，退出时删除临时参数文件。
 - 融合 LiDAR/IMU link 在模型中的位姿为 `(0,-0.2,0.3,0,0,0)`，
   物理 base_link 位于 `(0,0,0.2,0,0,0)`。适配器将左右测量点转换到该 IMU 公共帧，
   不会把里程计原点移到车体中心。
