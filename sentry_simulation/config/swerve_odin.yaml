@@ -1,4 +1,5 @@
-# Chassis/Odin housing geometry and chassis motion limits match navigation_odin_hardware.yaml.
+# Chassis/Odin housing geometry matches navigation_odin_hardware.yaml.
+# Motion ceilings provide headroom above the navigation limits for simulation tuning.
 # Wheel modules, mass, contact and actuator dynamics remain simulation assumptions.
 geometry:
   length: 0.730
@@ -27,11 +28,11 @@ dynamics:
   steering_damping: 0.05
   wheel_damping: 0.01
 control:
-  max_linear_speed: 0.5
-  max_yaw_speed: 1.6
-  max_wheel_speed: 3.0
-  linear_acceleration: 0.8
-  yaw_acceleration: 1.6
+  max_linear_speed: 3.0
+  max_yaw_speed: 3.2
+  max_wheel_speed: 5.0
+  linear_acceleration: 1.6
+  yaw_acceleration: 3.2
   max_steering_velocity: 6.28318530718
   max_steering_acceleration: 50.2654824576 # Steering reference [rad/s^2]; flat-ground sim tuned.
   command_timeout: 0.25
