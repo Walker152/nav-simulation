@@ -31,6 +31,34 @@
           <diffuse>0.780392157 0.725490196 0.623529412 1</diffuse>
         </material>
       </visual>
+      <collision name="roof">
+        <pose>24 16 2.9 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>48.2 32.2 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="roof_visual">
+        <pose>24 16 2.9 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>48.2 32.2 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.909803922 0.91372549 0.88627451 1</ambient>
+          <diffuse>0.909803922 0.91372549 0.88627451 1</diffuse>
+        </material>
+      </visual>
       <collision name="outer_south">
         <pose>24 0 1.4 0 0 0</pose>
         <geometry>

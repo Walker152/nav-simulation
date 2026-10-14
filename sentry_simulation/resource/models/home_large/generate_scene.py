@@ -165,6 +165,8 @@ class Scene:
 
 def architecture(scene):
     scene.box('floor', (24, 16, -.1), (48, 32, .2), 'floor')
+    # Close the house at wall height, including the outer walls' 0.10 m overhang.
+    scene.box('roof', (24, 16, 2.9), (48.2, 32.2, .2), 'white')
     for name, x, y, sx, sy in (('south', 24, 0, 48, .2), ('north', 24, 32, 48, .2),
                               ('west', 0, 16, .2, 32), ('east', 48, 16, .2, 32)):
         scene.wall('outer_'+name, x, y, sx, sy)
