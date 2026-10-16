@@ -169,6 +169,9 @@ def bridge_config(sensors, publish_ground_truth_tf=True):
                 ('/rgb/image', '/rgb/image', 'Image', 'Image'),
                 ('/rgb/camera_info', '/rgb/camera_info', 'CameraInfo', 'CameraInfo')):
                 bridge(prefix + ros, prefix + gz, 'sensor_msgs/msg/' + ros_type, gz_type)
+                # Unused RGB streams otherwise keep four full-resolution cameras rendering.
+                if ros_type in ('Image', 'CameraInfo'):
+                    entries[-1]['lazy'] = True
     return entries
 
 

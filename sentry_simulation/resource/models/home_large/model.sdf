@@ -31,6 +31,36 @@
           <diffuse>0.780392157 0.725490196 0.623529412 1</diffuse>
         </material>
       </visual>
+      <collision name="roof">
+        <pose>24 16 2.9 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>48.2 32.2 0.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="roof_visual">
+        <pose>24 16 2.9 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>48.2 32.2 0.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.909803922 0.91372549 0.88627451 1</ambient>
+          <diffuse>0.909803922 0.91372549 0.88627451 1</diffuse>
+        </material>
+        <transparency>1</transparency>
+        <cast_shadows>false</cast_shadows>
+      </visual>
       <collision name="outer_south">
         <pose>24 0 1.4 0 0 0</pose>
         <geometry>
@@ -5040,7 +5070,7 @@
         </material>
       </visual>
       <collision name="shoe_cabinet">
-        <pose>1 3.8 0.6 0 0 0</pose>
+        <pose>1 5.3 0.6 0 0 0</pose>
         <geometry>
           <box>
             <size>0.6 3.2 1.2</size>
@@ -5056,7 +5086,7 @@
         </surface>
       </collision>
       <visual name="shoe_cabinet_visual">
-        <pose>1 3.8 0.6 0 0 0</pose>
+        <pose>1 5.3 0.6 0 0 0</pose>
         <geometry>
           <box>
             <size>0.6 3.2 1.2</size>
@@ -11352,7 +11382,7 @@
         </material>
       </visual>
       <collision name="dressing_bench_top">
-        <pose>12 27.75 0.415 0 0 0</pose>
+        <pose>10.7 31.15 0.415 0 0 0</pose>
         <geometry>
           <box>
             <size>1.6 0.6 0.07</size>
@@ -11368,7 +11398,7 @@
         </surface>
       </collision>
       <visual name="dressing_bench_top_visual">
-        <pose>12 27.75 0.415 0 0 0</pose>
+        <pose>10.7 31.15 0.415 0 0 0</pose>
         <geometry>
           <box>
             <size>1.6 0.6 0.07</size>
@@ -11380,7 +11410,7 @@
         </material>
       </visual>
       <collision name="dressing_bench_leg_00">
-        <pose>11.3 27.55 0.19 0 0 0</pose>
+        <pose>10 30.95 0.19 0 0 0</pose>
         <geometry>
           <box>
             <size>0.065 0.065 0.38</size>
@@ -11396,7 +11426,7 @@
         </surface>
       </collision>
       <visual name="dressing_bench_leg_00_visual">
-        <pose>11.3 27.55 0.19 0 0 0</pose>
+        <pose>10 30.95 0.19 0 0 0</pose>
         <geometry>
           <box>
             <size>0.065 0.065 0.38</size>
@@ -11408,7 +11438,7 @@
         </material>
       </visual>
       <collision name="dressing_bench_leg_01">
-        <pose>11.3 27.95 0.19 0 0 0</pose>
+        <pose>10 31.35 0.19 0 0 0</pose>
         <geometry>
           <box>
             <size>0.065 0.065 0.38</size>
@@ -11424,7 +11454,7 @@
         </surface>
       </collision>
       <visual name="dressing_bench_leg_01_visual">
-        <pose>11.3 27.95 0.19 0 0 0</pose>
+        <pose>10 31.35 0.19 0 0 0</pose>
         <geometry>
           <box>
             <size>0.065 0.065 0.38</size>
@@ -11436,7 +11466,7 @@
         </material>
       </visual>
       <collision name="dressing_bench_leg_10">
-        <pose>12.7 27.55 0.19 0 0 0</pose>
+        <pose>11.4 30.95 0.19 0 0 0</pose>
         <geometry>
           <box>
             <size>0.065 0.065 0.38</size>
@@ -11452,7 +11482,7 @@
         </surface>
       </collision>
       <visual name="dressing_bench_leg_10_visual">
-        <pose>12.7 27.55 0.19 0 0 0</pose>
+        <pose>11.4 30.95 0.19 0 0 0</pose>
         <geometry>
           <box>
             <size>0.065 0.065 0.38</size>
@@ -11464,7 +11494,7 @@
         </material>
       </visual>
       <collision name="dressing_bench_leg_11">
-        <pose>12.7 27.95 0.19 0 0 0</pose>
+        <pose>11.4 31.35 0.19 0 0 0</pose>
         <geometry>
           <box>
             <size>0.065 0.065 0.38</size>
@@ -11480,7 +11510,7 @@
         </surface>
       </collision>
       <visual name="dressing_bench_leg_11_visual">
-        <pose>12.7 27.95 0.19 0 0 0</pose>
+        <pose>11.4 31.35 0.19 0 0 0</pose>
         <geometry>
           <box>
             <size>0.065 0.065 0.38</size>
@@ -18537,6 +18567,3088 @@
         <material>
           <ambient>0.776470588 0.658823529 0.478431373 1</ambient>
           <diffuse>0.776470588 0.658823529 0.478431373 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_foyer_wall_0_-1">
+        <pose>4.385 5 0.8 0 0 1.57079633</pose>
+        <geometry>
+          <box>
+            <size>3.202 0.14 1.6</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_foyer_wall_0_-1_visual">
+        <pose>4.385 5 0.8 0 0 1.57079633</pose>
+        <geometry>
+          <box>
+            <size>3.202 0.14 1.6</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_foyer_wall_0_1">
+        <pose>3.615 5 0.8 0 0 1.57079633</pose>
+        <geometry>
+          <box>
+            <size>3.202 0.14 1.6</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_foyer_wall_0_1_visual">
+        <pose>3.615 5 0.8 0 0 1.57079633</pose>
+        <geometry>
+          <box>
+            <size>3.202 0.14 1.6</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_straight_wall_0_-1">
+        <pose>12.435 27.3 1 0 0 1.57079633</pose>
+        <geometry>
+          <box>
+            <size>7.002 0.14 2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_straight_wall_0_-1_visual">
+        <pose>12.435 27.3 1 0 0 1.57079633</pose>
+        <geometry>
+          <box>
+            <size>7.002 0.14 2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_straight_wall_0_1">
+        <pose>11.565 27.3 1 0 0 1.57079633</pose>
+        <geometry>
+          <box>
+            <size>7.002 0.14 2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_straight_wall_0_1_visual">
+        <pose>11.565 27.3 1 0 0 1.57079633</pose>
+        <geometry>
+          <box>
+            <size>7.002 0.14 2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_foyer_crosswall_left">
+        <pose>1.8425 3.4 1.4 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>3.685 0.14 2.8</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_foyer_crosswall_left_visual">
+        <pose>1.8425 3.4 1.4 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>3.685 0.14 2.8</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.835294118 0.850980392 0.839215686 1</ambient>
+          <diffuse>0.835294118 0.850980392 0.839215686 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_foyer_crosswall_right">
+        <pose>6.1575 3.4 1.4 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>3.685 0.14 2.8</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_foyer_crosswall_right_visual">
+        <pose>6.1575 3.4 1.4 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>3.685 0.14 2.8</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.835294118 0.850980392 0.839215686 1</ambient>
+          <diffuse>0.835294118 0.850980392 0.839215686 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_straight_crosswall_left">
+        <pose>9.8175 23.8 1.4 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>3.635 0.14 2.8</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_straight_crosswall_left_visual">
+        <pose>9.8175 23.8 1.4 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>3.635 0.14 2.8</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.835294118 0.850980392 0.839215686 1</ambient>
+          <diffuse>0.835294118 0.850980392 0.839215686 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_straight_crosswall_right">
+        <pose>14.1825 23.8 1.4 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>3.635 0.14 2.8</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_straight_crosswall_right_visual">
+        <pose>14.1825 23.8 1.4 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>3.635 0.14 2.8</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.835294118 0.850980392 0.839215686 1</ambient>
+          <diffuse>0.835294118 0.850980392 0.839215686 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_0_-1">
+        <pose>2.7 26.015 0.85 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>1.02 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_0_-1_visual">
+        <pose>2.7 26.015 0.85 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>1.02 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_0_1">
+        <pose>2.7 26.985 0.85 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>1.02 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_0_1_visual">
+        <pose>2.7 26.985 0.85 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>1.02 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_1_-1">
+        <pose>3.25208879 26.0158353 0.85 0 0 0.0174532925</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_1_-1_visual">
+        <pose>3.25208879 26.0158353 0.85 0 0 0.0174532925</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_1_1">
+        <pose>3.23515995 26.9856876 0.85 0 0 0.0174532925</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_1_1_visual">
+        <pose>3.23515995 26.9856876 0.85 0 0 0.0174532925</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_2_-1">
+        <pose>3.3562029 26.0194711 0.85 0 0 0.0523598776</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_2_-1_visual">
+        <pose>3.3562029 26.0194711 0.85 0 0 0.0523598776</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_2_1">
+        <pose>3.30543702 26.9881417 0.85 0 0 0.0523598776</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_2_1_visual">
+        <pose>3.30543702 26.9881417 0.85 0 0 0.0523598776</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_3_-1">
+        <pose>3.46012671 26.0267381 0.85 0 0 0.0872664626</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_3_-1_visual">
+        <pose>3.46012671 26.0267381 0.85 0 0 0.0872664626</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_3_1">
+        <pose>3.37558564 26.993047 0.85 0 0 0.0872664626</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_3_1_visual">
+        <pose>3.37558564 26.993047 0.85 0 0 0.0872664626</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_4_-1">
+        <pose>3.56373359 26.0376277 0.85 0 0 0.122173048</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_4_-1_visual">
+        <pose>3.56373359 26.0376277 0.85 0 0 0.122173048</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_4_1">
+        <pose>3.44552032 27.0003974 0.85 0 0 0.122173048</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_4_1_visual">
+        <pose>3.44552032 27.0003974 0.85 0 0 0.122173048</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_5_-1">
+        <pose>3.66689731 26.0521264 0.85 0 0 0.157079633</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_5_-1_visual">
+        <pose>3.66689731 26.0521264 0.85 0 0 0.157079633</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_5_1">
+        <pose>3.51515588 27.0101841 0.85 0 0 0.157079633</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_5_1_visual">
+        <pose>3.51515588 27.0101841 0.85 0 0 0.157079633</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_6_-1">
+        <pose>3.7694922 26.0702166 0.85 0 0 0.191986218</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_6_-1_visual">
+        <pose>3.7694922 26.0702166 0.85 0 0 0.191986218</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_6_1">
+        <pose>3.58440747 27.022395 0.85 0 0 0.191986218</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_6_1_visual">
+        <pose>3.58440747 27.022395 0.85 0 0 0.191986218</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_7_-1">
+        <pose>3.87139324 26.0918764 0.85 0 0 0.226892803</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_7_-1_visual">
+        <pose>3.87139324 26.0918764 0.85 0 0 0.226892803</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_7_1">
+        <pose>3.65319072 27.0370153 0.85 0 0 0.226892803</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_7_1_visual">
+        <pose>3.65319072 27.0370153 0.85 0 0 0.226892803</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_8_-1">
+        <pose>3.9724763 26.1170792 0.85 0 0 0.261799388</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_8_-1_visual">
+        <pose>3.9724763 26.1170792 0.85 0 0 0.261799388</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_8_1">
+        <pose>3.72142183 27.0540272 0.85 0 0 0.261799388</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_8_1_visual">
+        <pose>3.72142183 27.0540272 0.85 0 0 0.261799388</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_9_-1">
+        <pose>4.07261821 26.1457944 0.85 0 0 0.296705973</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_9_-1_visual">
+        <pose>4.07261821 26.1457944 0.85 0 0 0.296705973</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_9_1">
+        <pose>3.78901766 27.07341 0.85 0 0 0.296705973</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_9_1_visual">
+        <pose>3.78901766 27.07341 0.85 0 0 0.296705973</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_10_-1">
+        <pose>4.17169698 26.1779871 0.85 0 0 0.331612558</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_10_-1_visual">
+        <pose>4.17169698 26.1779871 0.85 0 0 0.331612558</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_10_1">
+        <pose>3.85589587 27.0951401 0.85 0 0 0.331612558</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_10_1_visual">
+        <pose>3.85589587 27.0951401 0.85 0 0 0.331612558</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_11_-1">
+        <pose>4.26959188 26.2136179 0.85 0 0 0.366519143</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_11_-1_visual">
+        <pose>4.26959188 26.2136179 0.85 0 0 0.366519143</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_11_1">
+        <pose>3.92197497 27.1191909 0.85 0 0 0.366519143</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_11_1_visual">
+        <pose>3.92197497 27.1191909 0.85 0 0 0.366519143</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_12_-1">
+        <pose>4.36618364 26.2526435 0.85 0 0 0.401425728</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_12_-1_visual">
+        <pose>4.36618364 26.2526435 0.85 0 0 0.401425728</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_12_1">
+        <pose>3.98717445 27.1455332 0.85 0 0 0.401425728</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_12_1_visual">
+        <pose>3.98717445 27.1455332 0.85 0 0 0.401425728</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_13_-1">
+        <pose>4.46135459 26.2950163 0.85 0 0 0.436332313</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_13_-1_visual">
+        <pose>4.46135459 26.2950163 0.85 0 0 0.436332313</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_13_1">
+        <pose>4.05141488 27.1741349 0.85 0 0 0.436332313</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_13_1_visual">
+        <pose>4.05141488 27.1741349 0.85 0 0 0.436332313</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_14_-1">
+        <pose>4.55498878 26.3406848 0.85 0 0 0.471238898</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_14_-1_visual">
+        <pose>4.55498878 26.3406848 0.85 0 0 0.471238898</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_14_1">
+        <pose>4.11461799 27.2049611 0.85 0 0 0.471238898</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_14_1_visual">
+        <pose>4.11461799 27.2049611 0.85 0 0 0.471238898</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_15_-1">
+        <pose>4.64697212 26.3895932 0.85 0 0 0.506145483</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_15_-1_visual">
+        <pose>4.64697212 26.3895932 0.85 0 0 0.506145483</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_15_1">
+        <pose>4.17670679 27.2379743 0.85 0 0 0.506145483</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_15_1_visual">
+        <pose>4.17670679 27.2379743 0.85 0 0 0.506145483</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_16_-1">
+        <pose>4.73719255 26.441682 0.85 0 0 0.541052068</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_16_-1_visual">
+        <pose>4.73719255 26.441682 0.85 0 0 0.541052068</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_16_1">
+        <pose>4.23760561 27.2731343 0.85 0 0 0.541052068</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_16_1_visual">
+        <pose>4.23760561 27.2731343 0.85 0 0 0.541052068</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_17_-1">
+        <pose>4.82554014 26.4968877 0.85 0 0 0.575958653</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_17_-1_visual">
+        <pose>4.82554014 26.4968877 0.85 0 0 0.575958653</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_17_1">
+        <pose>4.29724028 27.3103981 0.85 0 0 0.575958653</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_17_1_visual">
+        <pose>4.29724028 27.3103981 0.85 0 0 0.575958653</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_18_-1">
+        <pose>4.91190727 26.555143 0.85 0 0 0.610865238</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_18_-1_visual">
+        <pose>4.91190727 26.555143 0.85 0 0 0.610865238</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_18_1">
+        <pose>4.35553812 27.3497205 0.85 0 0 0.610865238</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_18_1_visual">
+        <pose>4.35553812 27.3497205 0.85 0 0 0.610865238</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_19_-1">
+        <pose>4.9961887 26.6163771 0.85 0 0 0.645771823</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_19_-1_visual">
+        <pose>4.9961887 26.6163771 0.85 0 0 0.645771823</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_19_1">
+        <pose>4.41242812 27.3910535 0.85 0 0 0.645771823</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_19_1_visual">
+        <pose>4.41242812 27.3910535 0.85 0 0 0.645771823</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_20_-1">
+        <pose>5.07828175 26.6805152 0.85 0 0 0.680678408</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_20_-1_visual">
+        <pose>5.07828175 26.6805152 0.85 0 0 0.680678408</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_20_1">
+        <pose>4.46784097 27.4343468 0.85 0 0 0.680678408</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_20_1_visual">
+        <pose>4.46784097 27.4343468 0.85 0 0 0.680678408</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_21_-1">
+        <pose>5.1580864 26.7474793 0.85 0 0 0.715584993</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_21_-1_visual">
+        <pose>5.1580864 26.7474793 0.85 0 0 0.715584993</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_21_1">
+        <pose>4.52170914 27.4795476 0.85 0 0 0.715584993</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_21_1_visual">
+        <pose>4.52170914 27.4795476 0.85 0 0 0.715584993</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_22_-1">
+        <pose>5.23550543 26.8171877 0.85 0 0 0.750491578</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_22_-1_visual">
+        <pose>5.23550543 26.8171877 0.85 0 0 0.750491578</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_22_1">
+        <pose>4.57396702 27.5266008 0.85 0 0 0.750491578</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_22_1_visual">
+        <pose>4.57396702 27.5266008 0.85 0 0 0.750491578</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_23_-1">
+        <pose>5.3104445 26.8895555 0.85 0 0 0.785398163</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_23_-1_visual">
+        <pose>5.3104445 26.8895555 0.85 0 0 0.785398163</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_23_1">
+        <pose>4.62455092 27.5754491 0.85 0 0 0.785398163</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_23_1_visual">
+        <pose>4.62455092 27.5754491 0.85 0 0 0.785398163</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_24_-1">
+        <pose>5.38281233 26.9644946 0.85 0 0 0.820304748</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_24_-1_visual">
+        <pose>5.38281233 26.9644946 0.85 0 0 0.820304748</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_24_1">
+        <pose>4.67339924 27.626033 0.85 0 0 0.820304748</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_24_1_visual">
+        <pose>4.67339924 27.626033 0.85 0 0 0.820304748</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_25_-1">
+        <pose>5.45252073 27.0419136 0.85 0 0 0.855211333</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_25_-1_visual">
+        <pose>5.45252073 27.0419136 0.85 0 0 0.855211333</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_25_1">
+        <pose>4.72045244 27.6782909 0.85 0 0 0.855211333</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_25_1_visual">
+        <pose>4.72045244 27.6782909 0.85 0 0 0.855211333</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_26_-1">
+        <pose>5.51948479 27.1217183 0.85 0 0 0.890117919</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_26_-1_visual">
+        <pose>5.51948479 27.1217183 0.85 0 0 0.890117919</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_26_1">
+        <pose>4.7656532 27.732159 0.85 0 0 0.890117919</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_26_1_visual">
+        <pose>4.7656532 27.732159 0.85 0 0 0.890117919</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_27_-1">
+        <pose>5.58362291 27.2038113 0.85 0 0 0.925024504</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_27_-1_visual">
+        <pose>5.58362291 27.2038113 0.85 0 0 0.925024504</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_27_1">
+        <pose>4.80894646 27.7875719 0.85 0 0 0.925024504</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_27_1_visual">
+        <pose>4.80894646 27.7875719 0.85 0 0 0.925024504</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_28_-1">
+        <pose>5.64485695 27.2880927 0.85 0 0 0.959931089</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_28_-1_visual">
+        <pose>5.64485695 27.2880927 0.85 0 0 0.959931089</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_28_1">
+        <pose>4.85027947 27.8444619 0.85 0 0 0.959931089</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_28_1_visual">
+        <pose>4.85027947 27.8444619 0.85 0 0 0.959931089</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_29_-1">
+        <pose>5.70311231 27.3744599 0.85 0 0 0.994837674</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_29_-1_visual">
+        <pose>5.70311231 27.3744599 0.85 0 0 0.994837674</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_29_1">
+        <pose>4.88960186 27.9027597 0.85 0 0 0.994837674</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_29_1_visual">
+        <pose>4.88960186 27.9027597 0.85 0 0 0.994837674</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_30_-1">
+        <pose>5.75831802 27.4628075 0.85 0 0 1.02974426</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_30_-1_visual">
+        <pose>5.75831802 27.4628075 0.85 0 0 1.02974426</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_30_1">
+        <pose>4.92686573 27.9623944 0.85 0 0 1.02974426</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_30_1_visual">
+        <pose>4.92686573 27.9623944 0.85 0 0 1.02974426</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_31_-1">
+        <pose>5.8104068 27.5530279 0.85 0 0 1.06465084</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_31_-1_visual">
+        <pose>5.8104068 27.5530279 0.85 0 0 1.06465084</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_31_1">
+        <pose>4.96202569 28.0232932 0.85 0 0 1.06465084</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_31_1_visual">
+        <pose>4.96202569 28.0232932 0.85 0 0 1.06465084</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_32_-1">
+        <pose>5.85931521 27.6450112 0.85 0 0 1.09955743</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_32_-1_visual">
+        <pose>5.85931521 27.6450112 0.85 0 0 1.09955743</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_32_1">
+        <pose>4.99503888 28.085382 0.85 0 0 1.09955743</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_32_1_visual">
+        <pose>4.99503888 28.085382 0.85 0 0 1.09955743</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_33_-1">
+        <pose>5.90498366 27.7386454 0.85 0 0 1.13446401</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_33_-1_visual">
+        <pose>5.90498366 27.7386454 0.85 0 0 1.13446401</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_33_1">
+        <pose>5.0258651 28.1485851 0.85 0 0 1.13446401</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_33_1_visual">
+        <pose>5.0258651 28.1485851 0.85 0 0 1.13446401</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_34_-1">
+        <pose>5.94735649 27.8338164 0.85 0 0 1.1693706</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_34_-1_visual">
+        <pose>5.94735649 27.8338164 0.85 0 0 1.1693706</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_34_1">
+        <pose>5.05446679 28.2128256 0.85 0 0 1.1693706</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_34_1_visual">
+        <pose>5.05446679 28.2128256 0.85 0 0 1.1693706</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_35_-1">
+        <pose>5.9863821 27.9304081 0.85 0 0 1.20427718</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_35_-1_visual">
+        <pose>5.9863821 27.9304081 0.85 0 0 1.20427718</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_35_1">
+        <pose>5.08080909 28.278025 0.85 0 0 1.20427718</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_35_1_visual">
+        <pose>5.08080909 28.278025 0.85 0 0 1.20427718</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_36_-1">
+        <pose>6.02201293 28.028303 0.85 0 0 1.23918377</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_36_-1_visual">
+        <pose>6.02201293 28.028303 0.85 0 0 1.23918377</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_36_1">
+        <pose>5.10485991 28.3441041 0.85 0 0 1.23918377</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_36_1_visual">
+        <pose>5.10485991 28.3441041 0.85 0 0 1.23918377</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_37_-1">
+        <pose>6.05420557 28.1273818 0.85 0 0 1.27409035</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_37_-1_visual">
+        <pose>6.05420557 28.1273818 0.85 0 0 1.27409035</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_37_1">
+        <pose>5.12658996 28.4109823 0.85 0 0 1.27409035</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_37_1_visual">
+        <pose>5.12658996 28.4109823 0.85 0 0 1.27409035</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_38_-1">
+        <pose>6.0829208 28.2275237 0.85 0 0 1.30899694</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_38_-1_visual">
+        <pose>6.0829208 28.2275237 0.85 0 0 1.30899694</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_38_1">
+        <pose>5.14597275 28.4785782 0.85 0 0 1.30899694</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_38_1_visual">
+        <pose>5.14597275 28.4785782 0.85 0 0 1.30899694</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_39_-1">
+        <pose>6.10812364 28.3286068 0.85 0 0 1.34390352</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_39_-1_visual">
+        <pose>6.10812364 28.3286068 0.85 0 0 1.34390352</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_39_1">
+        <pose>5.16298468 28.5468093 0.85 0 0 1.34390352</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_39_1_visual">
+        <pose>5.16298468 28.5468093 0.85 0 0 1.34390352</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_40_-1">
+        <pose>6.12978338 28.4305078 0.85 0 0 1.37881011</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_40_-1_visual">
+        <pose>6.12978338 28.4305078 0.85 0 0 1.37881011</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_40_1">
+        <pose>5.17760501 28.6155925 0.85 0 0 1.37881011</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_40_1_visual">
+        <pose>5.17760501 28.6155925 0.85 0 0 1.37881011</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_41_-1">
+        <pose>6.14787362 28.5331027 0.85 0 0 1.41371669</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_41_-1_visual">
+        <pose>6.14787362 28.5331027 0.85 0 0 1.41371669</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_41_1">
+        <pose>5.18981593 28.6848441 0.85 0 0 1.41371669</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_41_1_visual">
+        <pose>5.18981593 28.6848441 0.85 0 0 1.41371669</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_42_-1">
+        <pose>6.16237234 28.6362664 0.85 0 0 1.44862328</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_42_-1_visual">
+        <pose>6.16237234 28.6362664 0.85 0 0 1.44862328</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_42_1">
+        <pose>5.19960257 28.7544797 0.85 0 0 1.44862328</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_42_1_visual">
+        <pose>5.19960257 28.7544797 0.85 0 0 1.44862328</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_43_-1">
+        <pose>6.17326186 28.7398733 0.85 0 0 1.48352986</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_43_-1_visual">
+        <pose>6.17326186 28.7398733 0.85 0 0 1.48352986</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_43_1">
+        <pose>5.206953 28.8244144 0.85 0 0 1.48352986</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_43_1_visual">
+        <pose>5.206953 28.8244144 0.85 0 0 1.48352986</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_44_-1">
+        <pose>6.18052892 28.8437971 0.85 0 0 1.51843645</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_44_-1_visual">
+        <pose>6.18052892 28.8437971 0.85 0 0 1.51843645</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_44_1">
+        <pose>5.21185827 28.894563 0.85 0 0 1.51843645</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_44_1_visual">
+        <pose>5.21185827 28.894563 0.85 0 0 1.51843645</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_45_-1">
+        <pose>6.18416467 28.9479112 0.85 0 0 1.55334303</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_45_-1_visual">
+        <pose>6.18416467 28.9479112 0.85 0 0 1.55334303</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_45_1">
+        <pose>5.2143124 28.96484 0.85 0 0 1.55334303</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_45_1_visual">
+        <pose>5.2143124 28.96484 0.85 0 0 1.55334303</pose>
+        <geometry>
+          <box>
+            <size>0.107262032 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_46_-1">
+        <pose>6.185 29.5 0.85 0 0 1.57079633</pose>
+        <geometry>
+          <box>
+            <size>1.02 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_46_-1_visual">
+        <pose>6.185 29.5 0.85 0 0 1.57079633</pose>
+        <geometry>
+          <box>
+            <size>1.02 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_wall_46_1">
+        <pose>5.215 29.5 0.85 0 0 1.57079633</pose>
+        <geometry>
+          <box>
+            <size>1.02 0.14 1.7</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_wall_46_1_visual">
+        <pose>5.215 29.5 0.85 0 0 1.57079633</pose>
+        <geometry>
+          <box>
+            <size>1.02 0.14 1.7</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.474509804 0.396078431 0.325490196 1</ambient>
+          <diffuse>0.474509804 0.396078431 0.325490196 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_crosswall_left">
+        <pose>2.6425 30 1.4 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>5.285 0.14 2.8</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_crosswall_left_visual">
+        <pose>2.6425 30 1.4 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>5.285 0.14 2.8</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.835294118 0.850980392 0.839215686 1</ambient>
+          <diffuse>0.835294118 0.850980392 0.839215686 1</diffuse>
+        </material>
+      </visual>
+      <collision name="narrow_curved_crosswall_right">
+        <pose>7.0575 30 1.4 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>1.885 0.14 2.8</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="narrow_curved_crosswall_right_visual">
+        <pose>7.0575 30 1.4 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>1.885 0.14 2.8</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.835294118 0.850980392 0.839215686 1</ambient>
+          <diffuse>0.835294118 0.850980392 0.839215686 1</diffuse>
+        </material>
+      </visual>
+      <collision name="irregular_L_long">
+        <pose>45.8 26.4 0.6 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>1.3 0.35 1.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="irregular_L_long_visual">
+        <pose>45.8 26.4 0.6 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>1.3 0.35 1.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.776470588 0.658823529 0.478431373 1</ambient>
+          <diffuse>0.776470588 0.658823529 0.478431373 1</diffuse>
+        </material>
+      </visual>
+      <collision name="irregular_L_return">
+        <pose>45.32 26.9 0.6 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.35 1.35 1.2</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="irregular_L_return_visual">
+        <pose>45.32 26.9 0.6 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.35 1.35 1.2</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.776470588 0.658823529 0.478431373 1</ambient>
+          <diffuse>0.776470588 0.658823529 0.478431373 1</diffuse>
+        </material>
+      </visual>
+      <collision name="irregular_rotated_parcel">
+        <pose>45.1 29.1 0.3 0 0 -0.35</pose>
+        <geometry>
+          <box>
+            <size>0.8 0.45 0.6</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="irregular_rotated_parcel_visual">
+        <pose>45.1 29.1 0.3 0 0 -0.35</pose>
+        <geometry>
+          <box>
+            <size>0.8 0.45 0.6</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.282352941 0.545098039 0.71372549 1</ambient>
+          <diffuse>0.282352941 0.545098039 0.71372549 1</diffuse>
+        </material>
+      </visual>
+      <collision name="irregular_step_low">
+        <pose>46.1 28.2 0.18 0 0 0.22</pose>
+        <geometry>
+          <box>
+            <size>0.9 0.8 0.36</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="irregular_step_low_visual">
+        <pose>46.1 28.2 0.18 0 0 0.22</pose>
+        <geometry>
+          <box>
+            <size>0.9 0.8 0.36</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.584313725 0.423529412 0.270588235 1</ambient>
+          <diffuse>0.584313725 0.423529412 0.270588235 1</diffuse>
+        </material>
+      </visual>
+      <collision name="irregular_step_high">
+        <pose>46.35 28.7 0.55 0 0 0.22</pose>
+        <geometry>
+          <box>
+            <size>0.4 0.7 1.1</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="irregular_step_high_visual">
+        <pose>46.35 28.7 0.55 0 0 0.22</pose>
+        <geometry>
+          <box>
+            <size>0.4 0.7 1.1</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.894117647 0.705882353 0.294117647 1</ambient>
+          <diffuse>0.894117647 0.705882353 0.294117647 1</diffuse>
+        </material>
+      </visual>
+      <collision name="irregular_round_post">
+        <pose>45.7 30 0.525 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.16</radius>
+            <length>1.05</length>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="irregular_round_post_visual">
+        <pose>45.7 30 0.525 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.16</radius>
+            <length>1.05</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.380392157 0.435294118 0.462745098 1</ambient>
+          <diffuse>0.380392157 0.435294118 0.462745098 1</diffuse>
         </material>
       </visual>
     </link>

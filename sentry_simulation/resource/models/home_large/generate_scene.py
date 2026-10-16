@@ -56,9 +56,20 @@ class Scene:
         self.items = []
         self.doors = []
         config = yaml.safe_load((PACKAGE / 'config/swerve_odin.yaml').read_text())
-        odin = ET.parse(PACKAGE / 'resource/models/odin1_lite/model.sdf')
-        sensor_x = float(odin.findtext('.//collision/geometry/box/size').split()[0])
-        self.robot_width = config['geometry']['width'] + sensor_x
+        # Keep the existing house's door geometry independent of later platform
+        # changes. This historical reference is NOT the current collision width.
+        self.robot_width = .662
+        g = config['geometry']
+        # swerve_platform mounts Odin housings flush with the chassis. Wheels
+        # and square knuckles can extend beyond it while steering; enclose their
+        # entire yaw sweep, including the tire's half contact width.
+        wheel_span = 2 * math.hypot(g['wheel_radius'], g['wheel_contact_width']/2)
+        spindle_span = math.hypot(g['spindle_length'], g['spindle_width'])
+        self.robot_envelope = dict(
+            length=max(g['length'], g['wheelbase']+wheel_span, g['wheelbase']+spindle_span),
+            width=max(g['width'], g['track']+wheel_span, g['track']+spindle_span),
+            body_length=g['length'], body_width=g['width'],
+            semantics='Conservative XY rectangle over all steering angles; Odin housings flush with body.')
 
     def shape(self, name, xyz, dims, color='wood', yaw=0, kind='box', link=None, collision=True):
         target = self.link if link is None else link
@@ -165,6 +176,12 @@ class Scene:
 
 def architecture(scene):
     scene.box('floor', (24, 16, -.1), (48, 32, .2), 'floor')
+    # Close the house at wall height, including the outer walls' 0.10 m overhang.
+    scene.box('roof', (24, 16, 2.9), (48.2, 32.2, .2), 'white')
+    # Keep the physical roof while allowing unobstructed overhead inspection.
+    roof_visual = scene.link.find("visual[@name='roof_visual']")
+    element(roof_visual, 'transparency', 1)
+    element(roof_visual, 'cast_shadows', 'false')
     for name, x, y, sx, sy in (('south', 24, 0, 48, .2), ('north', 24, 32, 48, .2),
                               ('west', 0, 16, .2, 32), ('east', 48, 16, .2, 32)):
         scene.wall('outer_'+name, x, y, sx, sy)
@@ -192,7 +209,10 @@ def architecture(scene):
             scene.doorway(key+'_north_door', a, b, 20.5, clearance)
             rooms.append(dict(name=key, label=label, bounds=[a,11.5,b,20.5], goal=[(a+b)/2,12.9]))
     # Visual-only floor finishes share the one physical ground plane.
+    # These destinations lie beyond the mandatory narrow connections.
+    inner_goals = {'foyer':[4,2.5], 'wardrobe':[12,31.35], 'master':[4.8,30.65]}
     for i, room in enumerate(rooms):
+        room['goal'] = inner_goals.get(room['name'],room['goal'])
         x0,y0,x1,y1 = room['bounds']
         color = ['#d7c4a6','#c9c7bb','#b9c7c6','#d3c0b1'][i%4]
         scene.shape(room['name']+'_finish', ((x0+x1)/2,(y0+y1)/2,.0005),
@@ -216,7 +236,7 @@ def furnish(s, rooms):
             s.slipper(name+'_slipper_a', x0+3.65,y0+4.4,.6)
             s.slipper(name+'_slipper_b', x0+3.9,y0+4.1,-.4)
         elif name == 'foyer':
-            s.box('shoe_cabinet', (1,3.8,.6), (.6,3.2,1.2), 'white')
+            s.box('shoe_cabinet', (1,5.3,.6), (.6,3.2,1.2), 'white')
             s.table('entry_bench', 6,3,1.4,.6,.45)
             s.cylinder('coat_stand', 6.4,5.4,1.8,.045)
             s.cylinder('coat_stand_base', 6.4,5.4,.05,.28)
@@ -268,7 +288,7 @@ def furnish(s, rooms):
                 s.box('wardrobe_bank'+str(side),(cx+side*2.9,cy,1.15),(.65,5.8,2.3),'lightwood')
                 for j in range(5):
                     s.box(f'wardrobe_handle{side}_{j}',(cx+side*2.54,y0+2+j,.95),(.045,.035,.28),'dark')
-            s.table('dressing_bench',cx,cy,1.6,.6,.45)
+            s.table('dressing_bench',10.7,31.15,1.6,.6,.45)
             s.box('suitcase',(x0+1.2,y1-1,.4),(.5,.7,.8),'blue',.2)
         elif name == 'study':
             s.table('study_desk',x0+1.6,cy,2,.85)
@@ -323,6 +343,78 @@ def furnish(s, rooms):
     for i, (x,y,a) in enumerate(((8.2,8.95,.3),(8.55,9.05,-.5),(34.8,22.95,.7),(35.2,22.85,-.2))):
         s.slipper('hall_slipper'+str(i),x,y,a,'blue')
     s.box('hall_parcel',(30.5,8.95,.16),(.5,.4,.32),'lightwood',.35)
+
+
+def challenges(s):
+    """Narrow connections are the sole access to three useful inner zones."""
+    body_width = s.robot_envelope['body_width']
+
+    def passage(name, label, kind, points, route, side_clearance, height):
+        clear_width = body_width + 2*side_clearance
+        thickness = .14
+        obstacles = []
+        for i, (a, b) in enumerate(zip(points, points[1:])):
+            dx, dy = b[0]-a[0], b[1]-a[1]
+            length = math.hypot(dx, dy)
+            yaw = math.atan2(dy, dx)
+            # Offset outer chords separate at their ends. A 2 cm extension
+            # closes those seams at 2 degree turns, with <1 mm gap variation.
+            overlap = .02 if kind == 'curved' else .002
+            for side in (-1, 1):
+                offset = side * (clear_width+thickness)/2
+                obstacle = f'{name}_wall_{i}_{side}'
+                s.box(obstacle, ((a[0]+b[0])/2-dy/length*offset,
+                                 (a[1]+b[1])/2+dx/length*offset, height/2),
+                      (length+overlap, thickness, height), 'frame', yaw)
+                obstacles.append(obstacle)
+        return dict(name=name, label=label, kind=kind, clear_width=clear_width,
+                    side_clearance=side_clearance, total_clearance=2*side_clearance,
+                    length=sum(math.dist(a,b) for a,b in zip(points,points[1:])),
+                    centerline=points, route=route, obstacles=obstacles)
+
+    def seal(challenge, x0, x1, y, x, connects, destination_bounds):
+        # Connect both passage sides to the original room boundary. The only
+        # opening in this cross-wall is the passage itself; no side bypass.
+        half = challenge['clear_width']/2
+        for side,a,b in (('left',x0,x-half),('right',x+half,x1)):
+            name = challenge['name']+'_crosswall_'+side
+            s.wall(name,(a+b)/2,y,b-a,.14)
+            challenge['obstacles'].append(name)
+        challenge['connects'] = connects
+        challenge['destination_bounds'] = destination_bounds
+
+    result = [passage('narrow_foyer', '窄玄关', 'foyer', [[4,3.4],[4,6.6]],
+                      [[4,7.1,-math.pi/2],[4,2.5,-math.pi/2]], .05, 1.6),
+              passage('narrow_straight', '7 m 窄直廊', 'straight', [[12,23.8],[12,30.8]],
+                      [[12,22.8,math.pi/2],[12,31.35,math.pi/2]], .10, 2.0)]
+    seal(result[0],0,8,3.4,4,['玄关入口区','玄关内区'],[2.8,1,5.1,2.8])
+    seal(result[1],8,16,23.8,12,['北侧公共走廊','衣帽间更衣区'],[9.8,30.95,14.1,31.7])
+    # Two-degree chords approximate a 2.5 m radius quarter arc, with tangent
+    # entries/exits. Nominal radial gap error is below 1 mm; the full vehicle
+    # rectangle (including its front/rear corners) fits this curve.
+    arc = [[3.2+2.5*math.cos(a), 29+2.5*math.sin(a), a+math.pi/2]
+           for a in np.linspace(-math.pi/2, 0, 46)]
+    route = [[4,22.8,math.pi/2],[4,24.9,math.pi/2],[1.6,24.9,math.pi/2],
+             [1.6,26.5,0], *arc, [5.7,30.55,math.pi/2],
+             [4.8,30.55,math.pi/2],[4.8,30.65,math.pi/2]]
+    points = [[2.2,26.5], *[p[:2] for p in arc], [5.7,30.0]]
+    result.append(passage('narrow_curved', '弧形窄长廊', 'curved', points, route, .15, 1.7))
+    seal(result[2],0,8,30,5.7,['主卧入口区','主卧书桌区'],[3.5,30.2,7.8,31.8])
+    first = len(s.items)
+    # Non-convex L, rotated parcels and a stepped silhouette, with a clear
+    # north/south test route between the existing bed and these new obstacles.
+    s.box('irregular_L_long', (45.8,26.4,.6), (1.3,.35,1.2), 'lightwood')
+    s.box('irregular_L_return', (45.32,26.9,.6), (.35,1.35,1.2), 'lightwood')
+    s.box('irregular_rotated_parcel', (45.1,29.1,.3), (.8,.45,.6), 'blue', -.35)
+    s.box('irregular_step_low', (46.1,28.2,.18), (.9,.8,.36), 'wood', .22)
+    s.box('irregular_step_high', (46.35,28.7,.55), (.4,.7,1.1), 'yellow', .22)
+    s.cylinder('irregular_round_post', 45.7,30.0,1.05,.16,'metal')
+    result.append(dict(name='irregular_guest', label='不规则障碍', kind='irregular',
+                       route=[[44,24.9,math.pi/2],[44.45,26.2,math.pi/2],
+                              [44.45,28.15,math.pi/2],[44.25,28.15,math.pi/2],
+                              [44.25,30.2,math.pi/2]],
+                       obstacles=[item['name'] for item in s.items[first:]]))
+    return result
 
 
 def people(s, world):
@@ -428,11 +520,19 @@ def write_plan(s, data):
         svg.append(f'<polyline points="{path}" fill="none" stroke="#c86451" stroke-width="3"/>')
         _,x,y,_=person['waypoints'][0]; px,py=p(x,y)
         svg.append(f'<circle cx="{px}" cy="{py}" r="6" fill="#c86451" stroke="white" stroke-width="2"/>')
+    for challenge in data['challenges']:
+        route = ' '.join(f'{p(w[0],w[1])[0]:.2f},{p(w[0],w[1])[1]:.2f}' for w in challenge['route'])
+        svg.append(f'<polyline points="{route}" fill="none" stroke="#9750a1" stroke-width="2"/>')
+        x,y = challenge['route'][0][:2]; px,py=p(x,y)
+        label = challenge['label']
+        if 'clear_width' in challenge:
+            label += f' / {challenge["clear_width"]*100:.1f} cm'
+        svg.append(f'<text x="{px+8:.2f}" y="{py-10:.2f}" font-size="12" fill="#713a7b">{escape(label)}</text>')
     px,py=p(*data['spawn'][:2])
     svg.append(f'<circle cx="{px}" cy="{py}" r="8" fill="#233e47" stroke="white" stroke-width="2"/>')
     svg += ['<text x="62" y="897" font-size="16" fill="#233e47">青色虚线：114 m 巡航环路　　珊瑚色：人物脚本路线　　小圆点：房间目标点</text>',
-            f'<text x="62" y="927" font-size="14" fill="#587078">整车碰撞宽 {s.robot_width:.3f} m + 左右各 10 / 15 / 20 / 25 / 30 cm；门净高 2.10 m，无门槛。</text>',
-            '<text x="62" y="953" font-size="14" fill="#587078">低矮拖鞋 / 散落积木 / 斜椅 / 高脚桌 / 晾衣架 / 儿童横穿。图示路线是测试任务，不代表导航已通过。</text>',
+            f'<text x="62" y="927" font-size="14" fill="#587078">紫色：新增挑战路线；底盘宽 {s.robot_envelope["body_width"]:.3f} m，左右每侧各留 5 / 10 / 15 cm。</text>',
+            '<text x="62" y="953" font-size="14" fill="#587078">门洞保留历史尺寸；低矮杂物 / 不规则障碍 / 儿童横穿。图示路线是测试任务，不代表导航已通过。</text>',
             '</g></svg>']
     (HERE/'floor_plan.svg').write_text('\n'.join(svg)+'\n')
 
@@ -441,6 +541,7 @@ def main():
     scene=Scene()
     rooms=architecture(scene)
     furnish(scene,rooms)
+    challenge_data=challenges(scene)
     write_xml(scene.root,HERE/'model.sdf')
     config=ET.Element('model')
     element(config,'name','Home Large - single-floor furnished residence')
@@ -457,6 +558,8 @@ def main():
     world.find('physics/max_step_size').text='0.002'
     world.find('physics').set('name','2ms')
     data=dict(size=[48,32], robot_collision_width=scene.robot_width,door_clear_widths=widths,
+              robot_collision_width_semantics='Historical door sizing reference; use robot_current_collision_envelope for the current platform.',
+              robot_current_collision_envelope=scene.robot_envelope, challenges=challenge_data,
               spawn=[4,10,0],rooms=rooms,doors=scene.doors,
               map_height_band=[.005,.40], map_excludes='All people; they are observed by live sensors.',
               routes={'ring':[[4,10],[46.5,10],[46.5,22],[1.5,22],[1.5,10],[4,10]]},
