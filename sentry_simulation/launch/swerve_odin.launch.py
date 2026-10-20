@@ -27,7 +27,8 @@ def _launch(context, share, worlds):
     paths = build_assets(config, share, directory.name, sensors=sensors,
                          world_path=share / world['world'] if world else None,
                          spawn=world['spawn'] if world else None,
-                         publish_ground_truth_tf=publish_ground_truth_tf)
+                         publish_ground_truth_tf=publish_ground_truth_tf,
+                         ground_truth_frame=LaunchConfiguration('ground_truth_frame').perform(context))
     actions = [SetEnvironmentVariable(resource_key, resource_value)]
     if (not context.environment.get('FASTRTPS_DEFAULT_PROFILES_FILE')
             and context.environment.get('ROS_LOCALHOST_ONLY') != '1'):
@@ -70,5 +71,7 @@ def generate_launch_description():
         DeclareLaunchArgument('rviz', default_value='false', choices=['true', 'false']),
         DeclareLaunchArgument('publish_ground_truth_tf', default_value='true', choices=['true', 'false'],
                               description='Disable when localization owns the base_link transform'),
+        DeclareLaunchArgument('ground_truth_frame', default_value='odom',
+                              description='Gazebo world-pose frame; navigation uses world to distinguish local odom'),
         OpaqueFunction(function=_launch, args=[share, worlds]),
     ])
