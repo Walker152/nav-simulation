@@ -1,4 +1,4 @@
-# Chassis/Odin housing geometry matches navigation_odin_hardware.yaml.
+# Chassis/Odin housing geometry matches navigation.yaml.
 # Motion ceilings provide headroom above the navigation limits for simulation tuning.
 # Wheel modules, mass, contact and actuator dynamics remain simulation assumptions.
 geometry:

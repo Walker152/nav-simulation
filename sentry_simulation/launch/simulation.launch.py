@@ -93,7 +93,7 @@ def _launch_setup(context, package_share):
     using_default_params = not nav2_params_path
     if not nav2_params_path:
         default_name = ("navigation_ackermann_sim.yaml" if chassis_type == "ackermann"
-                        else "navigation.yaml")
+                        else "navigation_sim.yaml")
         nav2_params_path = os.path.join(
             get_package_share_directory("navi2"), "params", default_name)
     assembler_path = Path(get_package_share_directory("navi2")) / "launch" / "navigation_parameters.py"
@@ -310,7 +310,7 @@ def _launch_setup(context, package_share):
 
     # Keep the diagnostic UI available while navigation is still initializing.
     # A lifecycle service timeout must not prevent RViz from starting.
-    rviz_config = os.path.join(get_package_share_directory("navi2"), "config", "our.rviz")
+    rviz_config = os.path.join(get_package_share_directory("navi2"), "config", "ours.rviz")
     rviz = Node(
         condition=IfCondition(LaunchConfiguration("rviz")),
         package="rviz2",
@@ -392,7 +392,7 @@ def generate_launch_description():
         DeclareLaunchArgument("log_level", default_value="info"),
         DeclareLaunchArgument(
             "params_file", default_value="",
-            description="Standalone navigation YAML; empty uses shared navigation.yaml for Omni, "
+            description="Standalone navigation YAML; empty uses navigation_sim.yaml for Omni, "
                         "or navigation_ackermann_sim.yaml for Ackermann",
         ),
         GroupAction(

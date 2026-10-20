@@ -176,12 +176,16 @@ def bridge_config(sensors, publish_ground_truth_tf=True):
 
 
 def build_assets(config, share, output, sensors=True, world_path=None, spawn=None,
-                 publish_ground_truth_tf=True):
+                 publish_ground_truth_tf=True, ground_truth_frame='odom'):
     """Generate resources; spawn.z is ground height, before wheel clearance.
 
     Localization may own the ROS base transform while ground-truth odometry
-    remains available for simulated device inputs and diagnostics.
+    remains available for simulated device inputs and diagnostics. Navigation
+    uses a distinct world label for these poses when odom has a local origin.
     """
+    if (not isinstance(ground_truth_frame, str) or not ground_truth_frame.strip()
+            or ground_truth_frame == 'base_link'):
+        raise ValueError('ground_truth_frame must be nonempty and distinct from base_link')
     g, d, c, p = (config[k] for k in ('geometry', 'dynamics', 'control', 'physics'))
     signed = {'body_center_z', 'wheel_center_z', 'sensor_height', 'spindle_center_z'}
     for section in (g, d, c, p):
@@ -273,7 +277,7 @@ def build_assets(config, share, output, sensors=True, world_path=None, spawn=Non
         element(drive, key, value)
     odometry = element(model, 'plugin', filename='gz-sim-odometry-publisher-system',
                        name='gz::sim::systems::OdometryPublisher')
-    for key, value in dict(odom_frame='odom', robot_base_frame='base_link', dimensions=3,
+    for key, value in dict(odom_frame=ground_truth_frame, robot_base_frame='base_link', dimensions=3,
                            odom_publish_frequency=c['publish_rate'],
                            odom_topic='/swerve/ground_truth/odometry', tf_topic='/swerve/ground_truth/tf').items():
         element(odometry, key, value)
