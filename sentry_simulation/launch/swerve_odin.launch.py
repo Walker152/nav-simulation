@@ -1,4 +1,4 @@
-"""Independent four-swerve / four O1LITE Gazebo Harmonic platform."""
+"""Independent four-swerve platform with selectable Odin or calibrated MID360 sensors."""
 import os
 from pathlib import Path
 from sentry_simulation.gazebo_compat import gazebo_arguments, prepare_share, resource_paths
@@ -20,6 +20,17 @@ def _launch(context, share, worlds):
     resource_key, resource_value = resource_paths(share)
     config = yaml.safe_load(Path(LaunchConfiguration('config').perform(context)).read_text())
     sensors = LaunchConfiguration('sensors').perform(context).lower() == 'true'
+    suite = LaunchConfiguration('sensor_suite').perform(context)
+    if suite not in ('odin', 'mid360'):
+        raise ValueError('sensor_suite must be odin or mid360')
+    mid360 = None
+    if suite == 'mid360':
+        sensor_path = Path(LaunchConfiguration('mid360_config').perform(context)).expanduser()
+        if not sensor_path.is_file():
+            raise FileNotFoundError(f'mid360_config must name a canonical MID360 YAML file: {sensor_path}')
+        mid360 = yaml.safe_load(sensor_path.read_text())
+        if not isinstance(mid360, dict):
+            raise ValueError('mid360_config must contain a YAML mapping')
     publish_ground_truth_tf = LaunchConfiguration('publish_ground_truth_tf').perform(context).lower() == 'true'
     world_name = LaunchConfiguration('world').perform(context)
     world = worlds[world_name] if world_name != 'swerve_odin' else None
@@ -28,7 +39,8 @@ def _launch(context, share, worlds):
                          world_path=share / world['world'] if world else None,
                          spawn=world['spawn'] if world else None,
                          publish_ground_truth_tf=publish_ground_truth_tf,
-                         ground_truth_frame=LaunchConfiguration('ground_truth_frame').perform(context))
+                         ground_truth_frame=LaunchConfiguration('ground_truth_frame').perform(context),
+                         mid360_config=mid360)
     actions = [SetEnvironmentVariable(resource_key, resource_value)]
     if (not context.environment.get('FASTRTPS_DEFAULT_PROFILES_FILE')
             and context.environment.get('ROS_LOCALHOST_ONLY') != '1'):
@@ -68,6 +80,10 @@ def generate_launch_description():
         DeclareLaunchArgument('headless', default_value='false', choices=['true', 'false']),
         DeclareLaunchArgument('sensors', default_value='true', choices=['true', 'false'],
                               description='Disable only for isolated chassis dynamics checks'),
+        DeclareLaunchArgument('sensor_suite', default_value='odin', choices=['odin', 'mid360'],
+                              description='Keep four Odin devices or use the canonical dual MID360 installation'),
+        DeclareLaunchArgument('mid360_config', default_value='',
+                              description='Canonical MID360 YAML; required only for sensor_suite=mid360'),
         DeclareLaunchArgument('rviz', default_value='false', choices=['true', 'false']),
         DeclareLaunchArgument('publish_ground_truth_tf', default_value='true', choices=['true', 'false'],
                               description='Disable when localization owns the base_link transform'),

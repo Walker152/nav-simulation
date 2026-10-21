@@ -87,6 +87,8 @@ install(PROGRAMS sentry_simulation/imu_filter.py
   RENAME sentry_sim_imu_filter)
 install(PROGRAMS scripts/validate_swerve.py DESTINATION lib/${PROJECT_NAME}
   RENAME validate_swerve)
+install(PROGRAMS scripts/export_home_large_pcd.py
+  DESTINATION share/${PROJECT_NAME}/scripts)
 install(DIRECTORY include/ DESTINATION include)
 install(TARGETS pointcloud_adapter_component
   ARCHIVE DESTINATION lib
