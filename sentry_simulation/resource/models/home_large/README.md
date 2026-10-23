@@ -1,6 +1,6 @@
 # home_large：大平层家居导航场景
 
-48 × 32 m（1536 m²），单层、平地、无门槛；18 个功能房间、24 个带门框的门洞，净宽分为 0.862–1.262 m 五档。保留原 `home_indoor` 双层住宅与所有默认场景。
+48 × 32 m（1536 m²），单层、平地、无门槛；18 个功能房间、24 个带门框的门洞，净宽分为 0.862–1.262 m 五档。保留原 `home_indoor` 双层住宅；导航仿真脚本默认选择本场景。
 
 ![俯视图](floor_plan.svg)
 
@@ -19,13 +19,27 @@ source install/setup.bash
 ./src/scripts/simlation.bash swerve home_large --headless --no-rviz
 ```
 
-链路沿用四舵轮 / 四 Odin → odin_multi_fusion → Omni MINCO。入口默认值、导航参数、控制和噪声保持原设置。`--check` 仅验证依赖和导航配置；不代表导航运行通过。
+默认链路为四舵轮 / 双 MID360 → 标定融合 → Point-LIO → backend 全局重定位 → Omni MINCO；`--sensors odin` 保留原四 Odin 路径。`--check` 验证依赖、参数及先验文件；不代表重定位或导航运行通过。
 
 只查看平台与场景：
 
 ```bash
 ros2 launch sentry_simulation swerve_odin.launch.py world:=home_large
 ```
+
+### 导出三维重定位先验
+
+在工作区根执行：
+
+```bash
+python3 src/simulation/sentry_simulation/scripts/export_home_large_pcd.py
+# 已安装包也可执行：
+python3 install/sentry_simulation/share/sentry_simulation/scripts/export_home_large_pcd.py
+```
+
+默认将当前发布的 `model.sdf` 静态碰撞几何按 0.1 m 间距采样为 `resource/maps/pcd/home_large.pcd`，binary XYZ、单位米、与世界及二维地图同原点。只读取房屋模型，不烘焙世界中的人物，也不重写场景、栅格或manifest。该图包含几何表面，可能含不可见/重叠面，并非实采扫描地图。可用 `--output` 和 `--spacing` 指定输出路径与采样间距；生成PCD只保留本地。
+
+`worlds.yaml` 的 `home_large.prior_map` 指向此PCD，默认启动无需另传路径；`--prior-map` 仍可覆盖。场景几何更新后应重新导出；如果资源已安装，重新安装 `sentry_simulation` 以同步新PCD。文件存在或backend成功加载不能单独证明全局定位唯一性或导航任务完成。
 
 所有模型使用本地几何，无 Fuel 下载。`ScriptedObstacle` 插件随 `sentry_simulation` 构建安装，新增后需重新构建。
 

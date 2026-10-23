@@ -55,6 +55,16 @@ PointCloudAdapter::PointCloudAdapter(const rclcpp::NodeOptions & options)
     declare_parameter<std::string>("right_rear_input_topic", "/sim/lidar/right/rear/points");
   const auto output_topic = declare_parameter<std::string>("output_topic", "/livox/lidar");
   output_frame_id_ = declare_parameter<std::string>("output_frame_id", "sim_lidar");
+  // Empty keeps the original common-frame merged output and SensorDataQoS.
+  const auto secondary_output_topic = declare_parameter<std::string>("secondary_output_topic", "");
+  secondary_output_frame_id_ = declare_parameter<std::string>("secondary_output_frame_id", "");
+  if (!secondary_output_topic.empty() &&
+      (output_topic.empty() || secondary_output_frame_id_.empty() ||
+      output_frame_id_ == secondary_output_frame_id_ ||
+      get_node_topics_interface()->resolve_topic_name(output_topic) ==
+      get_node_topics_interface()->resolve_topic_name(secondary_output_topic))) {
+    throw std::invalid_argument("raw MID360 outputs require distinct nonempty topics and frames");
+  }
   const auto pattern_file = declare_parameter<std::string>("pattern_file");
   pattern_points_per_frame_ = declare_parameter<int>("pattern_points_per_frame", 20000);
   vertical_min_rad_ = declare_parameter<double>("vertical_min_deg", -7.3) * kDegreesToRadians;
@@ -76,6 +86,8 @@ PointCloudAdapter::PointCloudAdapter(const rclcpp::NodeOptions & options)
     "left_sensor_pose", {-0.0496, 0.352530918687, 0.0, -0.5835987756, 0.0, 0.0}));
   right_transform_ = make_sensor_transform(declare_parameter<std::vector<double>>(
     "right_sensor_pose", {-0.0496, 0.047469081313, 0.0, 0.5835987756, 0.0, 0.0}));
+  left_inverse_transform_ = left_transform_.inverse();
+  right_inverse_transform_ = right_transform_.inverse();
 
   if (pattern_points_per_frame_ <= 0 ||
       pattern_points_per_frame_ > std::numeric_limits<int>::max() / 2 ||
@@ -117,7 +129,14 @@ PointCloudAdapter::PointCloudAdapter(const rclcpp::NodeOptions & options)
     "Loaded %zu MID360 pattern rays; publishing up to %d points per dual-lidar frame",
     pattern_.size(),
     pattern_points_per_frame_ * 2);
-  publisher_ = create_publisher<livox_ros_driver2::msg::CustomMsg>(output_topic, rclcpp::SensorDataQoS());
+  auto output_qos = rclcpp::SensorDataQoS();
+  if (!secondary_output_topic.empty()) {
+    // The canonical dual-MID360 merger requests reliable raw inputs.
+    output_qos.reliable();
+    secondary_publisher_ = create_publisher<livox_ros_driver2::msg::CustomMsg>(
+      secondary_output_topic, output_qos);
+  }
+  publisher_ = create_publisher<livox_ros_driver2::msg::CustomMsg>(output_topic, output_qos);
   ground_truth_subscription_ = create_subscription<nav_msgs::msg::Odometry>(
     declare_parameter<std::string>("ground_truth_topic", "/sim/ground_truth/odom"),
     rclcpp::SensorDataQoS(),
@@ -302,7 +321,16 @@ void PointCloudAdapter::publish_synchronized_clouds()
   output->header = left_front_cloud_->header;
   output->header.frame_id = output_frame_id_;
   output->lidar_id = 0;
-  output->points.reserve(static_cast<std::size_t>(pattern_points_per_frame_) * 2);
+  output->points.reserve(static_cast<std::size_t>(pattern_points_per_frame_) *
+    (secondary_publisher_ ? 1 : 2));
+  std::unique_ptr<livox_ros_driver2::msg::CustomMsg> secondary_output;
+  if (secondary_publisher_) {
+    secondary_output = std::make_unique<livox_ros_driver2::msg::CustomMsg>();
+    secondary_output->header = right_front_cloud_->header;
+    secondary_output->header.frame_id = secondary_output_frame_id_;
+    secondary_output->lidar_id = 1;
+    secondary_output->points.reserve(static_cast<std::size_t>(pattern_points_per_frame_));
+  }
   const double vertical_span = vertical_max_rad_ - vertical_min_rad_;
 
   for (int offset = 0; offset < pattern_points_per_frame_; ++offset) {
@@ -322,7 +350,9 @@ void PointCloudAdapter::publish_synchronized_clouds()
     const auto append_sensor_point = [&](const pcl::PointCloud<pcl::PointXYZ> & front,
                                        const pcl::PointCloud<pcl::PointXYZ> & rear,
                                        const Eigen::Isometry3d & sensor_transform,
-                                       std::size_t source_index) {
+                                       const Eigen::Isometry3d & inverse_transform,
+                                       std::size_t source_index,
+                                       livox_ros_driver2::msg::CustomMsg & destination) {
       const auto & input = use_rear ? rear : front;
       const std::size_t column = static_cast<std::size_t>(std::lround(
         horizontal_position * static_cast<double>(input.width - 1)));
@@ -338,30 +368,39 @@ void PointCloudAdapter::publish_synchronized_clouds()
       // Snapshot visibility and dynamic objects are not reconstructed.
       const Eigen::Vector3d timed_point = point_from_world *
         (source_poses[source_index + (use_rear ? 1 : 0)] * (sensor_transform * sensor_point));
+      // Split output is raw sensor data; the downstream merger owns inter-lidar extrinsics.
+      const Eigen::Vector3d output_point = secondary_publisher_ ?
+        inverse_transform * timed_point : timed_point;
       livox_ros_driver2::msg::CustomPoint converted;
-      converted.x = static_cast<float>(timed_point.x());
-      converted.y = static_cast<float>(timed_point.y());
-      converted.z = static_cast<float>(timed_point.z());
+      converted.x = static_cast<float>(output_point.x());
+      converted.y = static_cast<float>(output_point.y());
+      converted.z = static_cast<float>(output_point.z());
       converted.reflectivity = 0;
       converted.tag = 0x10;
       converted.line = static_cast<std::uint8_t>(ray_index % 4);
       const auto point_stamp = static_cast<std::uint64_t>(scan_start + offset_time);
-      if (output->points.empty()) {
+      if (destination.points.empty()) {
         // Filtering may remove the first scan slots. Rebase metadata, not acquisition time.
-        output->timebase = point_stamp;
-        output->header.stamp = rclcpp::Time(static_cast<std::int64_t>(point_stamp), RCL_ROS_TIME);
+        destination.timebase = point_stamp;
+        destination.header.stamp = rclcpp::Time(static_cast<std::int64_t>(point_stamp), RCL_ROS_TIME);
       }
-      converted.offset_time = static_cast<std::uint32_t>(point_stamp - output->timebase);
-      output->points.push_back(converted);
+      converted.offset_time = static_cast<std::uint32_t>(point_stamp - destination.timebase);
+      destination.points.push_back(converted);
     };
-    append_sensor_point(left_front_input, left_rear_input, left_transform_, 0);
-    append_sensor_point(right_front_input, right_rear_input, right_transform_, 2);
+    append_sensor_point(left_front_input, left_rear_input, left_transform_, left_inverse_transform_,
+      0, *output);
+    append_sensor_point(right_front_input, right_rear_input, right_transform_, right_inverse_transform_,
+      2, secondary_output ? *secondary_output : *output);
   }
   pattern_index_ = (pattern_index_ + static_cast<std::size_t>(pattern_points_per_frame_)) % pattern_.size();
 
   if (!output->points.empty()) {
     output->point_num = static_cast<std::uint32_t>(output->points.size());
     publisher_->publish(std::move(output));
+  }
+  if (secondary_output && !secondary_output->points.empty()) {
+    secondary_output->point_num = static_cast<std::uint32_t>(secondary_output->points.size());
+    secondary_publisher_->publish(std::move(secondary_output));
   }
   last_scan_end_ = scan_end;
   reset_clouds();

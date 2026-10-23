@@ -1,7 +1,7 @@
 """Generate one coherent SDF/URDF/bridge set from the platform parameters.
 
-The canonical O1LITE asset remains the source for optics, extrinsics and mass.
-Only instance names, topics and mounting poses change here.
+The canonical O1LITE asset owns the Odin optics, extrinsics and mass. Optional
+MID360 mounts and sampling frequency come from the hardware input configuration.
 """
 from sentry_simulation.gazebo_compat import gazebo_text
 from copy import deepcopy
@@ -144,7 +144,89 @@ def to_urdf(model):
     return robot
 
 
-def bridge_config(sensors, publish_ground_truth_tf=True):
+def mid360_pose(config, key):
+    """Read a canonical T_parent_child pose, converting degrees to radians."""
+    try:
+        position, angles = (config[key][name] for name in ('xyz_m', 'rpy_deg'))
+        values = (*position, *angles)
+        if len(position) != 3 or len(angles) != 3 or not all(
+                type(v) in (int, float) and math.isfinite(v) for v in values):
+            raise ValueError('expected three finite xyz_m and rpy_deg values')
+    except (KeyError, TypeError, ValueError) as error:
+        raise ValueError(f'Invalid MID360 {key}: {error}') from error
+    return (*position, *(math.radians(v) for v in angles))
+
+
+def inverse_pose(pose):
+    """Invert an XYZ/RPY rigid transform using R=Rz(yaw)Ry(pitch)Rx(roll)."""
+    x, y, z, roll, pitch, yaw = pose
+    sr, cr, sp, cp, sy, cy = (math.sin(roll), math.cos(roll), math.sin(pitch),
+                             math.cos(pitch), math.sin(yaw), math.cos(yaw))
+    rotation = ((cy*cp, cy*sp*sr-sy*cr, cy*sp*cr+sy*sr),
+                (sy*cp, sy*sp*sr+cy*cr, sy*sp*cr-cy*sr),
+                (-sp, cp*sr, cp*cr))
+    inverse = tuple(zip(*rotation))
+    translation = tuple(-sum(row[i]*v for i, v in enumerate((x, y, z))) for row in inverse)
+    horizontal = math.hypot(inverse[0][0], inverse[1][0])
+    inverse_pitch = math.atan2(-inverse[2][0], horizontal)
+    if horizontal > 1e-12:
+        inverse_roll = math.atan2(inverse[2][1], inverse[2][2])
+        inverse_yaw = math.atan2(inverse[1][0], inverse[0][0])
+    else:
+        inverse_roll = math.atan2(-inverse[1][2], inverse[1][1])
+        inverse_yaw = 0.0
+    return (*translation, inverse_roll, inverse_pitch, inverse_yaw)
+
+
+def add_mid360(model, role, pose, frequency, dynamics, sensors, imu_pose=None):
+    """Mount one physical device; both scan halves share the calibrated light origin."""
+    name = 'sim_mid360_' + role
+    size, mass = (.065, .060, .065), .265  # Existing MID360 simulation assumptions.
+    link = physical_link(model, name, 'base_link', pose, mass, box_inertia(mass, size),
+                         box(size), (0, 0, -.03, 0, 0, 0), '0.12 0.14 0.16 1', dynamics)
+    link.remove(link.find('visual'))
+    mesh = ET.Element('geometry')
+    element(element(mesh, 'mesh'), 'uri', 'model://mid360/meshes/mid360.dae')
+    visual(link, name + '_visual', mesh, (0, 0, -.03, 0, 0, math.pi), '0.12 0.14 0.16 1')
+    joint(model, name + '_mount', 'base_link', name)
+    if imu_pose is not None:
+        frame = element(model, 'frame', name=name + '_imu', attached_to=name)
+        element(frame, 'pose', numbers(imu_pose), relative_to=name)
+    if not sensors:
+        return
+    for half, yaw in (('front', 0), ('rear', math.pi)):
+        sensor = element(link, 'sensor', name=name + '_' + half, type='gpu_lidar')
+        element(sensor, 'pose', numbers((0, 0, 0, 0, 0, yaw)))
+        element(sensor, 'topic', f'/sim/mid360/{role}/{half}')
+        element(sensor, 'update_rate', frequency)
+        element(sensor, 'always_on', 'true')
+        element(sensor, 'visualize', 'false')
+        element(sensor, 'gz_frame_id', name)
+        lidar = element(sensor, 'lidar')
+        scan = element(lidar, 'scan')
+        for axis, count, minimum, maximum in (
+                ('horizontal', 360, -math.pi/2, math.pi/2),
+                ('vertical', 120, math.radians(-7.3), math.radians(52.3))):
+            axis_node = element(scan, axis)
+            for tag, value in (('samples', count), ('resolution', 1),
+                               ('min_angle', minimum), ('max_angle', maximum)):
+                element(axis_node, tag, value)
+        limits = element(lidar, 'range')
+        for tag, value in (('min', .1), ('max', 40.0), ('resolution', .01)):
+            element(limits, tag, value)
+        noise = element(lidar, 'noise')
+        for tag, value in (('type', 'gaussian'), ('mean', 0.0), ('stddev', 0.0)):
+            element(noise, tag, value)
+    if imu_pose is not None:
+        imu = element(link, 'sensor', name=name + '_imu', type='imu')
+        element(imu, 'pose', numbers(imu_pose))
+        element(imu, 'topic', '/sim/mid360/primary/imu')
+        element(imu, 'update_rate', 200)
+        element(imu, 'always_on', 'true')
+        element(imu, 'gz_frame_id', name + '_imu')
+
+
+def bridge_config(sensors, publish_ground_truth_tf=True, mid360=False):
     entries = []
     def bridge(ros, gz, ros_type, gz_type, direction='GZ_TO_ROS'):
         entries.append(dict(ros_topic_name=ros, gz_topic_name=gz,
@@ -160,7 +242,13 @@ def bridge_config(sensors, publish_ground_truth_tf=True):
         bridge('/swerve/' + name, '/swerve/' + name, 'nav_msgs/msg/Odometry', 'Odometry')
     if publish_ground_truth_tf:
         bridge('/tf', '/swerve/ground_truth/tf', 'tf2_msgs/msg/TFMessage', 'Pose_V')
-    if sensors:
+    if sensors and mid360:
+        for role in ('primary', 'secondary'):
+            for half in ('front', 'rear'):
+                topic = f'/sim/mid360/{role}/{half}/points'
+                bridge(topic, topic, 'sensor_msgs/msg/PointCloud2', 'PointCloudPacked')
+        bridge('/sim/mid360/primary/imu', '/sim/mid360/primary/imu', 'sensor_msgs/msg/Imu', 'IMU')
+    elif sensors:
         for direction in DIRECTIONS:
             prefix = '/sim/odin_' + direction
             for ros, gz, ros_type, gz_type in (
@@ -176,7 +264,7 @@ def bridge_config(sensors, publish_ground_truth_tf=True):
 
 
 def build_assets(config, share, output, sensors=True, world_path=None, spawn=None,
-                 publish_ground_truth_tf=True, ground_truth_frame='odom'):
+                 publish_ground_truth_tf=True, ground_truth_frame='odom', mid360_config=None):
     """Generate resources; spawn.z is ground height, before wheel clearance.
 
     Localization may own the ROS base transform while ground-truth odometry
@@ -204,11 +292,23 @@ def build_assets(config, share, output, sensors=True, world_path=None, spawn=Non
         value = spawn[key]
         if not isinstance(value, (int, float)) or not math.isfinite(value):
             raise ValueError(f'spawn.{key} must be finite')
-    odin = ET.parse(Path(share) / 'resource/models/odin1_lite/model.sdf').getroot().find('model')
-    sensor_mass = float(odin.findtext('link/inertial/mass'))
-    body_mass = d['total_mass'] - 4 * (d['steer_mass'] + d['wheel_mass'] + sensor_mass)
+    if mid360_config is None:
+        odin = ET.parse(Path(share) / 'resource/models/odin1_lite/model.sdf').getroot().find('model')
+        sensor_mass = 4 * float(odin.findtext('link/inertial/mass'))
+    else:
+        primary = mid360_pose(mid360_config, 'primary_in_base')
+        secondary = mid360_pose(mid360_config, 'secondary_in_base')
+        imu_pose = inverse_pose(mid360_pose(mid360_config, 'primary_lidar_in_imu'))
+        try:
+            frequency = mid360_config['driver']['ros_parameters']['publish_freq']
+            if type(frequency) not in (int, float) or not math.isfinite(frequency) or not .5 <= frequency <= 100:
+                raise ValueError('must be a finite number within [0.5, 100] Hz')
+        except (KeyError, TypeError, ValueError) as error:
+            raise ValueError(f'Invalid MID360 publish_freq: {error}') from error
+        sensor_mass = 2 * .265
+    body_mass = d['total_mass'] - 4 * (d['steer_mass'] + d['wheel_mass']) - sensor_mass
     if body_mass <= 0:
-        raise ValueError('total_mass must exceed the four modules and Odin bodies')
+        raise ValueError('total_mass must exceed the four modules and sensor bodies')
     sdf = ET.Element('sdf', version='1.9')
     model = element(sdf, 'model', name='swerve_odin', canonical_link='base_link')
     element(model, 'self_collide', 'false')
@@ -244,32 +344,36 @@ def build_assets(config, share, output, sensors=True, world_path=None, spawn=Non
               c['max_steering_velocity'], c['steering_torque'], d['steering_damping'])
         joint(model, prefix+'_wheel_joint', steer, wheel, '0 1 0',
               velocity=c['max_wheel_speed']/r, effort=c['wheel_torque'], damping=d['wheel_damping'])
-    # Place the outer housing faces flush with the measured chassis perimeter.
-    # The body/IMU origin is the canonical asset's housing centre.
-    housing_depth = float(odin.findtext('link/collision/geometry/box/size').split()[0])
-    mount_x = (g['length'] - housing_depth) / 2
-    mount_y = (g['width'] - housing_depth) / 2
-    mounts = ((mount_x, 0, 0), (-mount_x, 0, math.pi),
-              (0, mount_y, math.pi/2), (0, -mount_y, -math.pi/2))
-    for direction, (x, y, yaw) in zip(DIRECTIONS, mounts):
-        prefix = 'odin_' + direction
-        for original in odin:
-            if original.tag not in ('link', 'frame'):
-                continue
-            instance = deepcopy(original)
-            for node in instance.iter():
-                for key, value in list(node.attrib.items()):
-                    node.set(key, value.replace('odin1_lite', prefix))
-                # Mesh URI is deliberately shared, all transport/frame values differ.
-                if node.text and node.tag != 'uri':
-                    node.text = node.text.replace('odin1_lite', prefix)
-            if instance.tag == 'link':
-                element(instance, 'pose', numbers((x, y, g['sensor_height'], 0, 0, yaw)), relative_to='base_link')
-                if not sensors:
-                    for sensor in instance.findall('sensor'):
-                        instance.remove(sensor)
-            model.append(instance)
-        joint(model, prefix+'_mount', 'base_link', prefix+'_body')
+    if mid360_config is not None:
+        add_mid360(model, 'primary', primary, frequency, d, sensors, imu_pose=imu_pose)
+        add_mid360(model, 'secondary', secondary, frequency, d, sensors)
+    else:
+        # Place the outer housing faces flush with the measured chassis perimeter.
+        # The body/IMU origin is the canonical asset's housing centre.
+        housing_depth = float(odin.findtext('link/collision/geometry/box/size').split()[0])
+        mount_x = (g['length'] - housing_depth) / 2
+        mount_y = (g['width'] - housing_depth) / 2
+        mounts = ((mount_x, 0, 0), (-mount_x, 0, math.pi),
+                  (0, mount_y, math.pi/2), (0, -mount_y, -math.pi/2))
+        for direction, (x, y, yaw) in zip(DIRECTIONS, mounts):
+            prefix = 'odin_' + direction
+            for original in odin:
+                if original.tag not in ('link', 'frame'):
+                    continue
+                instance = deepcopy(original)
+                for node in instance.iter():
+                    for key, value in list(node.attrib.items()):
+                        node.set(key, value.replace('odin1_lite', prefix))
+                    # Mesh URI is deliberately shared, all transport/frame values differ.
+                    if node.text and node.tag != 'uri':
+                        node.text = node.text.replace('odin1_lite', prefix)
+                if instance.tag == 'link':
+                    element(instance, 'pose', numbers((x, y, g['sensor_height'], 0, 0, yaw)), relative_to='base_link')
+                    if not sensors:
+                        for sensor in instance.findall('sensor'):
+                            instance.remove(sensor)
+                model.append(instance)
+            joint(model, prefix+'_mount', 'base_link', prefix+'_body')
     drive = element(model, 'plugin', filename='libSwerveDrive.so', name='sentry_simulation::SwerveDrive')
     for key in ('wheel_radius', 'wheelbase', 'track', 'steering_limit', 'steering_hard_limit'):
         element(drive, key, g[key])
@@ -305,7 +409,7 @@ def build_assets(config, share, output, sensors=True, world_path=None, spawn=Non
         ET.indent(root)
         ET.ElementTree(root).write(paths[key], encoding='utf-8', xml_declaration=True)
     paths['bridge'].write_text(yaml.safe_dump(
-        bridge_config(sensors, publish_ground_truth_tf), sort_keys=False))
+        bridge_config(sensors, publish_ground_truth_tf, mid360=mid360_config is not None), sort_keys=False))
     for key in ('model', 'world', 'bridge'):
         paths[key].write_text(gazebo_text(paths[key].read_text()))
     return paths

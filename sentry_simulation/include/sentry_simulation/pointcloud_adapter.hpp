@@ -58,8 +58,11 @@ private:
   Eigen::Isometry3d lidar_pose_in_model_;
   std::deque<TimedPose> pose_history_;
   std::string output_frame_id_;
+  std::string secondary_output_frame_id_;
   Eigen::Isometry3d left_transform_;
   Eigen::Isometry3d right_transform_;
+  Eigen::Isometry3d left_inverse_transform_;
+  Eigen::Isometry3d right_inverse_transform_;
   sensor_msgs::msg::PointCloud2::UniquePtr left_front_cloud_;
   sensor_msgs::msg::PointCloud2::UniquePtr left_rear_cloud_;
   sensor_msgs::msg::PointCloud2::UniquePtr right_front_cloud_;
@@ -69,6 +72,7 @@ private:
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr right_front_subscription_;
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr right_rear_subscription_;
   rclcpp::Publisher<livox_ros_driver2::msg::CustomMsg>::SharedPtr publisher_;
+  rclcpp::Publisher<livox_ros_driver2::msg::CustomMsg>::SharedPtr secondary_publisher_;
   rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr ground_truth_subscription_;
 };
 
