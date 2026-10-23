@@ -28,6 +28,7 @@
   <depend>sensor_msgs</depend>
 
   <exec_depend>navi2</exec_depend>
+  <exec_depend>perception_config</exec_depend>
   <exec_depend>dual_mid360_fusion</exec_depend>
   <exec_depend>backend</exec_depend>
   <exec_depend>minco_controller</exec_depend>

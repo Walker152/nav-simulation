@@ -45,8 +45,7 @@ def _launch(context):
     spec = importlib.util.spec_from_file_location('mid360_sim_calibration', fusion / 'launch/calibration_common.py')
     calibration = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(calibration)
-    cfg, *_ = calibration.load_calibration(
-        files['params_file'], files['mid360_config'], model=value('model').strip() or None)
+    cfg, *_ = calibration.load_calibration(files['params_file'], files['mid360_config'])
     vehicle = yaml.safe_load(Path(files['params_file']).read_text())
     if (value('model').strip() or vehicle['planner']['model']) != 'omni' or cfg['frames']['base'] != 'base_link':
         raise ValueError('Swerve simulation requires planner.model=omni and frames.base=base_link')
@@ -114,12 +113,13 @@ def _launch(context):
 
 def generate_launch_description():
     share = Path(os.environ.get('SENTRY_SIMULATION_SHARE', get_package_share_directory('sentry_simulation')))
+    config = Path(get_package_share_directory('perception_config'))
     defaults = {
         'world': 'home_large', 'headless': 'false', 'rviz': 'true', 'autostart': 'true',
         'params_file': str(Path(get_package_share_directory('navi2')) / 'params/navigation.yaml'),
-        'mid360_config': str(Path(get_package_share_directory('dual_mid360_fusion')) / 'config/mid360.yaml'),
-        'pointlio_config': str(Path(get_package_share_directory('point_lio')) / 'config/mid360.yaml'),
-        'backend_config': str(Path(get_package_share_directory('backend')) / 'config/pointlio_localization.yaml'),
+        'mid360_config': str(config / 'mid360.yaml'),
+        'pointlio_config': str(config / 'pointlio.yaml'),
+        'backend_config': str(config / 'localization_room.yaml'),
         'platform_config': str(share / 'config/swerve_odin.yaml'),
         'prior_map': '', 'map': '', 'model': '',
     }
