@@ -41,6 +41,8 @@ public:
         if (!sdf->HasElement(field.first)) throw std::invalid_argument(std::string("missing ")+field.first);
         *field.second=sdf->Get<double>(field.first);
       }
+      // Older generated SDFs omit this optional term and retain PD behavior.
+      p.steering_ki=sdf->HasElement("steering_ki") ? sdf->Get<double>("steering_ki") : 0.0;
       control=std::make_unique<swerve::Control>(p);
       SENTRY_GZ::SENTRY_SIM::Model model(entity);
       if (!model.Valid(ecm)) throw std::invalid_argument("requires a model entity");
@@ -100,14 +102,11 @@ public:
     targets=control->step(command,generation,now,dt,feedback);
     if (!targets.feedback_valid) Invalidate();
     for (std::size_t i=0;i<4;++i) {
-      const double steering_force=targets.feedback_valid ?
-        p.steering_kp*(targets.steering_position[i]-feedback.steering_position[i])+
-        p.steering_kd*(targets.steering_velocity[i]-feedback.steering_velocity[i]) : 0;
       // Invalid commands produce a zero wheel target, so finite feedback is
       // actively braked with the same bounded physical motor torque.
       const double wheel_force=std::isfinite(feedback.wheel_velocity[i]) ?
         p.wheel_kp*(targets.wheel_velocity[i]-feedback.wheel_velocity[i]) : 0;
-      SENTRY_GZ::SENTRY_SIM::Joint(steering[i]).SetForce(ecm,{std::clamp(steering_force,-p.steering_torque,p.steering_torque)});
+      SENTRY_GZ::SENTRY_SIM::Joint(steering[i]).SetForce(ecm,{std::clamp(targets.steering_force[i],-p.steering_torque,p.steering_torque)});
       SENTRY_GZ::SENTRY_SIM::Joint(wheels[i]).SetForce(ecm,{std::clamp(wheel_force,-p.wheel_torque,p.wheel_torque)});
     }
   }

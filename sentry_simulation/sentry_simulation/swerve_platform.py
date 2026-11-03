@@ -278,7 +278,10 @@ def build_assets(config, share, output, sensors=True, world_path=None, spawn=Non
     signed = {'body_center_z', 'wheel_center_z', 'sensor_height', 'spindle_center_z'}
     for section in (g, d, c, p):
         for key, value in section.items():
-            if not isinstance(value, (int, float)) or not math.isfinite(value) or (key not in signed and value <= 0):
+            if section is c and key == 'steering_ki':
+                if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
+                    raise ValueError('steering_ki must be finite and nonnegative')
+            elif not isinstance(value, (int, float)) or not math.isfinite(value) or (key not in signed and value <= 0):
                 raise ValueError(f'{key} must be finite' + ('' if key in signed else ' and positive'))
     if p['step'] > .1:
         raise ValueError('physics.step must be <= 0.1 s, the controller dt limit')

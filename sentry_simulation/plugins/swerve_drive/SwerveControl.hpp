@@ -69,6 +69,7 @@ struct Parameters {
   double command_timeout{.25}, publish_rate{100};
   double steering_kp{80}, steering_kd{4}, steering_torque{13.5};
   double wheel_kp{4}, wheel_torque{22};
+  double steering_ki{0};  // Nm/(rad*s); zero preserves the original PD path.
   void validate() const {
     for (double v : {wheel_radius,wheelbase,track,steering_limit,steering_hard_limit,
       max_linear_speed,max_yaw_speed,max_wheel_speed,linear_acceleration,yaw_acceleration,
@@ -76,6 +77,8 @@ struct Parameters {
       steering_kp,steering_kd,steering_torque,wheel_kp,wheel_torque}) {
       if (!std::isfinite(v) || v <= 0) throw std::invalid_argument("swerve parameters must be finite and positive");
     }
+    if (!std::isfinite(steering_ki) || steering_ki<0)
+      throw std::invalid_argument("steering_ki must be finite and nonnegative");
     if (steering_limit >= steering_hard_limit || steering_hard_limit >= 3.14159265359)
       throw std::invalid_argument("require steering_limit < steering_hard_limit < pi");
   }
@@ -103,6 +106,7 @@ struct Output {
   bool feedback_valid{};
   core::ChassisTwist reference;
   std::array<double,4> steering_position{}, steering_velocity{}, wheel_velocity{};
+  std::array<double,4> steering_force{};  // Raw PD+I; Drive retains the total torque clamp.
 };
 struct SteeringProfile {
   double position{}, velocity{};
@@ -121,11 +125,11 @@ class Control {
 public:
   explicit Control(const Parameters & parameters) : p(parameters),
     kinematics(p.geometry()), optimizer(p.geometry(),{p.max_wheel_speed,1e-5}) { p.validate(); }
-  void reset() { reference={}; profiles={}; active=false; holding=false; }
+  void reset() { reference={}; profiles={}; steering_integral={}; active=false; holding=false; }
   Output step(const Command & command, uint64_t generation, double now, double dt, const Feedback & feedback) {
     Output out;
     out.feedback_valid=feedback.valid(p.steering_hard_limit);
-    if (!out.feedback_valid) { reset(); return out; }
+    if (!out.feedback_valid) { reset(); return finalize(out,feedback,dt); }
     if (generation!=seen_generation) {
       if (active) reset();  // Repeated invalid packets retain the first hold angle.
       seen_generation=generation;
@@ -156,7 +160,7 @@ public:
       const auto velocities=kinematics.to_module_velocities(reference);
       const auto commands=optimizer.optimize(velocities.velocities,steering);
       if (velocities.status!=core::SwerveStatus::kOk || commands.status!=core::SwerveStatus::kOk) {
-        reset(); return out;
+        reset(); return finalize(out,feedback,dt);
       }
       // Project each wheel onto its measured rolling direction. A module taking
       // a long turn at a steering limit must not stop the other aligned modules.
@@ -174,14 +178,39 @@ public:
       out.steering_position[i]=profiles[i].position;
       out.steering_velocity[i]=profiles[i].velocity;
     }
-    return out;
+    return finalize(out,feedback,dt);
   }
 private:
+  Output finalize(Output out, const Feedback & feedback, double dt) {
+    if (!out.feedback_valid) return out;  // reset() already cleared I; never form PD from NaN feedback.
+    // Only a successful valid step remains active and nonholding. Invalid dt,
+    // timeout and optimizer failures take the original hold/reset paths above.
+    const bool integrate=p.steering_ki>0 && active && !holding;
+    if (!integrate) steering_integral={};
+    for (std::size_t i=0;i<4;++i) {
+      const double error=out.steering_position[i]-feedback.steering_position[i];
+      const double pd=p.steering_kp*error+
+        p.steering_kd*(out.steering_velocity[i]-feedback.steering_velocity[i]);
+      if (!integrate) {
+        out.steering_force[i]=pd;  // Preserve old arithmetic, including signed zero; no +0.
+        continue;
+      }
+      const double previous=steering_integral[i];
+      const double trial=std::clamp(previous+p.steering_ki*error*dt,-p.steering_torque,p.steering_torque);
+      const double total=pd+trial;
+      // Reject only increments farther into total saturation; reversal may unload I.
+      if (!((total>p.steering_torque && trial>previous) ||
+            (total<-p.steering_torque && trial<previous))) steering_integral[i]=trial;
+      out.steering_force[i]=pd+steering_integral[i];
+    }
+    return out;
+  }
   Parameters p;
   core::SwerveKinematics kinematics;
   core::ModuleCommandOptimizer optimizer;
   core::ChassisTwist reference{};
   std::array<SteeringProfile,4> profiles{};
+  std::array<double,4> steering_integral{};  // One Nm state per steering joint, owned by this lifecycle.
   uint64_t seen_generation{};
   bool active{},holding{};
 };
