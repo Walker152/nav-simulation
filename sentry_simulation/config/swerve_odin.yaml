@@ -39,6 +39,7 @@ control:
   publish_rate: 100.0
   steering_kp: 80.0
   steering_kd: 4.0
+  steering_ki: 0.0           # Optional Nm/(rad*s); use 80 only in the isolated servo candidate profile.
   steering_torque: 13.5
   wheel_kp: 4.0              # Wheel speed servo [N m / (rad/s)]; flat-ground sim tuned.
   wheel_torque: 22.0
