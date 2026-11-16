@@ -19,6 +19,8 @@ ros2 launch sentry_simulation swerve_odin.launch.py rviz:=true
 
 无头：`headless:=true`；底盘单独检查：再加 `sensors:=false`（外壳和质量仍保留）。
 Gazebo 的 RGB/dToF 仍需要可用的图形渲染环境；`headless` 只关闭 GUI。
+`home_large` 使用 Ogre，以减少已测窄墙掠射点的距离偏差；其他世界保留各自引擎。
+该场景需可用的 DISPLAY/图形环境，不适用于仅支持 Ogre2 的 `--headless-rendering` EGL 模式。
 退出用 Ctrl+C，launch 同时停止 Gazebo、桥接和 TF 节点并清理临时生成资源。
 与其他仿真同时运行时，使用独立 `ROS_DOMAIN_ID` 和 `GZ_PARTITION`。
 
