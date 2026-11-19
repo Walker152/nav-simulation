@@ -112,6 +112,8 @@ def _launch_setup(context, package_share):
             f"chassis_type '{chassis_type}' does not match planner.model '{vehicle_model}'")
     model_path = os.path.join(
         package_share, "resource", "models", f"sentry_{vehicle_model}", "model.sdf")
+    assembler.prepare_navigation_parameters(
+        resolved_params, get_package_share_directory("navi2"))
     process_params_file = assembler.write_navigation_parameters(resolved_params)
     cleanup_params = RegisterEventHandler(OnShutdown(on_shutdown=[OpaqueFunction(
         function=lambda context: Path(process_params_file).unlink(missing_ok=True))]))
@@ -232,8 +234,7 @@ def _launch_setup(context, package_share):
         # Keep the nested navigation launch focused on planner/controller nodes.
         launch_arguments={
             "use_sim_time": "true",
-            "params_file": nav2_params_path,
-            "model": vehicle_model,
+            "resolved_params_file": process_params_file,
             "autostart": "true",
             "use_composition": "False",
             "planner_container_name": "livox_pointlio_container",
