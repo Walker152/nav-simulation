@@ -168,8 +168,9 @@ public:
         const auto & target=commands.setpoints[i];
         profiles[i].step(target.steering_angle_rad,dt,p.max_steering_velocity,p.max_steering_acceleration);
         const double error=std::abs(target.steering_angle_rad-feedback.steering_position[i]);
-        // Keep this wheel stopped through perpendicular and longer limited turns.
-        const double alignment=error<1.5707963267948966 ? std::cos(error) : 0.0;
+        // The rolling axis is periodic even when the steering path is limited.
+        // Signed projection stays continuous when equivalent targets swap speed sign.
+        const double alignment=std::cos(error);
         out.wheel_velocity[i]=target.wheel_speed_mps/p.wheel_radius*alignment;
       }
     }
